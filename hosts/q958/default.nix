@@ -25,5 +25,10 @@
     nix-output-monitor sops
   ];
 
+  environment.shellAliases = {
+    sops-edit = "sudo bash -c 'SOPS_AGE_KEY_FILE=/var/lib/sops-nix/key.txt sops /home/moritz/nix-config/secrets.sops.yaml'";
+    sops-show = "sudo bash -c 'SOPS_AGE_KEY_FILE=/var/lib/sops-nix/key.txt sops -d /home/moritz/nix-config/secrets.sops.yaml'";
+  };
+
   system.stateVersion = "25.11";
 }
