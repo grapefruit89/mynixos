@@ -6,6 +6,10 @@
     ../../modules/00-system/nix-settings.nix
     ../../modules/10-infrastructure/tailscale.nix
     ../../modules/10-infrastructure/traefik.nix
+    ../../modules/10-infrastructure/pocket-id.nix
+
+    # Backend Media
+    ../../modules/20-backend-media/sabnzbd.nix
   ];
 
   boot.loader.systemd-boot.enable      = true;
@@ -18,9 +22,18 @@
   i18n.defaultLocale = "de_DE.UTF-8";
   console.keyMap     = "de";
 
-  nixpkgs.config.allowUnfree = true;
+  # ── SOUND (Pipewire – moderner Standard) ───────────────────────────────────
+  services.pulseaudio.enable = false;
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable            = true;
+    alsa.enable       = true;
+    alsa.support32Bit = true;
+    pulse.enable      = true;
+  };
 
   environment.systemPackages = with pkgs; [
+    vscodium
     git htop wget curl tree unzip file
     nix-output-monitor sops
   ];

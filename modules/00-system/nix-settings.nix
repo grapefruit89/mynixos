@@ -13,4 +13,7 @@
     dates     = "weekly";
     options   = "--delete-older-than 7d";
   };
+
+  # Proprietäre Software erlauben
+  nixpkgs.config.allowUnfree = true;
 }
