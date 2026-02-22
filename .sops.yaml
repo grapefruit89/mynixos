@@ -1,0 +1,4 @@
+# Diese Datei legt fest, welche Schlüssel zum Verschlüsseln verwendet werden.
+creation_rules:
+  - path_regex: secrets.sops.yaml$
+    age: "age183k0jjzg4n5ue0rm4l8x3x8gvvc6uzvd7q02v0xa00gfl5ch9qsswjw7m2"
