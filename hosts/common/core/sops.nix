@@ -1,21 +1,16 @@
-{ config, pkgs, lib, ... }:
-
+# hosts/common/core/sops.nix
+{ ... }:
 {
-  # ── SOPS (Secrets Management) ──────────────────────────────────────────────
   sops = {
-    # Pfad zur zentralen Secrets-Datei
     defaultSopsFile = ../../../secrets.sops.yaml;
 
-    # Definiere die Geheimnisse, die entschlüsselt werden sollen.
-    # Der Wert wird dann unter config.sops.secrets.<name> verfügbar.
-    # secrets = {
-    #   "example_secret" = {};
-    #   # "sabnzbd_api_key" = {};
-    #   # "cloudflare_api_token" = {};
-    # };
+    # Server-SSH-Host-Key wird zur Entschlüsselung genutzt
+    # Kein separater Age-Key nötig – der Host-Key ist immer vorhanden
+    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
 
-    # Konfiguration für den sops-nix Dienst
-    # age.keyFile = "/var/lib/sops/age.key"; # Standard-Pfad für den System-Key
-    age.sshKeyPaths = []; # Wir verwenden Age, keine SSH-Keys
+    # Secrets werden hier eingetragen sobald sie gebraucht werden, z.B.:
+    # secrets."cloudflare_api_token" = {
+    #   owner = "traefik";
+    # };
   };
 }
