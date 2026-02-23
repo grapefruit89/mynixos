@@ -1,26 +1,34 @@
 { config, lib, pkgs, ... }:
-
 {
-  # ── NIX EINSTELLUNGEN ──────────────────────────────────────────────────────
-  nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ]; # Flakes aktivieren
-    auto-optimise-store   = true;                        # Speicher sparen
-  };
+  # ── BOOTLOADER ───────────────────────────────────────────────────────────
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.grub.enable = false;
 
-  # Alte Systemgenerationen automatisch aufräumen (älter als 7 Tage)
-  nix.gc = {
-    automatic = true;
-    dates     = "weekly";
-    options   = "--delete-older-than 7d";
-  };
+  # ── SYSTEM ───────────────────────────────────────────────────────────────
+  networking.hostName = "q958";
+  networking.networkmanager.enable = true;
+  time.timeZone = "Europe/Berlin";
+  i18n.defaultLocale = "de_DE.UTF-8";
+  console.keyMap = "de";
 
-  # Proprietäre Software erlauben
   nixpkgs.config.allowUnfree = true;
 
-  # OOM-Schutz für wichtige Dienste
-  systemd.services.traefik.serviceConfig = {
-    OOMScoreAdjust = -900; # Etwas weniger aggressiv als SSHd, aber immer noch bevorzugt
-    Restart = lib.mkForce "always";
-    RestartSec = "5s";
+  # ── PAKETE ───────────────────────────────────────────────────────────────
+  environment.systemPackages = with pkgs; [
+    nodejs_22
+    alejandra
+    git
+    htop
+    wget
+    curl
+    tree
+    unzip
+    file
+    nix-output-monitor
+  ];
+
+  programs.bash.shellAliases = {
+    gemini = "npx @google/gemini-cli";
   };
 }

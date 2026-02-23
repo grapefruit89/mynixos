@@ -1,31 +1,33 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, ... }:
 let
   domain = "m7c5.de";
 in
 {
-  # sops.secrets."cloudflare_api_token" = {
-  #   owner = "traefik";
-  #   group = "traefik";
-  # };
-  # systemd.services.traefik.serviceConfig.EnvironmentFile = [
-  #   config.sops.secrets."cloudflare_api_token".path
-  # ];
+  # Traefik läuft als Herzstück. Token kommt aus /etc/secrets/traefik.env
+  systemd.services.traefik.serviceConfig = {
+    Restart = lib.mkForce "always";
+    RestartSec = lib.mkForce "5s";
+    OOMScoreAdjust = -900;
+    EnvironmentFile = [ "/etc/secrets/traefik.env" ];
+  };
+
   services.traefik = {
     enable = true;
     dataDir = "/var/lib/traefik";
+
     staticConfigOptions = {
-      log.level = "DEBUG";
+      log.level = "INFO";
       api.dashboard = false;
+
       certificatesResolvers.letsencrypt.acme = {
         email = "moritzbaumeister@gmail.com";
         storage = "${config.services.traefik.dataDir}/acme.json";
         dnsChallenge = {
-          # provider = "cloudflare"; # Cloudflare DNS Challenge Provider benötigt API-Token.
-                                   # Diesen manuell in der Umgebungsvariable `CF_DNS_API_TOKEN` setzen oder hier den Token eintragen.
-                                   # Beispiel: "--env CF_DNS_API_TOKEN=your_token" in extraOptions für den Traefik-Container.
+          provider = "cloudflare";
           resolvers = [ "1.1.1.1:53" "8.8.8.8:53" ];
         };
       };
+
       entryPoints = {
         web = {
           address = ":80";
@@ -46,44 +48,17 @@ in
           };
         };
       };
-      providers.docker = {
-        exposedByDefault = false;
-      };
     };
-    dynamicConfigOptions = {
-      http.middlewares = {
-        "pocket-id-auth" = {
-          forwardAuth = {
-            address = "http://127.0.0.1:3000"; # Interne Adresse von Pocket ID
-            authResponseHeaders = [ "X-Forwarded-User" ];
-          };
-        };
 
-        secure-headers.headers = {
-          stsSeconds = 31536000;
-          stsIncludeSubdomains = true;
-          stsPreload = true;
-          forceSTSHeader = true;
-          browserXssFilter = true;
-          contentTypeNosniff = true;
-          frameDeny = true;
-        };
-      };
+    dynamicConfigOptions.http.middlewares.secure-headers.headers = {
+      stsSeconds = 31536000;
+      stsIncludeSubdomains = true;
+      stsPreload = true;
+      forceSTSHeader = true;
+      contentTypeNosniff = true;
+      frameDeny = true;
     };
   };
 
-  # -- ZUR VALIDIERUNG: Ein einfacher 'whoami'-Service --
-  # Dieser Container gibt nur Request-Infos aus. Er wird unter whoami.m7c5.de
-  # verfügbar gemacht, um zu testen, ob Traefik und Let's Encrypt korrekt funktionieren.
-  virtualisation.oci-containers.containers.whoami = {
-    image = "traefik/whoami";
-    extraOptions = [
-      "--label=traefik.enable=true"
-      "--label=traefik.http.routers.whoami.rule=Host(`nix-whoami.${domain}`)"
-      "--label=traefik.http.routers.whoami.entrypoints=websecure"
-      "--label=traefik.http.routers.whoami.tls.certresolver=letsencrypt"
-      "--label=traefik.http.routers.whoami.middlewares=secure-headers@file"
-      "--label=traefik.http.services.whoami.loadbalancer.server.port=80"
-    ];
-  };
+  # Hinweis: Neue Services bitte mit Prefix "nix-" anlegen (z.B. nix-foo.m7c5.de).
 }

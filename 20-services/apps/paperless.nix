@@ -1,12 +1,17 @@
-# modules/40-services/paperless.nix
-# ══════════════════════════════════════════════════════════════════════════════
-# DUMMY – NOCH NICHT AKTIV
-# Paperless-ngx – Dokumenten Management
-# ══════════════════════════════════════════════════════════════════════════════
-# DIESES MODUL ERST IMPORTIEREN wenn es vollständig ausgearbeitet ist!
-# (Import in hosts/q958/default.nix ergänzen)
-# ══════════════════════════════════════════════════════════════════════════════
 { ... }:
 {
-  # Platzhalter – noch nicht implementiert
+  services.paperless.enable = true;
+
+  services.traefik.dynamicConfigOptions.http = {
+    routers.paperless = {
+      rule = "Host(`nix-paperless.m7c5.de`)";
+      entryPoints = [ "websecure" ];
+      tls.certResolver = "letsencrypt";
+      middlewares = [ "secure-headers@file" ];
+      service = "paperless";
+    };
+    services.paperless.loadBalancer.servers = [
+      { url = "http://127.0.0.1:28981"; }
+    ];
+  };
 }
