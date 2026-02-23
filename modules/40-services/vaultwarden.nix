@@ -5,9 +5,6 @@ in
 {
   services.vaultwarden = {
     enable = true;
-    dataDir = "/var/lib/vaultwarden";
-    user = "vaultwarden";
-    group = "vaultwarden";
     # Optional: Weitere Vaultwarden-spezifische Einstellungen hier.
     # z.B. rocket = { ip_header = "X-Forwarded-For"; }; wenn Traefik als Reverse Proxy dient
   };
