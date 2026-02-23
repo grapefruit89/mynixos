@@ -3,13 +3,13 @@ let
   domain = "m7c5.de";
 in
 {
-  sops.secrets."cloudflare_api_token" = {
-    owner = "traefik";
-    group = "traefik";
-  };
-  systemd.services.traefik.serviceConfig.EnvironmentFile = [
-    config.sops.secrets."cloudflare_api_token".path
-  ];
+  # sops.secrets."cloudflare_api_token" = {
+  #   owner = "traefik";
+  #   group = "traefik";
+  # };
+  # systemd.services.traefik.serviceConfig.EnvironmentFile = [
+  #   config.sops.secrets."cloudflare_api_token".path
+  # ];
   services.traefik = {
     enable = true;
     dataDir = "/var/lib/traefik";
@@ -69,7 +69,6 @@ in
       };
     };
   };
-  networking.firewall.allowedTCPPorts = [ 80 443 ];
 
   # -- ZUR VALIDIERUNG: Ein einfacher 'whoami'-Service --
   # Dieser Container gibt nur Request-Infos aus. Er wird unter whoami.m7c5.de

@@ -6,6 +6,6 @@
   # Nach dem ersten Build: 'sudo tailscale up' ausführen.
   services.tailscale.enable = true;
 
-  # MagicDNS aktivieren, damit der Server andere Geräte im Tailnet per Namen findet.
-  services.tailscale.useTailnetDNS = true;
+  # MagicDNS wird bei Aktivierung von Tailscale automatisch konfiguriert.
+  # Die alte Option 'useTailnetDNS' wurde entfernt.
 }

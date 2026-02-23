@@ -9,7 +9,8 @@
     ../../modules/10-infrastructure/pocket-id.nix
 
     # Backend Media
-    ../../modules/20-backend-media/sabnzbd.nix
+    # ../../modules/20-backend-media/sabnzbd.nix
+    # ../../modules/20-backend-media/prowlarr.nix
   ];
 
   boot.loader.systemd-boot.enable      = true;
@@ -18,9 +19,25 @@
   networking.hostName              = "q958";
   networking.networkmanager.enable = true;
 
+  # Erstellt eine 4GB Swap-Datei, um den Arbeitsspeicher bei Bedarf zu erweitern.
+  # Dies ist nützlich, um "Out of Memory"-Fehler bei speicherintensiven
+  # Build-Prozessen (wie bei Sonarr/Radarr) zu verhindern.
+  swapDevices = [
+    { device = "/var/lib/swapfile"; size = 4096; }
+  ];
+
   time.timeZone      = "Europe/Berlin";
   i18n.defaultLocale = "de_DE.UTF-8";
-  console.keyMap     = "de";
+
+  # Deutsche Tastaturkonfiguration fuer Konsole und X-Server
+  console.keyMap = "de-latin1";
+  services.xserver = {
+    enable = true;
+    xkb = {
+      layout = "de";
+      model = "pc105";
+    };
+  };
 
   # ── SOUND (Pipewire – moderner Standard) ───────────────────────────────────
   services.pulseaudio.enable = false;

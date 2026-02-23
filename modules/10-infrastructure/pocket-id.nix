@@ -5,7 +5,7 @@ in
 {
   # 1. Pocket ID Service konfigurieren
   services.pocket-id = {
-    enable = true;
+    enable = false;
     dataDir = "/var/lib/pocket-id";
     settings = {
       # Die externe URL, unter der der Dienst erreichbar ist
@@ -18,18 +18,18 @@ in
       title = "m7c5 Login";
 
       # Ersten Admin-Benutzer festlegen (kann nach dem ersten Login geändert werden)
-      users = [
-        {
-          email = "moritzbaumeister@gmail.com";
-          name = "Moritz";
-          admin = true;
-        }
-      ];
+      # users = builtins.toJSON [
+      #   {
+      #     email = "moritzbaumeister@gmail.com";
+      #     name = "Moritz";
+      #     admin = true;
+      #   }
+      # ];
     };
   };
 
   # 2. Pocket ID über Traefik erreichbar machen
-  services.traefik.dynamicConfig.http = {
+  services.traefik.dynamicConfigOptions.http = {
     routers.pocket-id = {
       rule = "Host(`nix-auth.${domain}`)";
       entryPoints = [ "websecure" ];
