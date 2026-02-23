@@ -10,6 +10,12 @@ in
     group = "audiobookshelf";
   };
 
+  # Sicherstellen, dass das Datenverzeichnis existiert und die richtigen Berechtigungen hat
+  systemd.tmpfiles.rules = [
+    "d /var/lib/audiobookshelf 0755 audiobookshelf audiobookshelf -"
+  ];
+
+
   services.traefik.dynamicConfigOptions.http = {
     routers.audiobookshelf = {
       rule = "Host(`audiobookshelf.${domain}`)";

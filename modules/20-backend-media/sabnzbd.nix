@@ -25,12 +25,12 @@ in
   # HINWEIS: Der Netzwerknamensraum selbst (z.B. wg-interface in den netns verschieben, Routing)
   # muss noch separat konfiguriert werden. Dies hier weist SABnzbd nur an,
   # diesen Namespace zu nutzen.
-  systemd.services.sabnzbd.serviceConfig.NetworkNamespacePath = netnsPath;
+  # systemd.services.sabnzbd.serviceConfig.NetworkNamespacePath = netnsPath;
 
-  # Sicherstellen, dass das Verzeichnis für Netzwerknamensräume existiert
-  systemd.tmpfiles.rules = [
-    "d ${netnsPath} 0755 root root -"
-  ];
+  # # Sicherstellen, dass das Verzeichnis für Netzwerknamensräume existiert
+  # systemd.tmpfiles.rules = [
+  #   "d ${netnsPath} 0755 root root -"
+  # ];
 
   # 5. SABnzbd über Traefik erreichbar machen und mit Pocket ID absichern
   services.traefik.dynamicConfigOptions.http = {
