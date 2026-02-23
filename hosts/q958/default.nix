@@ -13,6 +13,8 @@
     # ../../modules/20-backend-media/prowlarr.nix
     ../../modules/30-frontend-media/audiobookshelf.nix
     ../../modules/30-frontend-media/jellyfin.nix
+    ../../modules/40-services/vaultwarden.nix
+    ../../modules/40-services/homepage.nix
 
     # Enabled Services
     ../../modules/90-services-enabled/default.nix

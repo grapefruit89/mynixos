@@ -3,18 +3,18 @@
   # ── SSH SERVER ─────────────────────────────────────────────────────────────
   services.openssh = {
     enable = true;
-    openFirewall = lib.mkForce true; # Erlaube den SSH-Port durch die Firewall
-
+    extraConfig = ''
+      Match Address *,!10.0.0.0/8,!172.16.0.0/12,!192.168.0.0/16,!100.64.0.0/10
+        ForceCommand /bin/false
+        X11Forwarding no
+        PermitTTY no
+    '';
     settings = {
       Port = 22; # SSH Port 22 – EISERNES GESETZ – wird durch nichts überschrieben
       PermitRootLogin      = "no";    # Root-Login verboten
       PasswordAuthentication = false; # Nur Key-Login erlauben
-      # AllowUsers = "moritz @192.168.2.*"; # Beispiel: SSH nur von bestimmten IPs erlauben
     };
   };
-
-  # SSH Port 22 – EISERNES GESETZ – wird durch nichts überschrieben
-  networking.firewall.allowedTCPPorts = lib.mkForce [ 22 80 443 ];
 
   # OOM-Schutz – sshd wird niemals gekillt
   systemd.services.sshd.serviceConfig = {
