@@ -6,7 +6,7 @@
     ../../modules/00-system/nix-settings.nix
     ../../modules/10-infrastructure/tailscale.nix
     ../../modules/10-infrastructure/traefik.nix
-    ../../modules/10-infrastructure/pocket-id.nix
+    # ../../modules/10-infrastructure/pocket-id.nix # Temporarily disabled due to 'option does not exist' error
 
     # Backend Media
     # ../../modules/20-backend-media/sabnzbd.nix
