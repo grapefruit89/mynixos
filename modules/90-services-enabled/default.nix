@@ -6,5 +6,7 @@
   services.audiobookshelf.enable = true;
   services.jellyfin.enable = true;
   services.vaultwarden.enable = true;
+  # services.n8n.enable = true; # Temporarily disabled
+
 
 }

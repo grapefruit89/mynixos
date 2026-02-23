@@ -15,6 +15,7 @@
     ./modules/30-frontend-media/jellyfin.nix
     ./modules/40-services/vaultwarden.nix
     ./modules/40-services/homepage.nix
+    ./modules/40-services/n8n.nix
 
     # Enabled Services
     ./modules/90-services-enabled/default.nix

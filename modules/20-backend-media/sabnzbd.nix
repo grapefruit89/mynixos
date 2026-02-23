@@ -7,12 +7,6 @@ in
   # 3. SABnzbd-Dienst konfigurieren
   services.sabnzbd = {
     enable = true;
-    stateDir = "/var/lib/sabnzbd"; # Appdata auf der NVMe
-    user = "sabnzbd";
-    group = "sabnzbd";
-    # WICHTIG: Den SABnzbd API-Key musst du nach dem ersten Start manuell über die Web-Oberfläche setzen.
-    # Wenn du den Key in eine Datei auslagern möchtest, kannst du hier den Pfad angeben:
-    # api_key_file = "/path/to/your/sabnzbd_api_key_file";
   };
 
   # 4. SABnzbd in den VPN-Namespace "einsperren" (Native NixOS-Lösung)
