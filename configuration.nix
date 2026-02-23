@@ -2,23 +2,30 @@
 {
   imports = [
     ./hosts/q958/hardware-configuration.nix
-    ./hosts/common/core
-    ./modules/00-system/nix-settings.nix
-    ./modules/10-infrastructure/tailscale.nix
-    ./modules/10-infrastructure/traefik.nix
-    # ./modules/10-infrastructure/pocket-id.nix # Temporarily disabled due to 'option does not exist' error
+    ./00-core/users.nix
+    ./00-core/ssh.nix
+    ./00-core/firewall.nix
+    ./00-core/system.nix
+    # ./00-core/storage.nix
+
+    ./10-infrastructure/tailscale.nix
+    ./10-infrastructure/traefik.nix
+    ./10-infrastructure/homepage.nix
+    # ./10-infrastructure/adguardhome.nix
+    # ./10-infrastructure/pocket-id.nix # Temporarily disabled due to 'option does not exist' error
+    # ./10-infrastructure/wireguard-vpn.nix
 
     # Backend Media
-    ./modules/20-backend-media/sabnzbd.nix
-    # ./modules/20-backend-media/prowlarr.nix
-    ./modules/30-frontend-media/audiobookshelf.nix
-    ./modules/30-frontend-media/jellyfin.nix
-    ./modules/40-services/vaultwarden.nix
-    ./modules/40-services/homepage.nix
-    ./modules/40-services/n8n.nix
+    ./20-services/backend-media/sabnzbd.nix
+    # ./20-services/backend-media/prowlarr.nix
 
-    # Enabled Services
-    ./modules/90-services-enabled/default.nix
+    # Frontend Media
+    ./20-services/frontend-media/audiobookshelf.nix
+    ./20-services/frontend-media/jellyfin.nix
+
+    # Apps / Services
+    ./20-services/apps/vaultwarden.nix
+    ./20-services/apps/n8n.nix
   ];
 
   boot.loader.systemd-boot.enable      = true;

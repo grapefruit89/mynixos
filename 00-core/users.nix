@@ -4,6 +4,7 @@
   users.users.moritz = {
     isNormalUser = true;
     description  = "Moritz Baumeister";
+    hashedPassword = "$6$pKl63Hvf4xCZ.50p$VDqTe9xF6gTtMFxZjQec1J3Xj2DfBFLPYQHUBJ2Vv2H6xurgOpi7sTz.jU3oyPTBTUo4uvv7ANq2eaUGwO1rC.";
     extraGroups  = [
       "networkmanager"   # Netzwerk verwalten
       "wheel"            # sudo-Rechte
