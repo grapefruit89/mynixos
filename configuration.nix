@@ -8,6 +8,7 @@
     ./00-core/users.nix
     ./00-core/ssh.nix
     ./00-core/firewall.nix
+    ./00-core/aliases.nix
 
     ./10-infrastructure/tailscale.nix
     ./10-infrastructure/traefik.nix
