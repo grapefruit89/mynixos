@@ -10,7 +10,7 @@ in
   # Erstelle einen dedizierten Benutzer und eine Gruppe für den Homepage-Dienst
   users.groups.${homepageGroup} = {};
   users.users.${homepageUser} = {
-    isNormalUser = false;
+    isSystemUser = true;
     group = homepageGroup;
     home = homepageConfigDir;
     createHome = true;
