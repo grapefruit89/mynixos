@@ -15,7 +15,7 @@ in
   hardware.opengl.enable = true;
   hardware.opengl.extraPackages = with pkgs; [
     intel-media-driver
-    vaapiIntel
+    intel-vaapi-driver
     intel-compute-runtime
   ];
   users.users.jellyfin.extraGroups = [ "video" "render" ];
