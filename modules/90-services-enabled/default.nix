@@ -6,5 +6,5 @@
   services.audiobookshelf.enable = true;
   services.jellyfin.enable = true;
   services.vaultwarden.enable = true;
-  services.homepage.enable = true;
+
 }

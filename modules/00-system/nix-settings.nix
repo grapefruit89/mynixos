@@ -20,7 +20,7 @@
   # OOM-Schutz für wichtige Dienste
   systemd.services.traefik.serviceConfig = {
     OOMScoreAdjust = -900; # Etwas weniger aggressiv als SSHd, aber immer noch bevorzugt
-    Restart = "always";
+    Restart = lib.mkForce "always";
     RestartSec = "5s";
   };
 }
