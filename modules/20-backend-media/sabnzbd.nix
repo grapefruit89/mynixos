@@ -1,6 +1,7 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, ... }:
 let
   domain = "m7c5.de";
+  netnsPath = "/run/netns/wg"; # Pfad für den VPN-Netzwerknamensraum
 in
 {
   # 3. SABnzbd-Dienst konfigurieren
@@ -20,11 +21,16 @@ in
     };
   };
 
-  # 4. SABnzbd in den VPN-Namespace "einsperren"
-  systemd.services.sabnzbd.vpnConfinement = {
-    enable = true;
-    vpnNamespace = "privado"; # Use the 'privado' namespace defined in wireguard-vpn.nix
-  };
+  # 4. SABnzbd in den VPN-Namespace "einsperren" (Native NixOS-Lösung)
+  # HINWEIS: Der Netzwerknamensraum selbst (z.B. wg-interface in den netns verschieben, Routing)
+  # muss noch separat konfiguriert werden. Dies hier weist SABnzbd nur an,
+  # diesen Namespace zu nutzen.
+  systemd.services.sabnzbd.serviceConfig.NetworkNamespacePath = netnsPath;
+
+  # Sicherstellen, dass das Verzeichnis für Netzwerknamensräume existiert
+  systemd.tmpfiles.rules = [
+    "d ${netnsPath} 0755 root root -"
+  ];
 
   # 5. SABnzbd über Traefik erreichbar machen und mit Pocket ID absichern
   services.traefik.dynamicConfigOptions.http = {
@@ -33,7 +39,7 @@ in
       entryPoints = [ "websecure" ];
       tls.certResolver = "letsencrypt";
       middlewares = [
-        "pocket-id-auth@file" # Assuming this middleware is defined elsewhere
+        # "pocket-id-auth@file" # Assuming this middleware is defined elsewhere
         "secure-headers@file" # Assuming this middleware is defined elsewhere
       ];
       service = "sabnzbd";
