@@ -4,17 +4,17 @@
 #
 # Hinweis Q958: kein GPU → lokale Modelle (Ollama) sehr langsam.
 # Empfehlung: externe API (OpenAI/Anthropic) als Backend nutzen.
-# API-Key über sops:
 #
-#   sops.secrets."openai_api_key" = { owner = "open-webui"; };
+# API-Key muss manuell konfiguriert werden, z.B. direkt im Modul oder über Umgebungsvariablen.
 #
-#   services.open-webui = {
-#     enable = true;
-#     environment = {
-#       OPENAI_API_KEY = "";  # zur Laufzeit via sops gesetzt
-#       # OLLAMA_API_BASE_URL = "http://localhost:11434";
-#     };
-#   };
+#   # Beispiel für manuelle Konfiguration:
+#   # services.open-webui = {
+#   #   enable = true;
+#   #   environment = {
+#   #     OPENAI_API_KEY = "DEIN_OPENAI_API_KEY";
+#   #     # OLLAMA_API_BASE_URL = "http://localhost:11434";
+#   #   };
+#   # };
 #
 # Achtung: bekannte Bugs in aktuellen nixpkgs (sqlite readonly, build failures)
 # → vor Aktivierung Issue-Status prüfen:

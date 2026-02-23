@@ -20,7 +20,9 @@ in
         email = "moritzbaumeister@gmail.com";
         storage = "${config.services.traefik.dataDir}/acme.json";
         dnsChallenge = {
-          provider = "cloudflare";
+          # provider = "cloudflare"; # Cloudflare DNS Challenge Provider benötigt API-Token.
+                                   # Diesen manuell in der Umgebungsvariable `CF_DNS_API_TOKEN` setzen oder hier den Token eintragen.
+                                   # Beispiel: "--env CF_DNS_API_TOKEN=your_token" in extraOptions für den Traefik-Container.
           resolvers = [ "1.1.1.1:53" "8.8.8.8:53" ];
         };
       };

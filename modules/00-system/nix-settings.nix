@@ -16,4 +16,11 @@
 
   # Proprietäre Software erlauben
   nixpkgs.config.allowUnfree = true;
+
+  # OOM-Schutz für wichtige Dienste
+  systemd.services.traefik.serviceConfig = {
+    OOMScoreAdjust = -900; # Etwas weniger aggressiv als SSHd, aber immer noch bevorzugt
+    Restart = "always";
+    RestartSec = "5s";
+  };
 }

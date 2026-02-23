@@ -11,6 +11,11 @@
     # Backend Media
     # ../../modules/20-backend-media/sabnzbd.nix
     # ../../modules/20-backend-media/prowlarr.nix
+    ../../modules/30-frontend-media/audiobookshelf.nix
+    ../../modules/30-frontend-media/jellyfin.nix
+
+    # Enabled Services
+    ../../modules/90-services-enabled/default.nix
   ];
 
   boot.loader.systemd-boot.enable      = true;
@@ -28,37 +33,15 @@
 
   time.timeZone      = "Europe/Berlin";
   i18n.defaultLocale = "de_DE.UTF-8";
+  i18n.supportedLocales = lib.mkForce [ "de_DE.UTF-8/UTF-8" "en_US.UTF-8/UTF-8" ];
 
-  # Deutsche Tastaturkonfiguration fuer Konsole und X-Server
-  console.keyMap = "de-latin1";
-  services.xserver = {
-    enable = true;
-    xkb = {
-      layout = "de";
-      model = "pc105";
-    };
-  };
-
-  # ── SOUND (Pipewire – moderner Standard) ───────────────────────────────────
-  services.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable            = true;
-    alsa.enable       = true;
-    alsa.support32Bit = true;
-    pulse.enable      = true;
-  };
+  # Konsolen-Konfiguration
+  console.keyMap = lib.mkForce "de";
 
   environment.systemPackages = with pkgs; [
-    vscodium
     git htop wget curl tree unzip file
-    nix-output-monitor sops
+    nix-output-monitor
   ];
 
-  environment.shellAliases = {
-    sops-edit = "sudo bash -c 'SOPS_AGE_KEY_FILE=/var/lib/sops-nix/key.txt sops /home/moritz/nix-config/secrets.sops.yaml'";
-    sops-show = "sudo bash -c 'SOPS_AGE_KEY_FILE=/var/lib/sops-nix/key.txt sops -d /home/moritz/nix-config/secrets.sops.yaml'";
-  };
-
-  system.stateVersion = "25.11";
+  system.stateVersion = "24.11";
 }

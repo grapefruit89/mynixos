@@ -11,8 +11,10 @@ in
       # Die externe URL, unter der der Dienst erreichbar ist
       issuer = "https://nix-auth.${domain}";
 
-      # Das Secret zum Signieren der Tokens, wird aus der sops-Datei gelesen
-      secret = config.sops.secrets.pocket_id_secret.path;
+      # Das Secret zum Signieren der Tokens, muss manuell gesetzt werden.
+      # WICHTIG: Ersetze "your-very-secret-signing-key" durch einen langen, zufälligen String!
+      # secret = "your-very-secret-signing-key";
+      # Das alte Secret bezog sich auf sops: config.sops.secrets.pocket_id_secret.path;
 
       # Standard-Titel für die Login-Seite
       title = "m7c5 Login";
