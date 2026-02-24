@@ -1,6 +1,8 @@
 { ... }:
 {
   my.media = {
+    defaults.domain = "m7c5.de";
+
     jellyfin.enable = true;
     sonarr.enable = true;
     radarr.enable = true;

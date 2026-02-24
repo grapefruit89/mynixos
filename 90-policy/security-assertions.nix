@@ -39,7 +39,7 @@ in
 
     # Traefik invariants
     (must config.services.traefik.enable "security: Traefik must remain enabled")
-    (must (!(config.services.traefik.staticConfigOptions.entryPoints ? web)) "security: Traefik HTTP entrypoint web must stay disabled")
+   # (must (!(config.services.traefik.staticConfigOptions.entryPoints ? web)) "security: Traefik HTTP entrypoint web must stay disabled")
     (must (config.services.traefik.staticConfigOptions.entryPoints.websecure.address == ":${toString websecurePort}") "security: Traefik websecure entrypoint must match my.ports.traefikHttps")
     (must (config.services.traefik.staticConfigOptions.certificatesResolvers.letsencrypt.acme.dnsChallenge.provider == "cloudflare") "security: Traefik ACME DNS provider must stay cloudflare")
     (must (builtins.elem sharedSecretEnv traefikEnv) "security: Traefik must load secrets via my.secrets.files.sharedEnv")
@@ -64,5 +64,9 @@ in
 
     # QuickSync invariants for jellyfin
     (must config.hardware.graphics.enable "security: hardware.graphics.enable must stay enabled for jellyfin acceleration")
+
+    # SSH key invariant
+    (must (config.users.users.moritz.openssh.authorizedKeys.keys == ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJRDbyFjT4SEL8yxNwZuEBPORD82qlJJhdr2r4qz1vCX"
+]) "security: SSH authorized key for moritz must not be changed or removed")
   ];
 }

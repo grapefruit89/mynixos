@@ -2,34 +2,41 @@
 {
   imports = [
     ./hosts/q958/hardware-configuration.nix
+
+    # Core
     ./00-core/ports.nix
+    ./00-core/secrets.nix
     ./00-core/users.nix
     ./00-core/ssh.nix
     ./00-core/firewall.nix
     ./00-core/system.nix
+    ./00-core/aliases.nix
+    ./00-core/fail2ban.nix
     # ./00-core/storage.nix
 
+    # Infrastructure
     ./10-infrastructure/tailscale.nix
     ./10-infrastructure/traefik-core.nix
-    ./10-infrastructure/traefik-routes-public.nix
+    # ./10-infrastructure/traefik-routes-public.nix
     ./10-infrastructure/traefik-routes-internal.nix
     ./10-infrastructure/homepage.nix
+    ./10-infrastructure/wireguard-vpn.nix
     # ./10-infrastructure/adguardhome.nix
-    # ./10-infrastructure/pocket-id.nix # Temporarily disabled due to 'option does not exist' error
-    # ./10-infrastructure/wireguard-vpn.nix
+    # ./10-infrastructure/pocket-id.nix
 
-    # Backend Media
-    ./20-services/media-stack.nix
-    ./20-services/backend-media/sabnzbd.nix
-    # ./20-services/backend-media/prowlarr.nix
+    # Media Stack (neues _lib.nix-basiertes System)
+    ./20-services/media/default.nix
+    ./20-services/media/media-stack.nix
 
-    # Frontend Media
-    ./20-services/frontend-media/audiobookshelf.nix
-    ./20-services/media/jellyfin.nix
-
-    # Apps / Services
+    # Apps
+    ./20-services/apps/audiobookshelf.nix
     ./20-services/apps/vaultwarden.nix
+    ./20-services/apps/paperless.nix
+    ./20-services/apps/miniflux.nix
     ./20-services/apps/n8n.nix
+
+    # Security Policy
+    ./90-policy/security-assertions.nix
   ];
 
   boot.loader.systemd-boot.enable      = true;
@@ -53,5 +60,5 @@
     nix-output-monitor
   ];
 
-  system.stateVersion = "24.11";
+  system.stateVersion = "25.11";
 }

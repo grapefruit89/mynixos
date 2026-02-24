@@ -39,7 +39,7 @@ in
     environmentFiles = [
       # Format:
       #   CLOUDFLARE_DNS_API_TOKEN=...
-      "/run/secrets/traefik-cloudflare.env"
+      config.my.secrets.files.sharedEnv
     ];
 
     staticConfigOptions = {
