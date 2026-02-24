@@ -1,11 +1,11 @@
 { config, lib, pkgs, ... }:
 let
-  serviceMap = import ../00-core/service-map.nix;
+  
   domain = "m7c5.de";
   homepageUser = "homepage";
   homepageGroup = "homepage";
   homepageConfigDir = "/data/state/homepage";
-  homepagePort = serviceMap.ports.homepage;
+  homepagePort = config.my.ports.homepage;
 in
 {
   # Erstelle einen dedizierten Benutzer und eine Gruppe für den Homepage-Dienst

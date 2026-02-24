@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 let
-  serviceMap = import ../../00-core/service-map.nix;
+  
   domain = "m7c5.de";
 in
 {
@@ -8,7 +8,7 @@ in
     enable = true;
     config = {
       ROCKET_ADDRESS = "127.0.0.1";
-      ROCKET_PORT = serviceMap.ports.vaultwarden;
+      ROCKET_PORT = config.my.ports.vaultwarden;
     };
   };
 
@@ -22,7 +22,7 @@ in
     };
     services.vaultwarden = {
       loadBalancer.servers = [{
-        url = "http://127.0.0.1:${toString serviceMap.ports.vaultwarden}";
+        url = "http://127.0.0.1:${toString config.my.ports.vaultwarden}";
       }];
     };
   };
