@@ -5,6 +5,7 @@
     ./automation.nix
 
     ./00-core/system.nix
+    ./00-core/de-config.nix
     ./00-core/users.nix
     ./00-core/ssh.nix
     ./00-core/firewall.nix
