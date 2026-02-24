@@ -12,6 +12,7 @@
     ./00-core/system.nix
     ./00-core/aliases.nix
     ./00-core/fail2ban.nix
+    ./automation.nix
     # ./00-core/storage.nix
 
     # Infrastructure
