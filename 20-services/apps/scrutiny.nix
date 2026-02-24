@@ -3,6 +3,8 @@ let
   port = config.my.ports.scrutiny;
 in
 {
+  # source: my.ports.scrutiny
+  # sink:   services.scrutiny + traefik router nix-scrutiny.m7c5.de
   services.scrutiny = {
     enable = true;
     settings.web.listen.port = port;

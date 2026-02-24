@@ -3,6 +3,8 @@ let
   port = config.my.ports.readeck;
 in
 {
+  # source: my.ports.readeck + /etc/secrets/readeck.env
+  # sink:   services.readeck + traefik router nix-readeck.m7c5.de
   services.readeck = {
     enable = true;
     environmentFile = "/etc/secrets/readeck.env";

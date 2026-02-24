@@ -3,6 +3,8 @@ let
   port = config.my.ports.paperless;
 in
 {
+  # source: my.ports.paperless
+  # sink:   services.paperless + traefik router nix-paperless.m7c5.de
   services.paperless = {
     enable = true;
     address = "127.0.0.1";

@@ -1,5 +1,7 @@
 { config, ... }:
 {
+  # source: my.ports.adguard + services.adguardhome.settings
+  # sink:   services.adguardhome + firewall extraInputRules (DNS LAN/Tailscale only)
   services.adguardhome = {
     enable = true;
     host = "0.0.0.0";

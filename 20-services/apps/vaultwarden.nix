@@ -3,6 +3,8 @@ let
   port = config.my.ports.vaultwarden;
 in
 {
+  # source: my.ports.vaultwarden
+  # sink:   services.vaultwarden + traefik router nix-vaultwarden.m7c5.de
   services.vaultwarden = { enable = true; config.ROCKET_PORT = port; };
 
   services.traefik.dynamicConfigOptions.http = {

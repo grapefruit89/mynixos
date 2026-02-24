@@ -9,7 +9,7 @@
   config.my.ports = {
     ssh = 53844;
 
-    traefikHttp = 80;
+    # HTTPS-only edge. Port 80 is intentionally not exposed.
     traefikHttps = 443;
     adguard = 3000;
     netdata = 19999;
@@ -32,5 +32,6 @@
     paperless = 28981;
     scrutiny = 2020;
     readeck = 2007;
+    monica = 2031;
   };
 }

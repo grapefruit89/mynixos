@@ -2,18 +2,21 @@
 let
   domain = "m7c5.de";
   port = config.my.ports.homepage;
+  host = "nix.${domain}";
 in
 lib.mkIf config.services.traefik.enable {
+  # source: my.ports.homepage + host nix.m7c5.de
+  # sink:   services.homepage-dashboard + services.traefik.dynamicConfigOptions.http
   services.homepage-dashboard = {
     enable = true;
     openFirewall = false;
     listenPort = port;
-    allowedHosts = "homepage.${domain},localhost:${toString port},127.0.0.1:${toString port}";
+    allowedHosts = "${host},localhost:${toString port},127.0.0.1:${toString port}";
   };
 
   services.traefik.dynamicConfigOptions.http = {
     routers.homepage = {
-      rule = "Host(`homepage.${domain}`)";
+      rule = "Host(`${host}`)";
       entryPoints = [ "websecure" ];
       tls.certResolver = "letsencrypt";
       middlewares = [ "secure-headers@file" ];

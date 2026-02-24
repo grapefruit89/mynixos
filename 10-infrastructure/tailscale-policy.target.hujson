@@ -1,0 +1,48 @@
+// source: /etc/nixos/10-infrastructure/tailscale-policy.target.hujson
+// sink:   Tailscale Admin API -> /api/v2/tailnet/<tailnet>/acl
+// goal:   stricter baseline with explicit tag model + tests.
+{
+  "tagOwners": {
+    "tag:infra": ["autogroup:admin"],
+    "tag:media": ["autogroup:admin"],
+    "tag:admin": ["autogroup:admin"]
+  },
+
+  "grants": [
+    {
+      "src": ["autogroup:member"],
+      "dst": ["autogroup:self"],
+      "ip": ["*"]
+    },
+    {
+      "src": ["moritz.baumeister@gmail.com"],
+      "dst": ["tag:infra"],
+      "ip": ["*"]
+    },
+    {
+      "src": ["autogroup:admin"],
+      "dst": ["tag:admin"],
+      "ip": ["*"]
+    }
+  ],
+
+  "ssh": [
+    {
+      "action": "check",
+      "src": ["autogroup:member"],
+      "dst": ["autogroup:self"],
+      "users": ["autogroup:nonroot", "root"]
+    }
+  ],
+
+  "tests": [
+    {
+      "src": "moritz.baumeister@gmail.com",
+      "accept": ["tag:infra:22", "tag:infra:443"]
+    },
+    {
+      "src": "not-allowed@example.com",
+      "deny": ["tag:infra:22"]
+    }
+  ]
+}

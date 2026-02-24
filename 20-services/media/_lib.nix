@@ -1,4 +1,6 @@
 { lib }:
+# source: name/port/stateOption parameters + my.media.defaults
+# sink:   generated per-service module: service config + tmpfiles + traefik router
 { name
 , port
 , stateOption

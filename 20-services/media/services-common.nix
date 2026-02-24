@@ -1,5 +1,7 @@
 { lib, config, ... }:
 {
+  # source: my.media.defaults.* options
+  # sink:   host generation + traefik defaults for all media modules
   options.my.media.defaults = {
     domain = lib.mkOption {
       type = lib.types.nullOr lib.types.str;

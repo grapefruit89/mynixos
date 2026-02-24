@@ -1,0 +1,10 @@
+[Interface]
+# Secret: keep only in /etc/secrets/wireguard/privado.conf
+PrivateKey = <SET_IN_/etc/secrets/wireguard/privado.conf>
+Address = 100.64.4.147/32
+DNS = 198.18.0.1,198.18.0.2
+
+[Peer]
+PublicKey = KgTUh3KLijVluDvNpzDCJJfrJ7EyLzYLmdHCksG4sRg=
+AllowedIPs = 0.0.0.0/0
+Endpoint = 91.148.237.21:51820

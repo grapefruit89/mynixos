@@ -1,14 +1,22 @@
 { config, lib, ... }:
 let
   must = assertion: message: { inherit assertion message; };
+
+  # source: 00-core/ports.nix
+  sshPort = config.my.ports.ssh;
+  websecurePort = config.my.ports.traefikHttps;
+
+  # source: 00-core/secrets.nix
+  sharedSecretEnv = config.my.secrets.files.sharedEnv;
+
+  # sinks: firewall + service deps
   fwRules = config.networking.firewall.extraInputRules;
   traefikEnv = config.systemd.services.traefik.serviceConfig.EnvironmentFile or [ ];
   sabBinds = config.systemd.services.sabnzbd.bindsTo or [ ];
-  sshPort = config.my.ports.ssh;
-  websecurePort = config.my.ports.traefikHttps;
-  sharedSecretEnv = config.my.secrets.files.sharedEnv;
 in
 {
+  # Server Rules (core guardrails)
+  # principle: isomorphic naming + source->sink traceability on every sensitive path.
   assertions = [
     # Secret contract invariants
     (must (config.my.secrets.vars.traefikAcmeCloudflareDnsApiTokenVarName == "CF_DNS_API_TOKEN") "security: cloudflare token variable name must be CF_DNS_API_TOKEN")
@@ -22,10 +30,10 @@ in
     (must (config.services.openssh.settings.PasswordAuthentication == false) "security: SSH password auth must stay disabled")
     (must (config.services.openssh.settings.KbdInteractiveAuthentication == false) "security: SSH keyboard-interactive auth must stay disabled")
     (must (config.services.openssh.settings.AllowUsers == [ "moritz" ]) "security: SSH allow-list must stay restricted to user moritz")
+
     # fail2ban invariants
     (must config.services.fail2ban.enable "security: fail2ban must remain enabled")
     (must (config.services.fail2ban.jails.sshd.settings.enabled == true) "security: fail2ban sshd jail must remain enabled")
-
 
     # Firewall invariants
     (must config.networking.firewall.enable "security: firewall must remain enabled")
@@ -36,6 +44,10 @@ in
     (must (config.networking.firewall.interfaces.tailscale0.allowedTCPPorts == [ sshPort ]) "security: tailscale0 must allow only SSH port from my.ports.ssh")
     (must (lib.hasInfix "tcp dport ${toString sshPort}" fwRules) "security: firewall must explicitly allow SSH from trusted source ranges")
     (must (lib.hasInfix "tcp dport 53" fwRules && lib.hasInfix "udp dport 53" fwRules) "security: firewall must keep DNS 53/tcp+udp restricted via extraInputRules")
+
+    # Tailscale invariants
+    (must config.services.tailscale.enable "security: tailscale must remain enabled")
+    (must (config.services.tailscale.openFirewall == false) "security: tailscale must not auto-open firewall")
 
     # Traefik invariants
     (must config.services.traefik.enable "security: Traefik must remain enabled")

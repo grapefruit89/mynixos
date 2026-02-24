@@ -3,6 +3,8 @@ let
   port = config.my.ports.audiobookshelf;
 in
 {
+  # source: my.ports.audiobookshelf
+  # sink:   services.audiobookshelf + traefik router nix-audiobookshelf.m7c5.de
   services.audiobookshelf = { enable = true; inherit port; };
 
   services.traefik.dynamicConfigOptions.http = {

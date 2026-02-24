@@ -3,6 +3,8 @@ let
   port = config.my.ports.n8n;
 in
 {
+  # source: my.ports.n8n
+  # sink:   services.n8n + traefik router nix-n8n.m7c5.de
   services.n8n = {
     enable = true;
     environment.N8N_PORT = toString port;

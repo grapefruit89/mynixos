@@ -3,6 +3,10 @@ let
   port = config.my.ports.ddnsUpdater;
 in
 {
+  # Module kept for future use, currently disabled by not importing it in configuration.nix.
+  # Traceability:
+  # source (future): ddns provider credentials
+  # sink (future): services.ddns-updater + Traefik router nix-ddns.m7c5.de
   services.ddns-updater = {
     enable = true;
     environment = {

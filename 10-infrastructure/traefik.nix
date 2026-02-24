@@ -1,14 +1,18 @@
 { config, lib, ... }:
 let
   domain = "m7c5.de";
+  secretFile = config.my.secrets.files.sharedEnv;
+  cfTokenVar = config.my.secrets.vars.traefikAcmeCloudflareDnsApiTokenVarName;
 in
 {
-  # Traefik läuft als Herzstück. Token kommt aus /etc/secrets/traefik.env
+  # Traceability:
+  # source: ${secretFile}:${cfTokenVar}
+  # sink: services.traefik ACME dnsChallenge provider=cloudflare
   systemd.services.traefik.serviceConfig = {
     Restart = lib.mkForce "always";
     RestartSec = lib.mkForce "5s";
     OOMScoreAdjust = -900;
-    EnvironmentFile = [ "/etc/secrets/traefik.env" ];
+    EnvironmentFile = [ secretFile ];
   };
 
   services.traefik = {
@@ -28,24 +32,15 @@ in
         };
       };
 
-      entryPoints = {
-        web = {
-          address = ":${toString config.my.ports.traefikHttp}";
-          http.redirections.entryPoint = {
-            to = "websecure";
-            scheme = "https";
-            permanent = true;
-          };
-        };
-        websecure = {
-          address = ":${toString config.my.ports.traefikHttps}";
-          http.tls = {
-            certResolver = "letsencrypt";
-            domains = [{
-              main = domain;
-              sans = [ "*.${domain}" ];
-            }];
-          };
+      # HTTPS-only edge: no HTTP entrypoint on :80.
+      entryPoints.websecure = {
+        address = ":${toString config.my.ports.traefikHttps}";
+        http.tls = {
+          certResolver = "letsencrypt";
+          domains = [{
+            main = domain;
+            sans = [ "*.${domain}" ];
+          }];
         };
       };
     };
@@ -59,6 +54,15 @@ in
       frameDeny = true;
     };
   };
+
+  # Safety note: the env var name must remain CF_DNS_API_TOKEN.
+  # It is enforced centrally in 00-core/secrets.nix.
+  assertions = [
+    {
+      assertion = cfTokenVar == "CF_DNS_API_TOKEN";
+      message = "security: Traefik Cloudflare token variable must be CF_DNS_API_TOKEN.";
+    }
+  ];
 
   # Hinweis: Neue Services bitte mit Prefix "nix-" anlegen (z.B. nix-foo.m7c5.de).
 }

@@ -1,5 +1,7 @@
 { ... }:
 {
+  # source: media module import list
+  # sink:   activates shared media module stack
   imports = [
     ./services-common.nix
     ./jellyfin.nix
