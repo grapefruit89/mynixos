@@ -1,7 +1,7 @@
-args@{ lib, ... }:
+args@{ lib, config, ... }:
 ((import ./_lib.nix { inherit lib; }) {
   name = "sonarr";
-  port = 8989;
+  port = config.my.ports.sonarr;
   stateOption = "dataDir";
   defaultStateDir = "/var/lib/sonarr";
 }) args

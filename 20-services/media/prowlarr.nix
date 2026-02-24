@@ -1,7 +1,7 @@
-args@{ lib, ... }:
+args@{ lib, config, ... }:
 ((import ./_lib.nix { inherit lib; }) {
   name = "prowlarr";
-  port = 9696;
+  port = config.my.ports.prowlarr;
   stateOption = "dataDir";
   defaultStateDir = "/var/lib/prowlarr";
   supportsUserGroup = false;

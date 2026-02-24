@@ -1,9 +1,12 @@
-{ ... }:
+{ config, ... }:
+let
+  port = config.my.ports.miniflux;
+in
 {
   services.miniflux = {
     enable = true;
     config = {
-      LISTEN_ADDR = "127.0.0.1:2016";
+      LISTEN_ADDR = "127.0.0.1:${toString port}";
       CREATE_ADMIN = 0;
     };
   };
@@ -17,7 +20,7 @@
       service = "miniflux";
     };
     services.miniflux.loadBalancer.servers = [
-      { url = "http://127.0.0.1:2016"; }
+      { url = "http://127.0.0.1:${toString port}"; }
     ];
   };
 }

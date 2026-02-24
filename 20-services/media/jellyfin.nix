@@ -3,7 +3,7 @@
   imports = [
     ((import ./_lib.nix { inherit lib; }) {
       name = "jellyfin";
-      port = 8096;
+      port = config.my.ports.jellyfin;
       stateOption = "dataDir";
       defaultStateDir = "/var/lib/jellyfin";
     })

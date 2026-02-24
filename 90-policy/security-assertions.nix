@@ -4,13 +4,16 @@ let
   fwRules = config.networking.firewall.extraInputRules;
   traefikEnv = config.systemd.services.traefik.serviceConfig.EnvironmentFile or [ ];
   sabBinds = config.systemd.services.sabnzbd.bindsTo or [ ];
+  sshPort = config.my.ports.ssh;
+  webPort = config.my.ports.traefikHttp;
+  websecurePort = config.my.ports.traefikHttps;
 in
 {
   assertions = [
     # SSH hardening invariants
     (must config.services.openssh.enable "security: services.openssh.enable must remain true")
     (must (config.services.openssh.openFirewall == false) "security: services.openssh.openFirewall must remain false")
-    (must (config.services.openssh.ports == [ 53844 ]) "security: SSH port is fixed to 53844")
+    (must (config.services.openssh.ports == [ sshPort ]) "security: SSH port must match my.ports.ssh")
     (must (config.services.openssh.settings.PermitRootLogin == "no") "security: root SSH login must stay disabled")
     (must (config.services.openssh.settings.PasswordAuthentication == false) "security: SSH password auth must stay disabled")
     (must (config.services.openssh.settings.KbdInteractiveAuthentication == false) "security: SSH keyboard-interactive auth must stay disabled")
@@ -18,17 +21,17 @@ in
 
     # Firewall invariants
     (must config.networking.firewall.enable "security: firewall must remain enabled")
-    (must (config.networking.firewall.allowedTCPPorts == [ 80 443 ]) "security: only TCP 80/443 may be globally open")
+    (must (config.networking.firewall.allowedTCPPorts == [ webPort websecurePort ]) "security: only Traefik HTTP/HTTPS may be globally open")
     (must (config.networking.firewall.allowedUDPPorts == [ ]) "security: no UDP ports may be globally open")
     (must (!(builtins.elem 22 config.networking.firewall.allowedTCPPorts)) "security: TCP port 22 must never be globally open")
-    (must (config.networking.firewall.interfaces.tailscale0.allowedTCPPorts == [ 53844 ]) "security: tailscale0 must allow only SSH 53844")
-    (must (lib.hasInfix "tcp dport 53844" fwRules) "security: firewall must explicitly allow SSH 53844 from trusted source ranges")
+    (must (config.networking.firewall.interfaces.tailscale0.allowedTCPPorts == [ sshPort ]) "security: tailscale0 must allow only SSH port from my.ports.ssh")
+    (must (lib.hasInfix "tcp dport ${toString sshPort}" fwRules) "security: firewall must explicitly allow SSH from trusted source ranges")
     (must (lib.hasInfix "tcp dport 53" fwRules && lib.hasInfix "udp dport 53" fwRules) "security: firewall must keep DNS 53/tcp+udp restricted via extraInputRules")
 
     # Traefik invariants
     (must config.services.traefik.enable "security: Traefik must remain enabled")
-    (must (config.services.traefik.staticConfigOptions.entryPoints.web.address == ":80") "security: Traefik web entrypoint must stay on :80")
-    (must (config.services.traefik.staticConfigOptions.entryPoints.websecure.address == ":443") "security: Traefik websecure entrypoint must stay on :443")
+    (must (config.services.traefik.staticConfigOptions.entryPoints.web.address == ":${toString webPort}") "security: Traefik web entrypoint must match my.ports.traefikHttp")
+    (must (config.services.traefik.staticConfigOptions.entryPoints.websecure.address == ":${toString websecurePort}") "security: Traefik websecure entrypoint must match my.ports.traefikHttps")
     (must (config.services.traefik.staticConfigOptions.certificatesResolvers.letsencrypt.acme.dnsChallenge.provider == "cloudflare") "security: Traefik ACME DNS provider must stay cloudflare")
     (must (builtins.elem "/etc/secrets/traefik.env" traefikEnv) "security: Traefik must load Cloudflare token via /etc/secrets/traefik.env")
 

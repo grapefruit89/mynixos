@@ -1,6 +1,13 @@
-{ ... }:
+{ config, ... }:
+let
+  port = config.my.ports.paperless;
+in
 {
-  services.paperless.enable = true;
+  services.paperless = {
+    enable = true;
+    address = "127.0.0.1";
+    inherit port;
+  };
 
   services.traefik.dynamicConfigOptions.http = {
     routers.paperless = {
@@ -11,7 +18,7 @@
       service = "paperless";
     };
     services.paperless.loadBalancer.servers = [
-      { url = "http://127.0.0.1:28981"; }
+      { url = "http://127.0.0.1:${toString port}"; }
     ];
   };
 }

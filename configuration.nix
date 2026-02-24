@@ -6,6 +6,7 @@
 
     ./00-core/system.nix
     ./00-core/host.nix
+    ./00-core/ports.nix
     ./00-core/00-REMOVE_BEFORE_FLIGHT.nix
     ./00-core/de-config.nix
     ./00-core/users.nix

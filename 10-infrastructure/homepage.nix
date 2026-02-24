@@ -1,7 +1,7 @@
 { lib, config, ... }:
 let
   domain = "m7c5.de";
-  port = 3000;
+  port = config.my.ports.homepage;
 in
 lib.mkIf config.services.traefik.enable {
   services.homepage-dashboard = {

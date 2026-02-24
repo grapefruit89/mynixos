@@ -1,8 +1,11 @@
-{ ... }:
+{ config, ... }:
+let
+  port = config.my.ports.scrutiny;
+in
 {
   services.scrutiny = {
     enable = true;
-    settings.web.listen.port = 2020;
+    settings.web.listen.port = port;
   };
 
   services.traefik.dynamicConfigOptions.http = {
@@ -14,7 +17,7 @@
       service = "scrutiny";
     };
     services.scrutiny.loadBalancer.servers = [
-      { url = "http://127.0.0.1:2020"; }
+      { url = "http://127.0.0.1:${toString port}"; }
     ];
   };
 }

@@ -1,14 +1,21 @@
-{ ... }:
+{ config, ... }:
 let
-  port = 2007;
+  port = config.my.ports.readeck;
 in
 {
   services.readeck = {
     enable = true;
+    environmentFile = "/etc/secrets/readeck.env";
     settings = {
+      main = {
+        data_directory = "/var/lib/readeck";
+      };
+      database = {
+        source = "sqlite3:/var/lib/readeck/db.sqlite3";
+      };
       server = {
         host = "127.0.0.1";
-        port = port;
+        inherit port;
       };
     };
   };

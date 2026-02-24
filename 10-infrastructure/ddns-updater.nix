@@ -1,6 +1,6 @@
-{ lib, ... }:
+{ config, ... }:
 let
-  port = 8000;
+  port = config.my.ports.ddnsUpdater;
 in
 {
   services.ddns-updater = {

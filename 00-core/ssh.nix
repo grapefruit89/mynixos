@@ -1,9 +1,12 @@
-{ lib, ... }:
+{ lib, config, ... }:
+let
+  sshPort = config.my.ports.ssh;
+in
 {
   services.openssh = {
     enable = true;
     openFirewall = false;
-    ports = lib.mkForce [ 53844 ];
+    ports = lib.mkForce [ sshPort ];
 
     settings = {
       PermitRootLogin = lib.mkForce "no";

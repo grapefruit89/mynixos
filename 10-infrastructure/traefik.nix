@@ -30,7 +30,7 @@ in
 
       entryPoints = {
         web = {
-          address = ":80";
+          address = ":${toString config.my.ports.traefikHttp}";
           http.redirections.entryPoint = {
             to = "websecure";
             scheme = "https";
@@ -38,7 +38,7 @@ in
           };
         };
         websecure = {
-          address = ":443";
+          address = ":${toString config.my.ports.traefikHttps}";
           http.tls = {
             certResolver = "letsencrypt";
             domains = [{

@@ -1,13 +1,21 @@
-{ ... }:
+{ config, ... }:
 {
   services.adguardhome = {
     enable = true;
     host = "0.0.0.0";
+    port = config.my.ports.adguard;
     openFirewall = false;
 
     # Declarative upstream/bootstrap resolvers for stable DNS forwarding.
     settings = {
       dns = {
+        # Avoid conflict with systemd-resolved (127.0.0.53/54:53) while keeping
+        # AdGuard reachable for localhost, LAN and Tailscale clients.
+        bind_hosts = [
+          "127.0.0.1"
+          "192.168.2.73"
+          "100.113.29.82"
+        ];
         upstream_dns = [
           "https://one.one.one.one/dns-query"
           "https://dns.quad9.net/dns-query"

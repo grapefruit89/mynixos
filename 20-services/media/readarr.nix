@@ -1,9 +1,9 @@
-{ lib, ... }:
+{ lib, config, ... }:
 {
   imports = [
     ((import ./_lib.nix { inherit lib; }) {
       name = "readarr";
-      port = 8787;
+      port = config.my.ports.readarr;
       stateOption = "dataDir";
       defaultStateDir = "/var/lib/readarr";
     })

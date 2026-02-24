@@ -1,6 +1,9 @@
-{ ... }:
+{ config, ... }:
+let
+  port = config.my.ports.audiobookshelf;
+in
 {
-  services.audiobookshelf = { enable = true; port = 2001; };
+  services.audiobookshelf = { enable = true; inherit port; };
 
   services.traefik.dynamicConfigOptions.http = {
     routers.audiobookshelf = {
@@ -11,7 +14,7 @@
       service = "audiobookshelf";
     };
     services.audiobookshelf.loadBalancer.servers = [
-      { url = "http://127.0.0.1:2001"; }
+      { url = "http://127.0.0.1:${toString port}"; }
     ];
   };
 }

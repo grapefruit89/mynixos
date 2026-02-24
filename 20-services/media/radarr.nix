@@ -1,7 +1,7 @@
-args@{ lib, ... }:
+args@{ lib, config, ... }:
 ((import ./_lib.nix { inherit lib; }) {
   name = "radarr";
-  port = 7878;
+  port = config.my.ports.radarr;
   stateOption = "dataDir";
   defaultStateDir = "/var/lib/radarr";
 }) args

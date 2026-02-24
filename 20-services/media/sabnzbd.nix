@@ -1,9 +1,9 @@
-{ lib, ... }:
+{ lib, config, ... }:
 {
   imports = [
     ((import ./_lib.nix { inherit lib; }) {
       name = "sabnzbd";
-      port = 8080;
+      port = config.my.ports.sabnzbd;
       stateOption = "configFile";
       defaultStateDir = "/var/lib/sabnzbd";
       statePathSuffix = "sabnzbd.ini";

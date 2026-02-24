@@ -1,8 +1,11 @@
-{ ... }:
+{ config, ... }:
+let
+  port = config.my.ports.n8n;
+in
 {
   services.n8n = {
     enable = true;
-    environment.N8N_PORT = "2017";
+    environment.N8N_PORT = toString port;
   };
 
   services.traefik.dynamicConfigOptions.http = {
@@ -14,7 +17,7 @@
       service = "n8n";
     };
     services.n8n.loadBalancer.servers = [
-      { url = "http://127.0.0.1:2017"; }
+      { url = "http://127.0.0.1:${toString port}"; }
     ];
   };
 }
