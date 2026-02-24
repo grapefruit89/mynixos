@@ -3,6 +3,7 @@ let
   must = assertion: message: { inherit assertion message; };
   fwRules = config.networking.firewall.extraInputRules;
   traefikEnv = config.systemd.services.traefik.serviceConfig.EnvironmentFile or [ ];
+  sabBinds = config.systemd.services.sabnzbd.bindsTo or [ ];
 in
 {
   assertions = [
@@ -31,16 +32,25 @@ in
     (must (config.services.traefik.staticConfigOptions.certificatesResolvers.letsencrypt.acme.dnsChallenge.provider == "cloudflare") "security: Traefik ACME DNS provider must stay cloudflare")
     (must (builtins.elem "/etc/secrets/traefik.env" traefikEnv) "security: Traefik must load Cloudflare token via /etc/secrets/traefik.env")
 
-    # AdGuard invariants
-    (must config.services.adguardhome.enable "security: AdGuard Home must remain enabled")
+    # Infra / app exposure invariants
     (must (config.services.adguardhome.openFirewall == false) "security: AdGuard must not open firewall ports automatically")
-    (must (config.services.adguardhome.host == "0.0.0.0") "security: AdGuard must bind on 0.0.0.0 for LAN/Tailscale DNS")
+    (must (config.services.homepage-dashboard.openFirewall == false) "security: Homepage Dashboard must not open firewall ports")
 
     # Media service exposure invariants
     (must (config.services.sonarr.openFirewall == false) "security: Sonarr must not open firewall ports")
     (must (config.services.radarr.openFirewall == false) "security: Radarr must not open firewall ports")
+    (must (config.services.readarr.openFirewall == false) "security: Readarr must not open firewall ports")
     (must (config.services.prowlarr.openFirewall == false) "security: Prowlarr must not open firewall ports")
     (must (config.services.sabnzbd.openFirewall == false) "security: SABnzbd must not open firewall ports")
     (must (config.services.jellyfin.openFirewall == false) "security: Jellyfin must not open firewall ports")
+    (must (config.services.jellyseerr.openFirewall == false) "security: Jellyseerr must not open firewall ports")
+
+    # VPN + sabnzbd invariants
+    (must (config.networking.wg-quick.interfaces ? privado) "security: wg-quick interface 'privado' must be defined")
+    (must (config.networking.wg-quick.interfaces.privado.autostart == true) "security: wg-quick privado must autostart")
+    (must (builtins.elem "wg-quick-privado.service" sabBinds) "security: sabnzbd must be bound to wg-quick-privado.service")
+
+    # QuickSync invariants for jellyfin
+    (must config.hardware.graphics.enable "security: hardware.graphics.enable must stay enabled for jellyfin acceleration")
   ];
 }

@@ -1,46 +1,16 @@
-{ config, lib, pkgs, ... }:
+{ lib, config, ... }:
 let
-  domain = "m7c5.de"; # Annahme: Domain ist hier definiert, kann bei Bedarf globaler gemacht werden
-  homepageUser = "homepage";
-  homepageGroup = "homepage";
-  homepageConfigDir = "/var/lib/homepage";
-  homepagePort = 3000; # Standard-Port für Homepage
+  domain = "m7c5.de";
+  port = 3000;
 in
-{
-  # Erstelle einen dedizierten Benutzer und eine Gruppe für den Homepage-Dienst
-  users.groups.${homepageGroup} = {};
-  users.users.${homepageUser} = {
-    isSystemUser = true;
-    group = homepageGroup;
-    home = homepageConfigDir;
-    createHome = true;
-  };
-
-  # Definiere den Homepage systemd Dienst
-  systemd.services.homepage = {
+lib.mkIf config.services.traefik.enable {
+  services.homepage-dashboard = {
     enable = true;
-    description = "Homepage Dashboard";
-    after = [ "network.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      User = homepageUser;
-      Group = homepageGroup;
-      WorkingDirectory = homepageConfigDir;
-      ExecStart = "${pkgs.homepage-dashboard}/bin/homepage --host 0.0.0.0 --port ${toString homepagePort} --config ${homepageConfigDir}"; # Pass den Startbefehl an den Homepage-Dienst an
-      Restart = "always";
-      RestartSec = "5s";
-      Environment = [
-        "HOMEPAGE_CONFIG=${homepageConfigDir}"
-      ];
-    };
+    openFirewall = false;
+    listenPort = port;
+    allowedHosts = "homepage.${domain},localhost:${toString port},127.0.0.1:${toString port}";
   };
 
-  # Stelle sicher, dass das Konfigurationsverzeichnis existiert
-  systemd.tmpfiles.rules = [
-    "d ${homepageConfigDir} 0755 ${homepageUser} ${homepageGroup} - -"
-  ];
-
-  # Traefik Integration für den Homepage-Dienst
   services.traefik.dynamicConfigOptions.http = {
     routers.homepage = {
       rule = "Host(`homepage.${domain}`)";
@@ -49,10 +19,8 @@ in
       middlewares = [ "secure-headers@file" ];
       service = "homepage";
     };
-    services.homepage = {
-      loadBalancer.servers = [{
-        url = "http://127.0.0.1:${toString homepagePort}";
-      }];
-    };
+    services.homepage.loadBalancer.servers = [
+      { url = "http://127.0.0.1:${toString port}"; }
+    ];
   };
 }

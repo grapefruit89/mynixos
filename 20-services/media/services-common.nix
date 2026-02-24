@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, config, ... }:
 {
   options.my.media.defaults = {
     domain = lib.mkOption {
@@ -26,4 +26,11 @@
       description = "Traefik middleware for security headers.";
     };
   };
+
+  config.assertions = [
+    {
+      assertion = config.my.media.defaults.domain != null;
+      message = "my.media.defaults.domain must be set (e.g. \"m7c5.de\") for generated media hostnames.";
+    }
+  ];
 }

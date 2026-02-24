@@ -1,12 +1,12 @@
-# modules/30-frontend-media/jellyseerr.nix
-# ══════════════════════════════════════════════════════════════════════════════
-# DUMMY – NOCH NICHT AKTIV
-# Jellyseerr – Media Request Manager
-# ══════════════════════════════════════════════════════════════════════════════
-# DIESES MODUL ERST IMPORTIEREN wenn es vollständig ausgearbeitet ist!
-# (Import in hosts/q958/default.nix ergänzen)
-# ══════════════════════════════════════════════════════════════════════════════
-{ ... }:
+{ lib, ... }:
 {
-  # Platzhalter – noch nicht implementiert
+  imports = [
+    ((import ./_lib.nix { inherit lib; }) {
+      name = "jellyseerr";
+      port = 5055;
+      stateOption = "configDir";
+      defaultStateDir = "/var/lib/jellyseerr/config";
+      supportsUserGroup = false;
+    })
+  ];
 }

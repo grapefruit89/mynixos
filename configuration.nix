@@ -17,6 +17,10 @@
     ./10-infrastructure/tailscale.nix
     ./10-infrastructure/traefik.nix
     ./10-infrastructure/adguardhome.nix
+    ./10-infrastructure/homepage.nix
+    ./10-infrastructure/ddns-updater.nix
+    ./10-infrastructure/valkey.nix
+    ./10-infrastructure/wireguard-vpn.nix
     ./10-infrastructure/netdata.nix
     ./10-infrastructure/uptime-kuma.nix
 
@@ -26,6 +30,7 @@
     ./20-services/apps/n8n.nix
     ./20-services/apps/scrutiny.nix
     ./20-services/apps/paperless.nix
+    ./20-services/apps/readeck.nix
 
     ./20-services/media/default.nix
     ./20-services/media/media-stack.nix
@@ -33,8 +38,10 @@
 
   my.media.defaults.domain = "m7c5.de";
 
-  # Optional zusätzlich aktivierbar:
-  # my.media.jellyfin.enable = true;
+  # Critical SSH key: keep this in top-level config so it is never lost.
+  users.users.moritz.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJRDbyFjT4SEL8yxNwZuEBPORD82qlJJhdr2r4qz1vCX"
+  ];
 
   system.stateVersion = "25.11";
 }

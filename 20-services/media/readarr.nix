@@ -1,12 +1,11 @@
-# modules/20-backend-media/readarr.nix
-# ══════════════════════════════════════════════════════════════════════════════
-# DUMMY – NOCH NICHT AKTIV
-# Readarr – Buch Automation
-# ══════════════════════════════════════════════════════════════════════════════
-# DIESES MODUL ERST IMPORTIEREN wenn es vollständig ausgearbeitet ist!
-# (Import in hosts/q958/default.nix ergänzen)
-# ══════════════════════════════════════════════════════════════════════════════
-{ ... }:
+{ lib, ... }:
 {
-  # Platzhalter – noch nicht implementiert
+  imports = [
+    ((import ./_lib.nix { inherit lib; }) {
+      name = "readarr";
+      port = 8787;
+      stateOption = "dataDir";
+      defaultStateDir = "/var/lib/readarr";
+    })
+  ];
 }
