@@ -1,0 +1,13 @@
+# Environment / secret files
+.env
+.env.*
+*.env
+
+# Local secret directory (if used inside repo)
+secrets/
+
+# Common sensitive artifacts
+*.pem
+*.key
+*.p12
+*.kdbx
