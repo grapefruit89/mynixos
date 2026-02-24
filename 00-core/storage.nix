@@ -1,3 +1,9 @@
+# meta:
+#   owner: core
+#   status: active
+#   scope: shared
+#   summary: storage Modul
+
 # modules/00-system/storage.nix
 # ══════════════════════════════════════════════════════════════════════════════
 # DUMMY – NOCH NICHT AKTIV

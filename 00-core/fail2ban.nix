@@ -1,3 +1,9 @@
+# meta:
+#   owner: core
+#   status: active
+#   scope: shared
+#   summary: fail2ban Modul
+
 { config, ... }:
 let
   sshPort = toString config.my.ports.ssh;
