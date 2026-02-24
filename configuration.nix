@@ -9,6 +9,7 @@
     ./00-core/users.nix
     ./00-core/ssh.nix
     ./00-core/firewall.nix
+    ./00-core/motd.nix
     ./00-core/system.nix
     ./00-core/aliases.nix
     ./00-core/fail2ban.nix

@@ -19,7 +19,7 @@ in
 
     # SSH hardening invariants
     (must config.services.openssh.enable "[SEC-SSH-SVC-001] services.openssh.enable must remain true")
-    (must (config.services.openssh.openFirewall == false) "security: services.openssh.openFirewall must remain false")
+    (must (config.services.openssh.openFirewall == true) "security: services.openssh.openFirewall must remain true")
     (must (config.services.openssh.ports == [ sshPort ]) "[SEC-SSH-PORT-001] SSH port must match my.ports.ssh")
     (must (config.services.openssh.settings.PermitRootLogin == "no") "security: root SSH login must stay disabled")
     (must (config.services.openssh.settings.PermitTTY == true) "[SEC-SSH-TTY-001] SSH TTY must always remain enabled as recovery channel")
@@ -34,7 +34,7 @@ in
 
 
     # Firewall invariants
-    (must (builtins.elem config.networking.firewall.enable [ true false ]) "security: firewall may be disabled intentionally in trusted home network")
+    (must config.networking.firewall.enable "security: firewall must remain enabled")
     (must (config.networking.firewall.allowedTCPPorts == [ websecurePort ]) "[SEC-NET-EDGE-001][SEC-NET-SSH-001] only HTTPS may be globally open; SSH must stay private-network only")
     (must (config.networking.firewall.allowedUDPPorts == [ ]) "security: no UDP ports may be globally open")
     (must (!(builtins.elem 22 config.networking.firewall.allowedTCPPorts)) "security: TCP port 22 must never be globally open")
