@@ -7,7 +7,7 @@ Stand: 2026-02-24
 cd /etc/nixos
 git fetch origin
 git pull --ff-only
-sudo nixos-rebuild test
+sudo /etc/nixos/scripts/preflight-switch.sh
 sudo nixos-rebuild switch
 ```
 
@@ -40,43 +40,28 @@ sudo systemctl status firewall --no-pager
 2. Bei nötiger Anpassung: Änderung -> `test` -> `switch`.
 
 ## 5) Secrets Rotation (ENV-basiert)
-1. Datei aktualisieren:
 ```bash
 sudoedit /etc/secrets/homelab-runtime-secrets.env
-```
-2. Rechte sicherstellen:
-```bash
+sudo chown root:root /etc/secrets/homelab-runtime-secrets.env
 sudo chmod 600 /etc/secrets/homelab-runtime-secrets.env
-```
-3. Relevante Dienste neu laden:
-```bash
 sudo systemctl restart traefik
 sudo systemctl start arr-wire.service
 ```
-4. Logs prüfen:
+
+## 6) Preflight standardisiert
 ```bash
-sudo journalctl -u traefik -n 100 --no-pager
-sudo journalctl -u arr-wire -n 100 --no-pager
+sudo /etc/nixos/scripts/preflight-switch.sh
 ```
 
-## 6) Git-Notfälle
+## 7) Git-Notfälle
 - `non-fast-forward`: erst `git pull --ff-only`, dann erneut pushen.
 - Falscher Branch:
 ```bash
 git -C /etc/nixos branch -vv
 ```
 
-## 7) Rollback
+## 8) Rollback
 ```bash
 sudo nix-env -p /nix/var/nix/profiles/system --list-generations
 sudo /nix/var/nix/profiles/system-<GEN>-link/bin/switch-to-configuration switch
 ```
-
-## 8) Minimal-Checkliste vor jeder produktiven Änderung
-1. Git sauber?
-```bash
-git -C /etc/nixos status -sb
-```
-2. `nixos-rebuild test` erfolgreich?
-3. SSH in zweitem Terminal verifiziert?
-4. Erst dann `switch`.

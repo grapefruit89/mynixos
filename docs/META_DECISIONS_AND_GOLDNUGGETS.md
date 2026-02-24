@@ -23,67 +23,29 @@ Zweck: Zentrale Entscheidungsübersicht über aktive Doku (`docs/`) plus histori
 
 ## 2) Architektur- und Betriebsentscheidungen (angenommen)
 1. Modularer Aufbau bleibt: `00-core`, `10-infrastructure`, `20-services`, `90-policy`.
-Begründung: klare Trennung, wartbar, Assertions zentralisierbar.
-
 2. Guardrail-Ansatz mit Assertions bleibt.
-Begründung: verhindert stille Security-Regressions.
-
 3. Zentrale Port-Registry über `my.ports.*` bleibt.
-Begründung: kein Hardcode, konsistente Policy-Prüfung.
-
 4. SSH-Notfallpfad bleibt (`PermitTTY`, key-aware Fallback-Logik).
-Begründung: Recovery-fähig ohne Daueraufweichung.
-
-5. Betriebsablauf bleibt: `git pull --ff-only` -> `nixos-rebuild test` -> `nixos-rebuild switch`.
-Begründung: risikoarme Aktivierung.
-
+5. Betriebsablauf bleibt: `git pull --ff-only` -> `preflight` -> `nixos-rebuild switch`.
 6. Secrets bleiben auf lokaler Runtime-ENV-Datei.
-Begründung: pragmatisch, schnell deploybar, ohne zusätzliche Tooling-Komplexität.
-
 7. Traefik + Cloudflare DNS-Challenge als TLS-Modell bleibt.
-Begründung: Wildcard/TLS hinter NAT praktikabel.
-
 8. fail2ban bleibt aktiv.
-Begründung: zusätzliche Schutzschicht bei Expositionsfehlern.
 
 ## 3) Verworfen / bewusst nicht umgesetzt (inkl. Warum)
-1. Secrets-Migration auf zusätzliches Kryptotooling in der aktuellen Phase.
-Warum verworfen: Fokus liegt auf Stabilität, Betriebsroutine und geringer Komplexität.
-
+1. Zusätzliche Secrets-Kryptotooling-Migration in der aktuellen Phase.
+Warum verworfen: Fokus auf Stabilität und Betriebsroutine.
 2. Breite "alles global öffnen"-Firewallmuster.
 Warum verworfen: widerspricht minimaler Angriffsfläche.
-
 3. Komplexe OpenSSH-Match-Negationskonstrukte als Primärschutz.
 Warum verworfen: fehleranfällig, potenzielles Lockout-Risiko.
-
-4. Frühzeitige Plattformausweitung (zu viele zusätzliche Services gleichzeitig).
-Warum verworfen: erhöht Betriebslast und Fehlerrisiko in der Stabilisierungsphase.
-
-5. Harte Abhängigkeit von Archiv-Texten als direkte Truth-Source.
+4. Harte Abhängigkeit von Archiv-Texten als direkte Truth-Source.
 Warum verworfen: Archive enthalten teils widersprüchliche historische Stände.
 
-## 4) Goldnuggets aus Doku/Archiv (wichtig, noch nicht vollständig umgesetzt)
-1. ENV-Secrets-Härtung als nächster Reifegrad (`/etc/secrets/*.env`).
-Nutzen: klarere Rotation, konsistente Rechte/Ownership, weniger Tippfehler bei Runtime-Secrets.
-Status: offen (geplant).
-
-2. Archive-Kuration mit klaren Labels (`authoritative` vs `historical`).
-Nutzen: reduziert Fehlentscheidungen auf Basis veralteter Snippets.
-Status: begonnen (`docs/archive/CONSOLIDATION_NOTES.md`), weiter ausbauen.
-
-3. Optionaler automatisierter Health-/Preflight-Check vor jedem `switch`.
-Nutzen: frühzeitige Erkennung von Drift/Regressionen.
-Status: offen.
-
-4. Architekturdiagramm (Ingress -> Proxy -> Services -> Policy).
-Nutzen: Onboarding und Review deutlich schneller.
-Status: ergänzt.
-
-## 5) Priorisierte Next Steps
-1. `Hoch`: ENV-Secrets-Prozess festziehen (Rotation, Dateirechte, Service-Restarts dokumentieren).
-2. `Mittel`: Archivdateien mit Kurz-Header versehen (`historical`, Datum, Gültigkeitsbereich).
-3. `Mittel`: Preflight-Check vor `switch` standardisieren.
-4. `Niedrig`: Architekturdiagramm bei Strukturänderungen aktualisieren.
+## 4) Umgesetzt aus Goldnuggets (2026-02-24)
+1. ENV-Secrets-Härtung dokumentiert und standardisiert (`docs/SECRETS_BOOTSTRAP.md`).
+2. Archive-Kuration mit Kurz-Headern in `docs/archive/*.md` ergänzt.
+3. Preflight vor `switch` standardisiert (`/etc/nixos/scripts/preflight-switch.sh` + Runbook).
+4. Architekturdiagramm ergänzt.
 
 ```mermaid
 flowchart LR
@@ -99,8 +61,7 @@ flowchart LR
   SEC --> S
 ```
 
-## 6) Pflege-Regeln für dieses Dokument
-1. Neue Entscheidung nur mit: Kontext, Entscheidung, Konsequenz.
-2. Verwerfung immer mit Grund dokumentieren.
-3. Goldnuggets nur aufnehmen, wenn klarer Betriebsnutzen erkennbar ist.
-4. Aktive Konfig gewinnt immer gegen Archivtext bei Konflikten.
+## 5) Offene Next Steps
+1. Cloudflare/TLS-Operations regelmäßig prüfen (Token-Lifecycle, ACME-Status, Traefik-Health).
+2. Preflight-Script bei neuen Services/Abhängigkeiten pflegen.
+3. Diagramm bei Strukturänderungen aktualisieren.

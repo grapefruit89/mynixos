@@ -1,3 +1,8 @@
+> archive-meta:
+> status: historical
+> curated: 2026-02-24
+> scope: Ideenspeicher, nicht direkt autoritativ
+
 # NixOS Q958 Homeserver – Master Dokument
 **Stand: Februar 2026 | Repo: https://github.com/grapefruit89/mynixos | Domain: m7c5.de**
 

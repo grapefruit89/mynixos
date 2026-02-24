@@ -4,17 +4,18 @@ Stand: 2026-02-24
 Quelle: Aktive Konfiguration + kuratierte Inhalte aus `docs/archive/`
 
 ## Hoch
-- Secrets-Härtung finalisieren: optional Migration von `.env` auf `sops-nix` (inkl. dokumentierter Rotation).
 - Cloudflare/TLS-Operations regelmäßig prüfen (Token-Lebenszyklus, ACME-Status, Traefik-Health).
 
 ## Mittel
-- Archiv konsolidieren: `docs/archive/MASTER.md` als Referenz behalten, redundante Chat-Exporte nur als Rohmaterial markieren.
-- Für Archive eine kurze Indexdatei mit Status pflegen: `authoritative` vs `historical`.
+- Preflight-Script bei Struktur-/Serviceänderungen nachziehen (`/etc/nixos/scripts/preflight-switch.sh`).
 
 ## Niedrig
-- Optional: zusätzlicher Betriebs-Check als Script (`git pull --ff-only` + `nixos-rebuild test` + Services-Health).
+- Architekturdiagramm in `docs/META_DECISIONS_AND_GOLDNUGGETS.md` aktuell halten.
 
 ## Bereits umgesetzt in diesem Lauf
 - `networking.firewall.enable = true`
-- `services.openssh.openFirewall = true` (gewünscht als zusätzlicher Lockout-Schutz)
+- `services.openssh.openFirewall = true`
 - MOTD/ToDo-Reminder vorhanden
+- ENV-Secrets-Härtung dokumentiert
+- Preflight-Check standardisiert
+- Archivdateien mit Kurz-Headern versehen

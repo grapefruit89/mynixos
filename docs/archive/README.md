@@ -1,3 +1,8 @@
+> archive-meta:
+> status: historical
+> curated: 2026-02-24
+> scope: Ideenspeicher, nicht direkt autoritativ
+
 # docs/archive
 
 Dieser Ordner ist für hochgeladene Chat-Exporte, Blueprints und Alt-Dokumente gedacht.

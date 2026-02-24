@@ -1,3 +1,8 @@
+> archive-meta:
+> status: historical
+> curated: 2026-02-24
+> scope: Ideenspeicher, nicht direkt autoritativ
+
 # NixOS-Masterchat
 
 **Created:** 2/23/2026 18:29:26  

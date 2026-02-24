@@ -1,3 +1,8 @@
+> archive-meta:
+> status: historical
+> curated: 2026-02-24
+> scope: Ideenspeicher, nicht direkt autoritativ
+
 # Archive Consolidation Notes
 
 ## Authoritative currently
