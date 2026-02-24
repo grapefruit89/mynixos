@@ -1,29 +1,59 @@
-{ lib, config, ... }:
+{ config, lib, pkgs, ... }:
 let
+  serviceMap = import ../00-core/service-map.nix;
   domain = "m7c5.de";
-  port = config.my.ports.homepage;
-  host = "nix.${domain}";
+  homepageUser = "homepage";
+  homepageGroup = "homepage";
+  homepageConfigDir = "/data/state/homepage";
+  homepagePort = serviceMap.ports.homepage;
 in
-lib.mkIf config.services.traefik.enable {
-  # source: my.ports.homepage + host nix.m7c5.de
-  # sink:   services.homepage-dashboard + services.traefik.dynamicConfigOptions.http
-  services.homepage-dashboard = {
-    enable = true;
-    openFirewall = false;
-    listenPort = port;
-    allowedHosts = "${host},localhost:${toString port},127.0.0.1:${toString port}";
+{
+  # Erstelle einen dedizierten Benutzer und eine Gruppe für den Homepage-Dienst
+  users.groups.${homepageGroup} = {};
+  users.users.${homepageUser} = {
+    isSystemUser = true;
+    group = homepageGroup;
+    home = homepageConfigDir;
+    createHome = true;
   };
 
+  # Definiere den Homepage systemd Dienst
+  systemd.services.homepage = {
+    enable = true;
+    description = "Homepage Dashboard";
+    after = [ "network.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      User = homepageUser;
+      Group = homepageGroup;
+      WorkingDirectory = homepageConfigDir;
+      ExecStart = "${pkgs.homepage-dashboard}/bin/homepage --host 127.0.0.1 --port ${toString homepagePort} --config ${homepageConfigDir}";
+      Restart = "always";
+      RestartSec = "5s";
+      Environment = [
+        "HOMEPAGE_CONFIG=${homepageConfigDir}"
+      ];
+    };
+  };
+
+  # Stelle sicher, dass das Konfigurationsverzeichnis existiert
+  systemd.tmpfiles.rules = [
+    "d ${homepageConfigDir} 0755 ${homepageUser} ${homepageGroup} - -"
+  ];
+
+  # Traefik Integration für den Homepage-Dienst
   services.traefik.dynamicConfigOptions.http = {
     routers.homepage = {
-      rule = "Host(`${host}`)";
+      rule = "Host(`${domain}`) || Host(`www.${domain}`)";
       entryPoints = [ "websecure" ];
       tls.certResolver = "letsencrypt";
-      middlewares = [ "secure-headers@file" ];
+      middlewares = [ "secured-chain@file" ];
       service = "homepage";
     };
-    services.homepage.loadBalancer.servers = [
-      { url = "http://127.0.0.1:${toString port}"; }
-    ];
+    services.homepage = {
+      loadBalancer.servers = [{
+        url = "http://127.0.0.1:${toString homepagePort}";
+      }];
+    };
   };
 }

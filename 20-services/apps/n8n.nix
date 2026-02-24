@@ -1,25 +1,28 @@
-{ config, ... }:
+{ config, lib, pkgs, ... }:
 let
-  port = config.my.ports.n8n;
+  serviceMap = import ../../00-core/service-map.nix;
+  domain = "m7c5.de";
 in
 {
-  # source: my.ports.n8n
-  # sink:   services.n8n + traefik router nix-n8n.m7c5.de
   services.n8n = {
     enable = true;
-    environment.N8N_PORT = toString port;
+    environment = {
+      N8N_PORT = toString serviceMap.ports.n8n;
+      N8N_HOST = "127.0.0.1";
+    };
   };
 
+  # Traefik Integration für n8n
   services.traefik.dynamicConfigOptions.http = {
     routers.n8n = {
-      rule = "Host(`nix-n8n.m7c5.de`)";
+      rule = "Host(`n8n.${domain}`)";
       entryPoints = [ "websecure" ];
       tls.certResolver = "letsencrypt";
-      middlewares = [ "secure-headers@file" ];
+      middlewares = [ "secured-chain@file" ];
       service = "n8n";
     };
-    services.n8n.loadBalancer.servers = [
-      { url = "http://127.0.0.1:${toString port}"; }
-    ];
+    services.n8n.loadBalancer.servers = [{
+      url = "http://127.0.0.1:${toString serviceMap.ports.n8n}";
+    }];
   };
 }

@@ -1,59 +1,56 @@
 { config, lib, pkgs, ... }:
 {
   imports = [
-    ./hardware-configuration.nix
-    ./automation.nix
-
-    ./00-core/system.nix
-    ./00-core/host.nix
-    ./00-core/ports.nix
-    ./00-core/secrets.nix
-    ./00-core/00-REMOVE_BEFORE_FLIGHT.nix
-    ./00-core/de-config.nix
+    ./hosts/q958/hardware-configuration.nix
     ./00-core/users.nix
     ./00-core/ssh.nix
-    ./00-core/fail2ban.nix
     ./00-core/firewall.nix
-    ./00-core/server-rules.nix
-    ./00-core/aliases.nix
+    ./00-core/system.nix
+    # ./00-core/storage.nix
 
     ./10-infrastructure/tailscale.nix
-    ./10-infrastructure/traefik.nix
-    ./10-infrastructure/adguardhome.nix
+    ./10-infrastructure/traefik-core.nix
+    ./10-infrastructure/traefik-routes-public.nix
+    ./10-infrastructure/traefik-routes-internal.nix
     ./10-infrastructure/homepage.nix
-    # ./10-infrastructure/ddns-updater.nix
-    # Traceability: DDNS currently intentionally disabled.
-    # Current edge path is DNS (Cloudflare proxied records) -> Traefik :443.
+    # ./10-infrastructure/adguardhome.nix
+    # ./10-infrastructure/pocket-id.nix # Temporarily disabled due to 'option does not exist' error
+    # ./10-infrastructure/wireguard-vpn.nix
 
-    ./10-infrastructure/valkey.nix
-    ./10-infrastructure/wireguard-vpn.nix
-    ./10-infrastructure/cloudflared-tunnel.nix
-    ./10-infrastructure/netdata.nix
-    ./10-infrastructure/uptime-kuma.nix
+    # Backend Media
+    ./20-services/media-stack.nix
+    ./20-services/backend-media/sabnzbd.nix
+    # ./20-services/backend-media/prowlarr.nix
 
-    ./20-services/apps/audiobookshelf.nix
+    # Frontend Media
+    ./20-services/frontend-media/audiobookshelf.nix
+    ./20-services/frontend-media/jellyfin.nix
+
+    # Apps / Services
     ./20-services/apps/vaultwarden.nix
-    ./20-services/apps/miniflux.nix
     ./20-services/apps/n8n.nix
-    ./20-services/apps/scrutiny.nix
-    ./20-services/apps/paperless.nix
-    ./20-services/apps/readeck.nix
-    ./20-services/apps/monica.nix
-
-    ./20-services/media/default.nix
-    ./20-services/media/media-stack.nix
   ];
 
-  my.media.defaults.domain = "m7c5.de";
+  boot.loader.systemd-boot.enable      = true;
+  boot.loader.efi.canTouchEfiVariables = true;
 
-  # Traceability: tunnel bridge exists, but is OFF until tunnelId + credentials are set.
-  # When enabled, edge path becomes DNS (proxied) -> Cloudflare Tunnel -> Traefik :443.
-  my.cloudflare.tunnel.enable = false;
+  networking.hostName              = "q958";
+  networking.networkmanager.enable = true;
 
-  # Critical SSH key: keep this in top-level config so it is never lost.
-  users.users.moritz.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJRDbyFjT4SEL8yxNwZuEBPORD82qlJJhdr2r4qz1vCX"
+  swapDevices = [
+    { device = "/var/lib/swapfile"; size = 4096; }
   ];
 
-  system.stateVersion = "25.11";
+  time.timeZone      = "Europe/Berlin";
+  i18n.defaultLocale = "de_DE.UTF-8";
+  i18n.supportedLocales = lib.mkForce [ "de_DE.UTF-8/UTF-8" "en_US.UTF-8/UTF-8" ];
+
+  console.keyMap = lib.mkForce "de";
+
+  environment.systemPackages = with pkgs; [
+    git htop wget curl tree unzip file
+    nix-output-monitor
+  ];
+
+  system.stateVersion = "24.11";
 }
