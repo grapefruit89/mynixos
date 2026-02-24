@@ -2,6 +2,7 @@
 {
   imports = [
     ./hosts/q958/hardware-configuration.nix
+    ./00-core/ports.nix
     ./00-core/users.nix
     ./00-core/ssh.nix
     ./00-core/firewall.nix
@@ -24,7 +25,7 @@
 
     # Frontend Media
     ./20-services/frontend-media/audiobookshelf.nix
-    ./20-services/frontend-media/jellyfin.nix
+    ./20-services/media/jellyfin.nix
 
     # Apps / Services
     ./20-services/apps/vaultwarden.nix

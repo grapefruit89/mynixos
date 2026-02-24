@@ -3,9 +3,7 @@
   users.groups.media = {};
 
   # Shared media access across local services.
-  users.users.jellyfin.extraGroups = lib.mkAfter [ "media" ];
-  users.users.sabnzbd.extraGroups = lib.mkAfter [ "media" ];
-  users.users.audiobookshelf.extraGroups = lib.mkAfter [ "media" ];
+  users.groups.media.members = [ "jellyfin" "sabnzbd" "audiobookshelf" ];
 
   # Canonical data/state layout for backups and predictable permissions.
   systemd.tmpfiles.rules = [
