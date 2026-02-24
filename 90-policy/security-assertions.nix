@@ -19,7 +19,7 @@ in
 
     # SSH hardening invariants
     (must config.services.openssh.enable "[SEC-SSH-SVC-001] services.openssh.enable must remain true")
-    (must (config.services.openssh.openFirewall == true) "security: services.openssh.openFirewall must remain true")
+    (must (config.services.openssh.openFirewall == false) "security: services.openssh.openFirewall must remain false")
     (must (config.services.openssh.ports == [ sshPort ]) "[SEC-SSH-PORT-001] SSH port must match my.ports.ssh")
     (must (config.services.openssh.settings.PermitRootLogin == "no") "security: root SSH login must stay disabled")
     (must (config.services.openssh.settings.PermitTTY == true) "[SEC-SSH-TTY-001] SSH TTY must always remain enabled as recovery channel")
@@ -45,14 +45,14 @@ in
 
     # Traefik invariants
     (must config.services.traefik.enable "security: Traefik must remain enabled")
-   # (must (!(config.services.traefik.staticConfigOptions.entryPoints ? web)) "security: Traefik HTTP entrypoint web must stay disabled")
+    (must (!(config.services.traefik.staticConfigOptions.entryPoints ? web)) "security: Traefik HTTP entrypoint web must stay disabled")
     (must (config.services.traefik.staticConfigOptions.entryPoints.websecure.address == ":${toString websecurePort}") "security: Traefik websecure entrypoint must match my.ports.traefikHttps")
     (must (config.services.traefik.staticConfigOptions.certificatesResolvers.letsencrypt.acme.dnsChallenge.provider == "cloudflare") "security: Traefik ACME DNS provider must stay cloudflare")
     (must (builtins.elem sharedSecretEnv traefikEnv) "security: Traefik must load secrets via my.secrets.files.sharedEnv")
 
     # Infra / app exposure invariants
     (must (config.services.adguardhome.openFirewall == false) "security: AdGuard must not open firewall ports automatically")
-    (must (config.services.homepage-dashboard.openFirewall == false) "security: Homepage Dashboard must not open firewall ports")
+    (must (lib.hasInfix "--host 127.0.0.1" (config.systemd.services.homepage.serviceConfig.ExecStart or "")) "security: Homepage service must bind to 127.0.0.1")
 
     # Media service exposure invariants
     (must (config.services.sonarr.openFirewall == false) "security: Sonarr must not open firewall ports")

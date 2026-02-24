@@ -14,7 +14,7 @@ in
   # [SEC-SSH-SVC-001] OpenSSH service must stay enabled.
   services.openssh = {
     enable = true;
-    openFirewall = true;
+    openFirewall = false;
     ports = lib.mkForce [ sshPort ];
 
     settings = {

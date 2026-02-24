@@ -34,8 +34,8 @@ for svc in sshd firewall fail2ban traefik; do
   fi
 done
 
-echo "[5/6] config test build"
-nixos-rebuild test >/dev/null
+echo "[5/6] config dry-activate"
+nixos-rebuild dry-activate >/dev/null
 
 echo "[6/6] done"
 echo "Preflight OK: safe to run nixos-rebuild switch"

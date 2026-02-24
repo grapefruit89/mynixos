@@ -60,15 +60,6 @@ in
       };
 
       entryPoints = {
-        web = {
-          address = ":80";
-          http.redirections.entryPoint = {
-            to = "websecure";
-            scheme = "https";
-            permanent = true;
-          };
-        };
-
         websecure = {
           address = ":443";
           http.tls = {
