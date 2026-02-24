@@ -10,6 +10,8 @@ Zweck: Zentrale Entscheidungsübersicht über aktive Doku (`docs/`) plus histori
 - `docs/SECRETS_BOOTSTRAP.md`
 - `docs/SSH_RECOVERY_POLICY.md`
 - `docs/OPERATIONS_GITHUB_PUSH.md`
+- `docs/OPERATIONS_RUNBOOK.md`
+- `docs/DECISION_LOG.md`
 - `docs/NIX_MODULE_CONVENTIONS.md`
 - `docs/ARR_API_WIRING.md`
 
@@ -65,32 +67,23 @@ Warum verworfen: Archive enthalten teils widersprüchliche historische Stände.
 Nutzen: reproduzierbare, verschlüsselte Secret-Verwaltung statt manueller `.env`-Pflege.
 Status: offen (geplant).
 
-2. Konsolidiertes "Decision Log" dauerhaft pflegen.
-Nutzen: nachvollziehbar, warum Dinge so und nicht anders gebaut wurden.
-Status: mit dieser Datei gestartet, laufend ergänzen.
-
-3. Explizites Operations-Runbook (Incident/Recovery/Rotation).
-Nutzen: schnellere Störungsbehebung, weniger Ad-hoc-Kommandos.
-Status: teilweise vorhanden, noch nicht als einheitliches Runbook zusammengeführt.
-
-4. Archive-Kuration mit klaren Labels (`authoritative` vs `historical`).
+2. Archive-Kuration mit klaren Labels (`authoritative` vs `historical`).
 Nutzen: reduziert Fehlentscheidungen auf Basis veralteter Snippets.
 Status: begonnen (`docs/archive/CONSOLIDATION_NOTES.md`), weiter ausbauen.
 
-5. Optionaler automatisierter Health-/Preflight-Check vor jedem `switch`.
+3. Optionaler automatisierter Health-/Preflight-Check vor jedem `switch`.
 Nutzen: frühzeitige Erkennung von Drift/Regressionen.
 Status: offen.
 
-6. Architekturdiagramm (Ingress -> Proxy -> Services -> Policy).
+4. Architekturdiagramm (Ingress -> Proxy -> Services -> Policy).
 Nutzen: Onboarding und Review deutlich schneller.
 Status: offen.
 
 ## 5) Priorisierte Next Steps
 1. `Hoch`: Secret-Übergang planen: von `.env` auf `sops-nix` inkl. Rotationsprozess.
-2. `Hoch`: Dieses Meta-Dokument bei Architekturänderungen sofort mitpflegen.
-3. `Mittel`: Einheitliches `docs/OPERATIONS_RUNBOOK.md` bauen (Recovery, Rollback, Token-Rotation).
-4. `Mittel`: Archivdateien mit Kurz-Header versehen (`historical`, Datum, Gültigkeitsbereich).
-5. `Niedrig`: Architekturdiagramm ergänzen.
+2. `Mittel`: Archivdateien mit Kurz-Header versehen (`historical`, Datum, Gültigkeitsbereich).
+3. `Mittel`: Preflight-Check vor `switch` standardisieren.
+4. `Niedrig`: Architekturdiagramm ergänzen.
 
 ## 6) Pflege-Regeln für dieses Dokument
 1. Neue Entscheidung nur mit: Kontext, Entscheidung, Konsequenz.
