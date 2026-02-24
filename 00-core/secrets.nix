@@ -1,3 +1,9 @@
+# meta:
+#   owner: core
+#   status: active
+#   scope: shared
+#   summary: secrets Modul
+
 { lib, config, ... }:
 {
   # Secret contract (single source of truth)
@@ -34,11 +40,11 @@
     };
 
     vars = {
-      # NOTE: value must stay CF_DNS_API_TOKEN because Traefik's Cloudflare provider
+      # NOTE: value must stay CLOUDFLARE_DNS_API_TOKEN because Traefik's Cloudflare provider
       # reads exactly this upstream env var.
       traefikAcmeCloudflareDnsApiTokenVarName = lib.mkOption {
         type = lib.types.str;
-        default = "CF_DNS_API_TOKEN";
+        default = "CLOUDFLARE_DNS_API_TOKEN";
         description = "Upstream-required env var name for Traefik ACME Cloudflare DNS challenge.";
       };
 
@@ -52,10 +58,34 @@
     };
   };
 
+  environment.etc."secrets/homelab-runtime-secrets.env.example".text = ''
+    # homelab runtime secrets (bootstrap template)
+    # Nur Werte rechts von '=' ergänzen. Keys NICHT umbenennen.
+
+    # Traefik / Cloudflare DNS-01
+    CLOUDFLARE_DNS_API_TOKEN=
+
+    # WireGuard privado
+    WG_PRIVADO_PRIVATE_KEY=
+
+    # ARR wiring (optional)
+    SONARR_API_KEY=
+    RADARR_API_KEY=
+    PROWLARR_API_KEY=
+    SABNZBD_API_KEY=
+
+    # Optional service URLs (Defaults sind localhost-Ports)
+    SONARR_URL=http://127.0.0.1:8989
+    RADARR_URL=http://127.0.0.1:7878
+    PROWLARR_URL=http://127.0.0.1:9696
+    SABNZBD_URL=http://127.0.0.1:8080
+  '';
+
+
   config.assertions = [
     {
-      assertion = config.my.secrets.vars.traefikAcmeCloudflareDnsApiTokenVarName == "CF_DNS_API_TOKEN";
-      message = "security: my.secrets.vars.traefikAcmeCloudflareDnsApiTokenVarName must stay CF_DNS_API_TOKEN (Traefik Cloudflare upstream requirement).";
+      assertion = config.my.secrets.vars.traefikAcmeCloudflareDnsApiTokenVarName == "CLOUDFLARE_DNS_API_TOKEN";
+      message = "security: my.secrets.vars.traefikAcmeCloudflareDnsApiTokenVarName must stay CLOUDFLARE_DNS_API_TOKEN (Traefik Cloudflare upstream requirement).";
     }
     {
       assertion = config.my.secrets.vars.wgPrivadoPrivateKeyVarName == "WG_PRIVADO_PRIVATE_KEY";
