@@ -37,8 +37,8 @@ Begründung: Recovery-fähig ohne Daueraufweichung.
 5. Betriebsablauf bleibt: `git pull --ff-only` -> `nixos-rebuild test` -> `nixos-rebuild switch`.
 Begründung: risikoarme Aktivierung.
 
-6. Secrets kurzfristig über lokale Runtime-ENV-Datei.
-Begründung: pragmatisch, schnell deploybar; spätere Migration möglich.
+6. Secrets bleiben auf lokaler Runtime-ENV-Datei.
+Begründung: pragmatisch, schnell deploybar, ohne zusätzliche Tooling-Komplexität.
 
 7. Traefik + Cloudflare DNS-Challenge als TLS-Modell bleibt.
 Begründung: Wildcard/TLS hinter NAT praktikabel.
@@ -47,8 +47,8 @@ Begründung: Wildcard/TLS hinter NAT praktikabel.
 Begründung: zusätzliche Schutzschicht bei Expositionsfehlern.
 
 ## 3) Verworfen / bewusst nicht umgesetzt (inkl. Warum)
-1. Vollständige frühe sops-Pflichtmigration (sofort).
-Warum verworfen: operative Stabilität zuerst; Komplexität am Anfang reduziert.
+1. Secrets-Migration auf zusätzliches Kryptotooling in der aktuellen Phase.
+Warum verworfen: Fokus liegt auf Stabilität, Betriebsroutine und geringer Komplexität.
 
 2. Breite "alles global öffnen"-Firewallmuster.
 Warum verworfen: widerspricht minimaler Angriffsfläche.
@@ -63,8 +63,8 @@ Warum verworfen: erhöht Betriebslast und Fehlerrisiko in der Stabilisierungspha
 Warum verworfen: Archive enthalten teils widersprüchliche historische Stände.
 
 ## 4) Goldnuggets aus Doku/Archiv (wichtig, noch nicht vollständig umgesetzt)
-1. Secrets-Härtung via `sops-nix` als nächster großer Reifegrad.
-Nutzen: reproduzierbare, verschlüsselte Secret-Verwaltung statt manueller `.env`-Pflege.
+1. ENV-Secrets-Härtung als nächster Reifegrad (`/etc/secrets/*.env`).
+Nutzen: klarere Rotation, konsistente Rechte/Ownership, weniger Tippfehler bei Runtime-Secrets.
 Status: offen (geplant).
 
 2. Archive-Kuration mit klaren Labels (`authoritative` vs `historical`).
@@ -77,13 +77,27 @@ Status: offen.
 
 4. Architekturdiagramm (Ingress -> Proxy -> Services -> Policy).
 Nutzen: Onboarding und Review deutlich schneller.
-Status: offen.
+Status: ergänzt.
 
 ## 5) Priorisierte Next Steps
-1. `Hoch`: Secret-Übergang planen: von `.env` auf `sops-nix` inkl. Rotationsprozess.
+1. `Hoch`: ENV-Secrets-Prozess festziehen (Rotation, Dateirechte, Service-Restarts dokumentieren).
 2. `Mittel`: Archivdateien mit Kurz-Header versehen (`historical`, Datum, Gültigkeitsbereich).
 3. `Mittel`: Preflight-Check vor `switch` standardisieren.
-4. `Niedrig`: Architekturdiagramm ergänzen.
+4. `Niedrig`: Architekturdiagramm bei Strukturänderungen aktualisieren.
+
+```mermaid
+flowchart LR
+  U[Clients: LAN/Tailscale/Internet] --> I[Ingress]
+  I --> T[Traefik]
+  T --> S[20-services Apps/Media]
+  S --> P[90-policy Assertions]
+  C[00-core] --> T
+  C --> S
+  INF[10-infrastructure] --> T
+  INF --> S
+  SEC[Secrets ENV Dateien] --> T
+  SEC --> S
+```
 
 ## 6) Pflege-Regeln für dieses Dokument
 1. Neue Entscheidung nur mit: Kontext, Entscheidung, Konsequenz.
