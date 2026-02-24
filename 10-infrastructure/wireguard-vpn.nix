@@ -1,24 +1,13 @@
-{ config, inputs, ... }:
+{ ... }:
 {
-  imports = [ inputs.vpn-confinement.nixosModules.default ];
+  # Natives NixOS WireGuard (wg-quick), ohne vpn-confinement.
+  # Aktivierung erfolgt erst, wenn dieses Modul in configuration.nix importiert wird.
+  networking.wg-quick.interfaces.privado = {
+    autostart = false;
 
-  vpnNamespaces.privado = {
-    enable = true;
-    wireguardConfig = {
-      # WICHTIG: Ersetze dies manuell mit dem Pfad zu deinem WireGuard Private Key auf dem Server.
-      # Beispiel: privateKeyFile = "/etc/wireguard/privado_wg_key";
-      # Der Schlüssel muss außerhalb des Git-Repos liegen und korrekte Berechtigungen haben (chmod 600).
-      # privateKeyFile = "/var/lib/secrets/privado_wg_key"; # <- Alte Referenz, falls du es später wieder nutzen möchtest
-      address = [ "100.64.3.40/32" ];
-      dns = [ "198.18.0.1" "198.18.0.2" ];
-    };
-    portMappings = [
-      { from = 8080; to = 8080; } # Example: For SABnzbd
-    ];
-    peers = [{
-      publicKey = "KgTUh3KLijVluDvNpzDCJJfrJ7EyLzYLmdHCksG4sRg=";
-      allowedIPs = [ "0.0.0.0/0" ];
-      endpoint = "91.148.237.21:51820";
-    }];
+    # Lege die Datei ausserhalb von Git ab, z.B.:
+    # /etc/secrets/wireguard/privado.conf
+    # Inhalt ist ein normales wg-quick Interface-Config.
+    configFile = "/etc/secrets/wireguard/privado.conf";
   };
 }

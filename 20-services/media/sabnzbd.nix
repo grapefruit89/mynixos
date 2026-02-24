@@ -1,17 +1,17 @@
-{ ... }:
+{ lib, ... }:
 {
-  services.sabnzbd.enable = true;
+  imports = [
+    ((import ./_lib.nix { inherit lib; }) {
+      name = "sabnzbd";
+      port = 8080;
+      stateOption = "configFile";
+      defaultStateDir = "/var/lib/sabnzbd";
+      statePathSuffix = "sabnzbd.ini";
+    })
+  ];
 
-  services.traefik.dynamicConfigOptions.http = {
-    routers.sabnzbd = {
-      rule = "Host(`nix-sabnzbd.m7c5.de`)";
-      entryPoints = [ "websecure" ];
-      tls.certResolver = "letsencrypt";
-      middlewares = [ "secure-headers@file" ];
-      service = "sabnzbd";
-    };
-    services.sabnzbd.loadBalancer.servers = [
-      { url = "http://127.0.0.1:8080"; }
-    ];
+  config = {
+    users.groups.sabnzbd.gid = lib.mkForce 194;
+    users.users.sabnzbd.uid = lib.mkForce 984;
   };
 }

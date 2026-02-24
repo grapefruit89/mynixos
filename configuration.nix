@@ -10,6 +10,7 @@
     ./00-core/users.nix
     ./00-core/ssh.nix
     ./00-core/firewall.nix
+    ./00-core/security-assertions.nix
     ./00-core/aliases.nix
 
     ./10-infrastructure/tailscale.nix
@@ -25,12 +26,14 @@
     ./20-services/apps/scrutiny.nix
     ./20-services/apps/paperless.nix
 
-    ./20-services/media/jellyfin.nix
-    ./20-services/media/sonarr.nix
-    ./20-services/media/radarr.nix
-    ./20-services/media/prowlarr.nix
-    ./20-services/media/sabnzbd.nix
+    ./20-services/media/default.nix
+    ./20-services/media/media-stack.nix
   ];
+
+  my.media.defaults.domain = "m7c5.de";
+
+  # Optional zusätzlich aktivierbar:
+  # my.media.jellyfin.enable = true;
 
   system.stateVersion = "25.11";
 }

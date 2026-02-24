@@ -1,17 +1,8 @@
-{ ... }:
-{
-  services.prowlarr.enable = true;
-
-  services.traefik.dynamicConfigOptions.http = {
-    routers.prowlarr = {
-      rule = "Host(`nix-prowlarr.m7c5.de`)";
-      entryPoints = [ "websecure" ];
-      tls.certResolver = "letsencrypt";
-      middlewares = [ "secure-headers@file" ];
-      service = "prowlarr";
-    };
-    services.prowlarr.loadBalancer.servers = [
-      { url = "http://127.0.0.1:9696"; }
-    ];
-  };
-}
+args@{ lib, ... }:
+((import ./_lib.nix { inherit lib; }) {
+  name = "prowlarr";
+  port = 9696;
+  stateOption = "dataDir";
+  defaultStateDir = "/var/lib/prowlarr";
+  supportsUserGroup = false;
+}) args
