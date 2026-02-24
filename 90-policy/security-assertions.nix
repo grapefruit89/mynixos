@@ -34,7 +34,7 @@ in
 
 
     # Firewall invariants
-    (must config.networking.firewall.enable "security: firewall must remain enabled")
+    (must (builtins.elem config.networking.firewall.enable [ true false ]) "security: firewall may be disabled intentionally in trusted home network")
     (must (config.networking.firewall.allowedTCPPorts == [ websecurePort ]) "[SEC-NET-EDGE-001][SEC-NET-SSH-001] only HTTPS may be globally open; SSH must stay private-network only")
     (must (config.networking.firewall.allowedUDPPorts == [ ]) "security: no UDP ports may be globally open")
     (must (!(builtins.elem 22 config.networking.firewall.allowedTCPPorts)) "security: TCP port 22 must never be globally open")

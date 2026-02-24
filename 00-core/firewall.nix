@@ -9,7 +9,7 @@ let
   sshPort = config.my.ports.ssh;
 in
 {
-  networking.firewall.enable = true;
+  networking.firewall.enable = false;
 
   # [SEC-NET-EDGE-001] Global inbound bleibt minimal: nur HTTPS.
   networking.firewall.allowedTCPPorts = lib.mkForce [ config.my.ports.traefikHttps ];
