@@ -5,12 +5,13 @@
     ./automation.nix
 
     ./00-core/system.nix
+    ./00-core/host.nix
     ./00-core/00-REMOVE_BEFORE_FLIGHT.nix
     ./00-core/de-config.nix
     ./00-core/users.nix
     ./00-core/ssh.nix
     ./00-core/firewall.nix
-    ./00-core/security-assertions.nix
+    ./90-policy/security-assertions.nix
     ./00-core/aliases.nix
 
     ./10-infrastructure/tailscale.nix

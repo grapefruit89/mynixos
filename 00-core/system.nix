@@ -1,17 +1,16 @@
 { config, lib, pkgs, ... }:
 {
-  # ── BOOTLOADER ───────────────────────────────────────────────────────────
+  # -- BOOTLOADER -----------------------------------------------------------
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.grub.enable = false;
 
-  # ── SYSTEM ───────────────────────────────────────────────────────────────
-  networking.hostName = "q958";
+  # -- SYSTEM BASIS ---------------------------------------------------------
   networking.networkmanager.enable = true;
 
   nixpkgs.config.allowUnfree = true;
 
-  # ── PAKETE ───────────────────────────────────────────────────────────────
+  # -- PACKAGES -------------------------------------------------------------
   environment.systemPackages = with pkgs; [
     nodejs_22
     alejandra
@@ -24,10 +23,6 @@
     file
     nix-output-monitor
   ];
-
-  programs.bash.shellAliases = {
-    gemini = "npx @google/gemini-cli";
-  };
 
   environment.sessionVariables = {
     PATH = "/home/moritz/.npm-global/bin:$PATH";
