@@ -4,9 +4,12 @@
 #   scope: shared
 #   summary: users Modul
 
-{ ... }:
+{ config, ... }:
+let
+  user = config.my.identity.user;
+in
 {
-  users.users.moritz = {
+  users.users.${user} = {
     isNormalUser = true;
     extraGroups = [ "networkmanager" "wheel" "video" "render" ];
     openssh.authorizedKeys.keys = [

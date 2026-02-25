@@ -44,6 +44,13 @@ in
 
     staticConfigOptions = {
       log.level = "INFO";
+      accessLog = {
+        format = "json";
+        fields = {
+          defaultMode = "keep";
+          names.StartUTC = "drop";
+        };
+      };
       api = {
         dashboard = true;
         insecure = false;
@@ -196,4 +203,7 @@ in
       };
     };
   };
+
+  systemd.services.traefik.serviceConfig.Environment =
+    lib.mkAfter [ "TZ=${config.time.timeZone}" ];
 }

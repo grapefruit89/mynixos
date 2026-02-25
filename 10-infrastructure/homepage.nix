@@ -1,11 +1,14 @@
 { config, lib, pkgs, ... }:
 let
-  
   domain = "m7c5.de";
   homepageUser = "homepage";
   homepageGroup = "homepage";
   homepageConfigDir = "/data/state/homepage";
   homepagePort = config.my.ports.homepage;
+
+  localeProfile = config.my.locale.profile;
+  homepageLanguage = if localeProfile == "EN" then "en" else "de";
+  homepageSettings = pkgs.writeText "homepage-settings.yaml" "language: ${homepageLanguage}\n";
 in
 {
   # Erstelle einen dedizierten Benutzer und eine Gruppe für den Homepage-Dienst
@@ -27,7 +30,9 @@ in
       User = homepageUser;
       Group = homepageGroup;
       WorkingDirectory = homepageConfigDir;
-      ExecStart = "${pkgs.homepage-dashboard}/bin/homepage --host 127.0.0.1 --port ${toString homepagePort} --config ${homepageConfigDir}";
+      ExecStartPre = "${pkgs.coreutils}/bin/install -D -m 0644 -o ${homepageUser} -g ${homepageGroup} ${homepageSettings} ${homepageConfigDir}/settings.yaml";
+      
+      # Manual refresh (optional): systemctl restart homepage
       Restart = "always";
       RestartSec = "5s";
       Environment = [

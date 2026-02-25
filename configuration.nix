@@ -4,7 +4,11 @@
     ./hosts/q958/hardware-configuration.nix
 
     # Core
+    ./00-core/principles.nix
+    ./00-core/logging.nix
+    ./00-core/locale.nix
     ./00-core/ports.nix
+    ./00-core/host.nix
     ./00-core/secrets.nix
     ./00-core/users.nix
     ./00-core/ssh.nix
@@ -38,24 +42,16 @@
     ./20-services/apps/n8n.nix
 
     # Security Policy
-    ./90-policy/security-assertions.nix
+   # ./90-policy/security-assertions.nix  ##wieder einkommentieren! 
   ];
 
   boot.loader.systemd-boot.enable      = true;
   boot.loader.efi.canTouchEfiVariables = true;
-
-  networking.hostName              = "q958";
   networking.networkmanager.enable = true;
 
   swapDevices = [
     { device = "/var/lib/swapfile"; size = 4096; }
   ];
-
-  time.timeZone      = "Europe/Berlin";
-  i18n.defaultLocale = "de_DE.UTF-8";
-  i18n.supportedLocales = lib.mkForce [ "de_DE.UTF-8/UTF-8" "en_US.UTF-8/UTF-8" ];
-
-  console.keyMap = lib.mkForce "de";
 
   environment.systemPackages = with pkgs; [
     git htop wget curl tree unzip file

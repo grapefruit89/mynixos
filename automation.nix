@@ -1,7 +1,7 @@
-{ pkgs, ... }: {
+{ config, pkgs, ... }: {
   security.sudo.extraRules = [
     {
-      users = [ "moritz" ];
+      users = [ config.my.identity.user ];
       commands = [
         {
           command = "/run/current-system/sw/bin/nixos-rebuild";
