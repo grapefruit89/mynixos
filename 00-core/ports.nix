@@ -1,3 +1,9 @@
+# meta:
+#   owner: core
+#   status: active
+#   scope: shared
+#   summary: ports Modul
+
 { lib, ... }:
 {
   options.my.ports = lib.mkOption {
