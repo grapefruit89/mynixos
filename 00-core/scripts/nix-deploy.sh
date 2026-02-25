@@ -9,6 +9,16 @@ run_test="true"
 run_switch="false"
 run_git="true"
 run_push="true"
+run_ssh="true"
+
+log_file="${XDG_CACHE_HOME:-$HOME/.cache}/nix-deploy.log"
+log_dir="$(dirname "$log_file")"
+mkdir -p "$log_dir"
+
+log() {
+  printf "[%s] %s
+" "$(date -Is)" "$*"
+}
 
 usage() {
   cat <<USAGE
@@ -28,6 +38,10 @@ Options:
   --no-switch       Do not run switch
   --no-git          Skip git add/commit
   --no-push         Skip git push
+  --no-ssh          Skip ssh-agent auto-start
+
+Logging:
+  Log file: $log_file
 
 Notes:
   - test is temporary (reverts on reboot)
@@ -45,20 +59,52 @@ while [ $# -gt 0 ]; do
     --no-switch) switch_mode="no" ;;
     --no-git) run_git="false" ;;
     --no-push) run_push="false" ;;
+    --no-ssh) run_ssh="false" ;;
     *) echo "Unknown option: $1"; usage; exit 2 ;;
   esac
   shift
 done
 
+# tee all output to log
+exec > >(tee -a "$log_file") 2>&1
+
+log "nix-deploy start"
+
+ensure_ssh_agent() {
+  if [ "$run_ssh" != "true" ]; then
+    log "ssh-agent autostart disabled"
+    return 0
+  fi
+
+  if ssh-add -l >/dev/null 2>&1; then
+    log "ssh-agent has keys loaded"
+    return 0
+  fi
+
+  if [ -z "${SSH_AUTH_SOCK:-}" ]; then
+    log "starting ssh-agent"
+    eval "$(ssh-agent -s)" >/dev/null
+  fi
+
+  if [ -f "$HOME/.ssh/id_ed25519" ]; then
+    log "loading ssh key: ~/.ssh/id_ed25519"
+    ssh-add "$HOME/.ssh/id_ed25519" || true
+  else
+    log "WARN: ~/.ssh/id_ed25519 not found"
+  fi
+}
+
 if [ "$run_dry" = "true" ]; then
-  echo "Running: nixos-rebuild dry-run"
+  log "Running: nixos-rebuild dry-run"
   sudo nixos-rebuild dry-run
+  log "done: dry-run"
   exit 0
 fi
 
 if [ "$run_test" = "true" ]; then
-  echo "Running: nixos-rebuild test (temporary until reboot)"
+  log "Running: nixos-rebuild test (temporary until reboot)"
   sudo nixos-rebuild test
+  log "done: test"
 fi
 
 if [ "$switch_mode" = "prompt" ]; then
@@ -75,32 +121,37 @@ else
 fi
 
 if [ "$run_switch" = "true" ]; then
-  echo "Running: nixos-rebuild switch (persistent)"
+  log "Running: nixos-rebuild switch (persistent)"
   sudo nixos-rebuild switch
+  log "done: switch"
 fi
 
 if [ "$run_git" != "true" ]; then
+  log "git steps skipped"
   exit 0
 fi
 
 if git -C "$repo" diff --quiet && git -C "$repo" diff --cached --quiet; then
-  echo "No git changes to commit."
+  log "No git changes to commit."
 else
-  echo "Changes detected in $repo."
+  log "Changes detected in $repo."
   read -r -p "Commit message (empty to skip): " msg
   if [ -n "$msg" ]; then
     sudo git -C "$repo" add -A
     sudo git -C "$repo" commit -m "$msg" --no-gpg-sign -n
+    log "commit created"
+  else
+    log "commit skipped"
   fi
 fi
 
 if [ "$run_push" != "true" ]; then
+  log "push skipped"
   exit 0
 fi
 
-# Push must run as user (SSH agent is user-scoped)
-if ! ssh-add -l >/dev/null 2>&1; then
-  echo "[WARN] SSH agent has no keys loaded. Run: eval \"\$(ssh-agent -s)\"; ssh-add ~/.ssh/id_ed25519"
-fi
+ensure_ssh_agent
 
+log "git push"
 git -C "$repo" push
+log "push done"
