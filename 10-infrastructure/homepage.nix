@@ -31,7 +31,8 @@ in
       Group = homepageGroup;
       WorkingDirectory = homepageConfigDir;
       ExecStartPre = "${pkgs.coreutils}/bin/install -D -m 0644 -o ${homepageUser} -g ${homepageGroup} ${homepageSettings} ${homepageConfigDir}/settings.yaml";
-      
+      ExecStart = "${pkgs.homepage-dashboard}/bin/homepage --host 127.0.0.1 --port ${toString homepagePort} --config ${homepageConfigDir}";
+
       # Manual refresh (optional): systemctl restart homepage
       Restart = "always";
       RestartSec = "5s";
