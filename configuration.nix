@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ ... }:
 {
   imports = [
     ./hosts/q958/hardware-configuration.nix
@@ -18,24 +18,23 @@
     ./00-core/system.nix
     ./00-core/aliases.nix
     ./00-core/fail2ban.nix
+    ./00-core/server-rules.nix # deprecated stub (TODO-ASSERTIONS-CONSOLIDATION-001)
     ./automation.nix
     # ./00-core/storage.nix
 
-    # Infrastructure
+    # 10 — Infrastructure
     ./10-infrastructure/tailscale.nix
     ./10-infrastructure/traefik-core.nix
-    # ./10-infrastructure/traefik-routes-public.nix
+    # ./10-infrastructure/traefik-routes-public.nix  # TODO-TRAEFIK-PUBLIC-001
     ./10-infrastructure/traefik-routes-internal.nix
     ./10-infrastructure/homepage.nix
     ./10-infrastructure/wireguard-vpn.nix
     # ./10-infrastructure/adguardhome.nix
     # ./10-infrastructure/pocket-id.nix
 
-    # Media Stack (neues _lib.nix-basiertes System)
+    # 20 — Services
     ./20-services/media/default.nix
     ./20-services/media/media-stack.nix
-
-    # Apps
     ./20-services/apps/audiobookshelf.nix
     ./20-services/apps/vaultwarden.nix
     ./20-services/apps/paperless.nix
@@ -50,6 +49,8 @@
   boot.loader.efi.canTouchEfiVariables = true;
   networking.networkmanager.enable = true;
 
+  # source-id: CFG.system.swap
+  # sink: aktiviert lokale Swap-Datei
   swapDevices = [
     { device = "/var/lib/swapfile"; size = 4096; }
   ];

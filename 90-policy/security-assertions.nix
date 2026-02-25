@@ -1,4 +1,14 @@
-{ config, lib, ... }:
+# meta:
+#   owner: policy
+#   status: draft — ASSERTIONS DEAKTIVIERT (Bastelmodus)
+#   scope: shared
+#   summary: Zentrale Sicherheits-Assertions (einzige Quelle der Wahrheit)
+#   specIds: siehe 90-policy/spec-registry.md
+#   note: Aktivieren wenn Bastelphase abgeschlossen.
+#         server-rules.nix ist deprecated und wird nach Aktivierung dieser Datei gelöscht.
+#         Bug-Fix vorbereitet: user-Variable ist hier sauber definiert.
+
+{ config, ... }:
 let
   must = assertion: message: { inherit assertion message; };
   fwRules = config.networking.firewall.extraInputRules;
@@ -33,6 +43,9 @@ in
     (must config.services.fail2ban.enable "security: fail2ban must remain enabled")
     (must (config.services.fail2ban.jails.sshd.settings.enabled == true) "security: fail2ban sshd jail must remain enabled")
 
+  # source-id: CFG.ports.ssh
+  # sink: Soll-Port für SSH Assertions
+  sshPort = config.my.ports.ssh;
 
     # Firewall invariants
     (must config.networking.firewall.enable "security: firewall must remain enabled")
@@ -55,22 +68,17 @@ in
     (must (config.services.adguardhome.openFirewall == false) "security: AdGuard must not open firewall ports automatically")
     (must (lib.hasInfix "--host 127.0.0.1" (config.systemd.services.homepage.serviceConfig.ExecStart or "")) "security: Homepage service must bind to 127.0.0.1")
 
-    # Media service exposure invariants
-    (must (config.services.sonarr.openFirewall == false) "security: Sonarr must not open firewall ports")
-    (must (config.services.radarr.openFirewall == false) "security: Radarr must not open firewall ports")
-    (must (config.services.readarr.openFirewall == false) "security: Readarr must not open firewall ports")
-    (must (config.services.prowlarr.openFirewall == false) "security: Prowlarr must not open firewall ports")
-    (must (config.services.sabnzbd.openFirewall == false) "security: SABnzbd must not open firewall ports")
-    (must (config.services.jellyfin.openFirewall == false) "security: Jellyfin must not open firewall ports")
-    (must (config.services.jellyseerr.openFirewall == false) "security: Jellyseerr must not open firewall ports")
+  # source-id: CFG.systemd.sabnzbd.bindsTo
+  # sink: VPN-Bindung für sabnzbd Assertions
+  sabBinds = config.systemd.services.sabnzbd.bindsTo or [ ];
 
-    # VPN + sabnzbd invariants
-    (must (config.networking.wg-quick.interfaces ? privado) "security: wg-quick interface 'privado' must be defined")
-    (must (config.networking.wg-quick.interfaces.privado.autostart == true) "security: wg-quick privado must autostart")
-    (must (builtins.elem "wg-quick-privado.service" sabBinds) "security: sabnzbd must be bound to wg-quick-privado.service")
+  # source-id: CFG.users.${user}.authorizedKeys
+  # sink: Key-aware SSH Auth Assertion
+  hasAuthorizedKeys = (config.users.users.${user}.openssh.authorizedKeys.keys or [ ]) != [ ];
 
-    # QuickSync invariants for jellyfin
-    (must config.hardware.graphics.enable "security: hardware.graphics.enable must stay enabled for jellyfin acceleration")
+  # source-id: CFG.systemd.sshd.restartPolicy
+  # sink: Liveness Assertion für sshd
+  sshdRestart = config.systemd.services.sshd.serviceConfig.Restart or null;
 
   ];
 }

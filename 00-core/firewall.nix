@@ -6,6 +6,8 @@
 
 { lib, config, ... }:
 let
+  # source-id: CFG.ports.ssh
+  # sink: SSH-Dienstport in Interface- und Input-Regeln
   sshPort = config.my.ports.ssh;
   useNft = config.my.firewall.backend == "nftables";
   # source-id: CFG.network.lanCidrs
