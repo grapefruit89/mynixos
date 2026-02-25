@@ -4,7 +4,7 @@
 #   scope: shared
 #   summary: aliases Modul
 
-{ config, ... }:
+{ config, pkgs, ... }:
 let
   sshPort = toString config.my.ports.ssh;
   passwordAuth = toString (config.services.openssh.settings.PasswordAuthentication or false);
@@ -13,6 +13,7 @@ let
   fallbackUnitEnabled = toString ((config.systemd.services ? ssh-password-fallback-warning));
 in
 {
+  environment.systemPackages = [ (pkgs.writeShellScriptBin "nix-deploy" (builtins.readFile ./scripts/nix-deploy.sh)) ];
   programs.bash = {
     shellAliases = {
       # Repo shortcuts
@@ -29,6 +30,7 @@ in
       nix-dry = "cd /etc/nixos && sudo nixos-rebuild dry-run -I nixos-config=/etc/nixos/configuration.nix 2>&1 | nom";
       nix-test = "cd /etc/nixos && sudo nixos-rebuild test -I nixos-config=/etc/nixos/configuration.nix 2>&1 | nom";
       nix-switch = "cd /etc/nixos && sudo nixos-rebuild switch -I nixos-config=/etc/nixos/configuration.nix 2>&1 | nom";
+      nix-deploy = "nix-deploy";
 
       # Existing helper
       gemini = "npx @google/gemini-cli";
@@ -44,6 +46,7 @@ in
       echo "  nix-dry    -> simulation, nothing is built"
       echo "  nix-test   -> active until reboot"
       echo "  nix-switch -> persistent rebuild"
+      echo "  nix-deploy -> test, optional switch, optional commit+push"
       echo ""
       echo "  Security Snapshot"
       echo "  - SSH Port: ${sshPort}"
