@@ -7,6 +7,7 @@
 { lib, config, pkgs, ... }:
 let
   sshPort = config.my.ports.ssh;
+  # source-id: CFG.identity.user
   user = config.my.identity.user;
   hasAuthorizedKeys = (config.users.users.${user}.openssh.authorizedKeys.keys or [ ]) != [ ];
   allowPasswordFallback = true;

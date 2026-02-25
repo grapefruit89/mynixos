@@ -6,6 +6,7 @@
 
 { config, ... }:
 let
+  # source-id: CFG.identity.user
   user = config.my.identity.user;
 in
 {

@@ -23,21 +23,25 @@ in
 {
   options.my.configs = {
     identity = {
+      # source-id: CFG.identity.domain
       domain = lib.mkOption {
         type = lib.types.str;
         default = "m7c5.de";
         description = "Primary domain for homelab services.";
       };
+      # source-id: CFG.identity.email
       email = lib.mkOption {
         type = lib.types.str;
         default = "moritzbaumeister@gmail.com";
         description = "Primary email for ACME and service notifications.";
       };
+      # source-id: CFG.identity.user
       user = lib.mkOption {
         type = lib.types.str;
         default = "moritz";
         description = "Primary interactive user.";
       };
+      # source-id: CFG.identity.host
       host = lib.mkOption {
         type = lib.types.str;
         default = "nixhome";
@@ -46,16 +50,19 @@ in
     };
 
     network = {
+      # source-id: CFG.network.lanCidrs
       lanCidrs = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [ "10.0.0.0/8" "172.16.0.0/12" "192.168.0.0/16" ];
         description = "Trusted RFC1918 ranges for LAN access rules.";
       };
+      # source-id: CFG.network.tailnetCidrs
       tailnetCidrs = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [ "100.64.0.0/10" ];
         description = "Trusted Tailscale CGNAT ranges.";
       };
+      # source-id: CFG.network.dnsNamed
       dnsNamed = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [
@@ -64,6 +71,7 @@ in
         ];
         description = "Named DNS resolvers for systemd-resolved.";
       };
+      # source-id: CFG.network.dnsFallback
       dnsFallback = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [
@@ -74,6 +82,7 @@ in
         ];
         description = "Fallback DNS resolvers for systemd-resolved.";
       };
+      # source-id: CFG.network.dnsDoH
       dnsDoH = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [
@@ -82,11 +91,13 @@ in
         ];
         description = "DNS-over-HTTPS upstreams.";
       };
+      # source-id: CFG.network.dnsBootstrap
       dnsBootstrap = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [ "1.1.1.1" "9.9.9.9" ];
         description = "Bootstrap DNS servers.";
       };
+      # source-id: CFG.network.acmeResolvers
       acmeResolvers = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [ "1.1.1.1:53" "8.8.8.8:53" ];
@@ -97,11 +108,9 @@ in
 
   config = {
     # source-id: CFG.identity.user
-    # sink-id:   my.identity.user
     my.identity.user = lib.mkDefault cfg.identity.user;
 
     # source-id: CFG.identity.host
-    # sink-id:   my.identity.host
     my.identity.host = lib.mkDefault cfg.identity.host;
   };
 }

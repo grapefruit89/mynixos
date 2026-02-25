@@ -15,8 +15,7 @@
 #   - IDs werden in Meta-Headern und in Source->Sink-Kommentaren verwendet.
 #   - Schema: CFG.<gruppe>.<key>  (z.B. CFG.identity.domain)
 #   - Beispiel:
-#       # source-id: CFG.identity.domain
-#       # sink-id:   services.traefik + router domain
+#       # source-id-example: CFG.identity.domain
 
 { ... }:
 {

@@ -30,6 +30,7 @@
     nix-output-monitor
   ];
 
+   # source-id: CFG.identity.user
   environment.sessionVariables = {
     PATH = "/home/${config.my.identity.user}/.npm-global/bin:$PATH";
   };

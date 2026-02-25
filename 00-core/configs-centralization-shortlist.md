@@ -67,5 +67,4 @@ Non-goal: do not centralize service-specific settings or universally stable cons
 
 Example:
   # source-id: CFG.identity.domain
-  # sink-id:   traefik router domain
 
