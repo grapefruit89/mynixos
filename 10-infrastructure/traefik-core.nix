@@ -1,11 +1,20 @@
 { config, lib, pkgs, ... }:
 let
-  domain = "m7c5.de";
+  # source-id: CFG.identity.domain
+  # sink: wildcard cert domains + router host rules
+  domain = config.my.configs.identity.domain;
+
+  # source-id: CFG.network.lanCidrs
+  # sink: traefik local whitelist + trusted proxy ranges
+  lanCidrs = config.my.configs.network.lanCidrs;
+
+  # source-id: CFG.network.tailnetCidrs
+  # sink: traefik local whitelist + allowlist
+  tailnetCidrs = config.my.configs.network.tailnetCidrs;
+
   trustedIPs = [
     "127.0.0.1/32"
-    "192.168.0.0/16"
-    "172.16.0.0/12"
-    "10.0.0.0/8"
+  ] ++ lanCidrs ++ tailnetCidrs ++ [
     "173.245.48.0/20"
     "103.21.244.0/22"
     "103.22.200.0/22"
@@ -50,7 +59,9 @@ in
       };
 
       certificatesResolvers.letsencrypt.acme = {
-        email = "moritzbaumeister@gmail.com";
+        # source-id: CFG.identity.email
+        # sink: ACME contact mail
+        email = config.my.configs.identity.email;
         storage = "${config.services.traefik.dataDir}/acme.json";
         # For wildcard certificates use Cloudflare DNS challenge.
         dnsChallenge = {
@@ -102,7 +113,9 @@ in
     dynamicConfigOptions = {
       http.middlewares = {
         "pocket-id-auth".forwardAuth = {
-          address = "http://127.0.0.1:3000";
+          # source-id: CFG.ports.pocketId
+          # sink: forward-auth backend for pocket-id
+          address = "http://127.0.0.1:${toString config.my.ports.pocketId}";
           authResponseHeaders = [ "X-Forwarded-User" ];
         };
 
@@ -124,14 +137,8 @@ in
           "compression"
         ];
 
-        local-ip-whitelist.ipAllowList.sourceRange = [
-          "127.0.0.1/32"
-          "192.168.0.0/16"
-          "172.16.0.0/12"
-          "10.0.0.0/8"
-          "100.64.0.0/10"
-          "fd7a:115c:a1e0::/48"
-        ];
+        local-ip-whitelist.ipAllowList.sourceRange =
+          [ "127.0.0.1/32" ] ++ lanCidrs ++ tailnetCidrs ++ [ "fd7a:115c:a1e0::/48" ];
 
         secure-headers.headers = {
           stsSeconds = 31536000;
@@ -160,7 +167,7 @@ in
 
         fail2ban.plugin.fail2ban = {
           logLevel = "INFO";
-          allowlist.ip = [ "127.0.0.1" "192.168.0.0/16" "172.16.0.0/12" "10.0.0.0/8" "100.64.0.0/10" ];
+          allowlist.ip = [ "127.0.0.1" ] ++ lanCidrs ++ tailnetCidrs;
           rules = {
             bantime = "3h";
             findtime = "10m";

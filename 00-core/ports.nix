@@ -1,3 +1,9 @@
+# meta:
+#   owner: core
+#   status: active
+#   scope: shared
+#   summary: ports Modul
+
 { lib, ... }:
 {
   options.my.ports = lib.mkOption {
@@ -16,6 +22,7 @@
     uptimeKuma = 3001;
     homepage = 8082;
     ddnsUpdater = 8001;
+    pocketId = 3000;
 
     jellyfin = 8096;
     audiobookshelf = 8000;

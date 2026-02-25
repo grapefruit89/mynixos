@@ -1,3 +1,9 @@
+# meta:
+#   owner: core
+#   status: active
+#   scope: shared
+#   summary: system Modul
+
 { config, lib, pkgs, ... }:
 {
   # -- BOOTLOADER -----------------------------------------------------------

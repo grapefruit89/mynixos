@@ -1,3 +1,9 @@
+# meta:
+#   owner: apps
+#   status: placeholder
+#   scope: service
+#   summary: Open-WebUI Platzhalter mit Implementierungshinweisen
+
 # TODO: open-webui – Web-Frontend für LLMs (Ollama, OpenAI, Anthropic, etc.)
 # Paket: services.open-webui (in nixpkgs)
 # Doku: https://mynixos.com/nixpkgs/option/services.open-webui.environment

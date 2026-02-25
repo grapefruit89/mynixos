@@ -1,12 +1,10 @@
-# modules/40-services/netdata.nix
-# ══════════════════════════════════════════════════════════════════════════════
-# DUMMY – NOCH NICHT AKTIV
-# Netdata – System Monitoring
-# ══════════════════════════════════════════════════════════════════════════════
-# DIESES MODUL ERST IMPORTIEREN wenn es vollständig ausgearbeitet ist!
-# (Import in hosts/q958/default.nix ergänzen)
-# ══════════════════════════════════════════════════════════════════════════════
+# meta:
+#   owner: apps
+#   status: placeholder
+#   scope: service
+#   summary: Netdata Platzhalter (noch nicht importiert/implementiert)
+
 { ... }:
 {
-  # Platzhalter – noch nicht implementiert
+  # Nächster Schritt: Implementieren und in configuration.nix importieren.
 }
