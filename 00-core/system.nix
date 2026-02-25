@@ -30,8 +30,9 @@
     nix-output-monitor
   ];
 
+   # source-id: CFG.identity.user
   environment.sessionVariables = {
-    PATH = "/home/moritz/.npm-global/bin:$PATH";
+    PATH = "/home/${config.my.identity.user}/.npm-global/bin:$PATH";
   };
 
   # source: /etc/git-hooks/pre-commit (managed by NixOS)

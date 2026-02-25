@@ -18,11 +18,10 @@
           "192.168.2.73"
           "100.113.29.82"
         ];
-        upstream_dns = [
-          "https://one.one.one.one/dns-query"
-          "https://dns.quad9.net/dns-query"
-        ];
-        bootstrap_dns = [ "1.1.1.1" "9.9.9.9" ];
+        # source-id: CFG.network.dnsDoH
+        upstream_dns = config.my.configs.network.dnsDoH;
+        # source-id: CFG.network.dnsBootstrap
+        bootstrap_dns = config.my.configs.network.dnsBootstrap;
       };
     };
   };

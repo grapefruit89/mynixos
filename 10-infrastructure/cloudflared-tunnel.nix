@@ -17,7 +17,8 @@ in
 
     domain = lib.mkOption {
       type = lib.types.str;
-      default = "m7c5.de";
+      # source-id: CFG.identity.domain
+      default = config.my.configs.identity.domain;
       description = "Base domain used by the tunnel ingress wildcard.";
     };
 

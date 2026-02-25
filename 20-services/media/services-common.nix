@@ -32,7 +32,8 @@
   config.assertions = [
     {
       assertion = config.my.media.defaults.domain != null;
-      message = "my.media.defaults.domain must be set (e.g. \"m7c5.de\") for generated media hostnames.";
+      # source-id: CFG.identity.domain
+      message = "my.media.defaults.domain must be set (e.g. \"${config.my.configs.identity.domain}\") for generated media hostnames.";
     }
   ];
 }

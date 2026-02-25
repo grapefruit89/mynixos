@@ -1,7 +1,9 @@
 { config, ... }:
 let
+  # source-id: CFG.identity.domain
+  domain = config.my.configs.identity.domain;
   port = config.my.ports.monica;
-  host = "nix-monica.m7c5.de";
+  host = "nix-monica.${domain}";
   appKeyFile = "/var/lib/monica/app-key";
 in
 {

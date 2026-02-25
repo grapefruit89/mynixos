@@ -1,30 +1,23 @@
 { config, ... }:
 let
+  # source-id: CFG.identity.domain
+  domain = config.my.configs.identity.domain;
   port = config.my.ports.readeck;
 in
 {
-  # source: my.ports.readeck + /etc/secrets/readeck.env
-  # sink:   services.readeck + traefik router nix-readeck.m7c5.de
+  # source: my.ports.readeck
+  # sink:   services.readeck + traefik router nix-readeck.${domain}
   services.readeck = {
     enable = true;
-    environmentFile = "/etc/secrets/readeck.env";
     settings = {
-      main = {
-        data_directory = "/var/lib/readeck";
-      };
-      database = {
-        source = "sqlite3:/var/lib/readeck/db.sqlite3";
-      };
-      server = {
-        host = "127.0.0.1";
-        inherit port;
-      };
+      host = "127.0.0.1";
+      port = port;
     };
   };
 
   services.traefik.dynamicConfigOptions.http = {
     routers.readeck = {
-      rule = "Host(`nix-readeck.m7c5.de`)";
+      rule = "Host(`nix-readeck.${domain}`)";
       entryPoints = [ "websecure" ];
       tls.certResolver = "letsencrypt";
       middlewares = [ "secure-headers@file" ];

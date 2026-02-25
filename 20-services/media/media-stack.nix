@@ -1,7 +1,8 @@
-{ ... }:
+{ config, ... }:
 {
   my.media = {
-    defaults.domain = "m7c5.de";
+    # source-id: CFG.identity.domain
+    defaults.domain = config.my.configs.identity.domain;
 
     jellyfin.enable = true;
     sonarr.enable = true;

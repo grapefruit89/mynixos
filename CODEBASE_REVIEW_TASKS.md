@@ -39,3 +39,13 @@ In der aktuellen Policy sind Beispiel-Tests auskommentiert, während die Ziel-Po
 - In der aktuellen Policy ebenfalls produktionsnahe `tests` aktivieren.
 - Mindestens 1 Positiv- und 1 Negativfall (z. B. Zugriff auf `tag:infra:22/443`).
 - Optional CI/Pre-Commit-Check ergänzen, der Policy-Syntax und Testblöcke validiert.
+
+## 5) Aufgabe: Firewall wieder einschalten (Betriebs-Reminder)
+**Betroffene Dateien:** `00-core/firewall.nix`, `00-core/motd.nix`, `90-policy/security-assertions.nix`
+
+Aktuell ist `networking.firewall.enable = false` für temporären Heimnetz-Betrieb gesetzt.
+
+**Vorschlag für Task:**
+- `networking.firewall.enable` wieder auf `true` setzen.
+- gelockerte Firewall-Assertions wieder hart machen.
+- `nixos-rebuild test` und danach `nixos-rebuild switch` ausführen.
