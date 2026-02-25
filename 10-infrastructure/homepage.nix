@@ -1,6 +1,7 @@
 { config, lib, pkgs, ... }:
 let
-  domain = "m7c5.de";
+  # source-id: CFG.identity.domain
+  domain = config.my.configs.identity.domain;
   homepageUser = "homepage";
   homepageGroup = "homepage";
   homepageConfigDir = "/data/state/homepage";

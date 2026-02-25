@@ -1,6 +1,7 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 let
-  domain = "m7c5.de";
+  # source-id: CFG.identity.domain
+  domain = config.my.configs.identity.domain;
 in
 {
   # Simple local test endpoint, intentionally internal-only.

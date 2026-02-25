@@ -1,12 +1,14 @@
 { config, ... }:
 let
+  # source-id: CFG.identity.domain
+  domain = config.my.configs.identity.domain;
   port = config.my.ports.ddnsUpdater;
 in
 {
   # Module kept for future use, currently disabled by not importing it in configuration.nix.
   # Traceability:
   # source (future): ddns provider credentials
-  # sink (future): services.ddns-updater + Traefik router nix-ddns.m7c5.de
+  # sink (future): services.ddns-updater + Traefik router nix-ddns.${domain}
   services.ddns-updater = {
     enable = true;
     environment = {
@@ -17,7 +19,7 @@ in
 
   services.traefik.dynamicConfigOptions.http = {
     routers.ddns-updater = {
-      rule = "Host(`nix-ddns.m7c5.de`)";
+      rule = "Host(`nix-ddns.${domain}`)";
       entryPoints = [ "websecure" ];
       tls.certResolver = "letsencrypt";
       middlewares = [ "secure-headers@file" ];

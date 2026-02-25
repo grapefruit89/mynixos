@@ -4,6 +4,7 @@
     ./hosts/q958/hardware-configuration.nix
 
     # Core
+    ./00-core/configs.nix
     ./00-core/principles.nix
     ./00-core/logging.nix
     ./00-core/locale.nix

@@ -10,6 +10,11 @@ let
   user = config.my.identity.user;
   hasAuthorizedKeys = (config.users.users.${user}.openssh.authorizedKeys.keys or [ ]) != [ ];
   allowPasswordFallback = true;
+  # source-id: CFG.network.lanCidrs
+  lanCidrs = config.my.configs.network.lanCidrs;
+  # source-id: CFG.network.tailnetCidrs
+  tailnetCidrs = config.my.configs.network.tailnetCidrs;
+  matchCidrs = lib.concatStringsSep "," (lanCidrs ++ tailnetCidrs);
 in
 {
   # [SEC-SSH-SVC-001] OpenSSH service must stay enabled.
@@ -32,7 +37,7 @@ in
     # Zugriff nur aus internen Netzen/Loopback/Tailscale-CGNAT.
     # Wichtig: kein globales "Match All" deny, damit Passwort-Fallback bei fehlendem Key greift.
     extraConfig = ''
-      Match Address 127.0.0.1,::1,192.168.0.0/16,10.0.0.0/8,172.16.0.0/12,100.64.0.0/10
+      Match Address 127.0.0.1,::1,${matchCidrs}
         PermitTTY yes
         AllowUsers ${user}
     '';

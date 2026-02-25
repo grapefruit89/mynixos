@@ -20,6 +20,7 @@
   };
 
   config = {
+    # source-id: CFG.identity.host
     networking.hostName = config.my.identity.host;
 
     services.avahi = {

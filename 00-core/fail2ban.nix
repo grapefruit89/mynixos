@@ -7,6 +7,10 @@
 { config, ... }:
 let
   sshPort = toString config.my.ports.ssh;
+  # source-id: CFG.network.lanCidrs
+  lanCidrs = config.my.configs.network.lanCidrs;
+  # source-id: CFG.network.tailnetCidrs
+  tailnetCidrs = config.my.configs.network.tailnetCidrs;
 in
 {
   # source: /etc/secrets/* is not needed; fail2ban reads auth failures from journal.
@@ -18,11 +22,7 @@ in
     ignoreIP = [
       "127.0.0.1/8"
       "::1"
-      "10.0.0.0/8"
-      "172.16.0.0/12"
-      "192.168.0.0/16"
-      "100.64.0.0/10"
-    ];
+    ] ++ lanCidrs ++ tailnetCidrs;
 
     bantime = "1h";
     maxretry = 5;

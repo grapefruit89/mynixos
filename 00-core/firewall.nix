@@ -8,8 +8,12 @@
 let
   sshPort = config.my.ports.ssh;
   useNft = config.my.firewall.backend == "nftables";
-  rfc1918 = "10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16";
-  tailnet = "100.64.0.0/10";
+  # source-id: CFG.network.lanCidrs
+  lanCidrs = config.my.configs.network.lanCidrs;
+  # source-id: CFG.network.tailnetCidrs
+  tailnetCidrs = config.my.configs.network.tailnetCidrs;
+  rfc1918 = lib.concatStringsSep ", " lanCidrs;
+  tailnet = lib.concatStringsSep ", " tailnetCidrs;
 in
 {
   options.my.firewall.backend = lib.mkOption {
@@ -43,45 +47,39 @@ in
 
     # iptables backend mirror for LAN/Tailscale rules.
     networking.firewall.extraCommands = lib.mkIf (!useNft) (lib.mkAfter ''
-      /run/current-system/sw/bin/iptables -A nixos-fw -s 10.0.0.0/8 -p tcp --dport ${toString sshPort} -j nixos-fw-accept
-      /run/current-system/sw/bin/iptables -A nixos-fw -s 172.16.0.0/12 -p tcp --dport ${toString sshPort} -j nixos-fw-accept
-      /run/current-system/sw/bin/iptables -A nixos-fw -s 192.168.0.0/16 -p tcp --dport ${toString sshPort} -j nixos-fw-accept
-      /run/current-system/sw/bin/iptables -A nixos-fw -s 100.64.0.0/10 -p tcp --dport ${toString sshPort} -j nixos-fw-accept
+      ${lib.concatMapStrings (cidr:
+        "/run/current-system/sw/bin/iptables -A nixos-fw -s ${cidr} -p tcp --dport ${toString sshPort} -j nixos-fw-accept\n"
+      ) (lanCidrs ++ tailnetCidrs)}
 
-      /run/current-system/sw/bin/iptables -A nixos-fw -s 10.0.0.0/8 -p tcp --dport 53 -j nixos-fw-accept
-      /run/current-system/sw/bin/iptables -A nixos-fw -s 172.16.0.0/12 -p tcp --dport 53 -j nixos-fw-accept
-      /run/current-system/sw/bin/iptables -A nixos-fw -s 192.168.0.0/16 -p tcp --dport 53 -j nixos-fw-accept
-      /run/current-system/sw/bin/iptables -A nixos-fw -s 100.64.0.0/10 -p tcp --dport 53 -j nixos-fw-accept
+      ${lib.concatMapStrings (cidr:
+        "/run/current-system/sw/bin/iptables -A nixos-fw -s ${cidr} -p tcp --dport 53 -j nixos-fw-accept\n"
+      ) (lanCidrs ++ tailnetCidrs)}
 
-      /run/current-system/sw/bin/iptables -A nixos-fw -s 10.0.0.0/8 -p udp --dport 53 -j nixos-fw-accept
-      /run/current-system/sw/bin/iptables -A nixos-fw -s 172.16.0.0/12 -p udp --dport 53 -j nixos-fw-accept
-      /run/current-system/sw/bin/iptables -A nixos-fw -s 192.168.0.0/16 -p udp --dport 53 -j nixos-fw-accept
-      /run/current-system/sw/bin/iptables -A nixos-fw -s 100.64.0.0/10 -p udp --dport 53 -j nixos-fw-accept
+      ${lib.concatMapStrings (cidr:
+        "/run/current-system/sw/bin/iptables -A nixos-fw -s ${cidr} -p udp --dport 53 -j nixos-fw-accept\n"
+      ) (lanCidrs ++ tailnetCidrs)}
 
-      /run/current-system/sw/bin/iptables -A nixos-fw -s 10.0.0.0/8 -p udp --dport 5353 -j nixos-fw-accept
-      /run/current-system/sw/bin/iptables -A nixos-fw -s 172.16.0.0/12 -p udp --dport 5353 -j nixos-fw-accept
-      /run/current-system/sw/bin/iptables -A nixos-fw -s 192.168.0.0/16 -p udp --dport 5353 -j nixos-fw-accept
+      ${lib.concatMapStrings (cidr:
+        "/run/current-system/sw/bin/iptables -A nixos-fw -s ${cidr} -p udp --dport 5353 -j nixos-fw-accept\n"
+      ) lanCidrs}
     '');
 
     networking.firewall.extraStopCommands = lib.mkIf (!useNft) (lib.mkAfter ''
-      /run/current-system/sw/bin/iptables -D nixos-fw -s 10.0.0.0/8 -p tcp --dport ${toString sshPort} -j nixos-fw-accept || true
-      /run/current-system/sw/bin/iptables -D nixos-fw -s 172.16.0.0/12 -p tcp --dport ${toString sshPort} -j nixos-fw-accept || true
-      /run/current-system/sw/bin/iptables -D nixos-fw -s 192.168.0.0/16 -p tcp --dport ${toString sshPort} -j nixos-fw-accept || true
-      /run/current-system/sw/bin/iptables -D nixos-fw -s 100.64.0.0/10 -p tcp --dport ${toString sshPort} -j nixos-fw-accept || true
+      ${lib.concatMapStrings (cidr:
+        "/run/current-system/sw/bin/iptables -D nixos-fw -s ${cidr} -p tcp --dport ${toString sshPort} -j nixos-fw-accept || true\n"
+      ) (lanCidrs ++ tailnetCidrs)}
 
-      /run/current-system/sw/bin/iptables -D nixos-fw -s 10.0.0.0/8 -p tcp --dport 53 -j nixos-fw-accept || true
-      /run/current-system/sw/bin/iptables -D nixos-fw -s 172.16.0.0/12 -p tcp --dport 53 -j nixos-fw-accept || true
-      /run/current-system/sw/bin/iptables -D nixos-fw -s 192.168.0.0/16 -p tcp --dport 53 -j nixos-fw-accept || true
-      /run/current-system/sw/bin/iptables -D nixos-fw -s 100.64.0.0/10 -p tcp --dport 53 -j nixos-fw-accept || true
+      ${lib.concatMapStrings (cidr:
+        "/run/current-system/sw/bin/iptables -D nixos-fw -s ${cidr} -p tcp --dport 53 -j nixos-fw-accept || true\n"
+      ) (lanCidrs ++ tailnetCidrs)}
 
-      /run/current-system/sw/bin/iptables -D nixos-fw -s 10.0.0.0/8 -p udp --dport 53 -j nixos-fw-accept || true
-      /run/current-system/sw/bin/iptables -D nixos-fw -s 172.16.0.0/12 -p udp --dport 53 -j nixos-fw-accept || true
-      /run/current-system/sw/bin/iptables -D nixos-fw -s 192.168.0.0/16 -p udp --dport 53 -j nixos-fw-accept || true
-      /run/current-system/sw/bin/iptables -D nixos-fw -s 100.64.0.0/10 -p udp --dport 53 -j nixos-fw-accept || true
+      ${lib.concatMapStrings (cidr:
+        "/run/current-system/sw/bin/iptables -D nixos-fw -s ${cidr} -p udp --dport 53 -j nixos-fw-accept || true\n"
+      ) (lanCidrs ++ tailnetCidrs)}
 
-      /run/current-system/sw/bin/iptables -D nixos-fw -s 10.0.0.0/8 -p udp --dport 5353 -j nixos-fw-accept || true
-      /run/current-system/sw/bin/iptables -D nixos-fw -s 172.16.0.0/12 -p udp --dport 5353 -j nixos-fw-accept || true
-      /run/current-system/sw/bin/iptables -D nixos-fw -s 192.168.0.0/16 -p udp --dport 5353 -j nixos-fw-accept || true
+      ${lib.concatMapStrings (cidr:
+        "/run/current-system/sw/bin/iptables -D nixos-fw -s ${cidr} -p udp --dport 5353 -j nixos-fw-accept || true\n"
+      ) lanCidrs}
     '');
   };
 }

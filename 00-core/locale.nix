@@ -60,23 +60,18 @@ in
 
     networking.timeServers = cfg.ntp;
 
-    networking.nameservers = [
-      "127.0.0.1"
-      "1.1.1.1#one.one.one.one"
-      "9.9.9.9#dns.quad9.net"
-    ];
+    # source-id: CFG.network.dnsNamed
+    networking.nameservers =
+      [ "127.0.0.1" ]
+      ++ config.my.configs.network.dnsNamed;
 
     services.resolved = {
       enable = true;
       dnssec = "true";
       dnsovertls = "opportunistic";
       domains = [ "~." ];
-      fallbackDns = [
-        "1.1.1.1#one.one.one.one"
-        "1.0.0.1#one.one.one.one"
-        "9.9.9.9#dns.quad9.net"
-        "149.112.112.112#dns.quad9.net"
-      ];
+      # source-id: CFG.network.dnsFallback
+      fallbackDns = config.my.configs.network.dnsFallback;
     };
   };
 }

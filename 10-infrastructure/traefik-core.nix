@@ -1,11 +1,12 @@
 { config, lib, pkgs, ... }:
 let
-  domain = "m7c5.de";
+  # source-id: CFG.identity.domain
+  domain = config.my.configs.identity.domain;
+  # source-id: CFG.network.lanCidrs
+  # source-id: CFG.network.tailnetCidrs
   trustedIPs = [
     "127.0.0.1/32"
-    "192.168.0.0/16"
-    "172.16.0.0/12"
-    "10.0.0.0/8"
+  ] ++ config.my.configs.network.lanCidrs ++ config.my.configs.network.tailnetCidrs ++ [
     "173.245.48.0/20"
     "103.21.244.0/22"
     "103.22.200.0/22"
@@ -57,12 +58,14 @@ in
       };
 
       certificatesResolvers.letsencrypt.acme = {
-        email = "moritzbaumeister@gmail.com";
+        # source-id: CFG.identity.email
+        email = config.my.configs.identity.email;
         storage = "${config.services.traefik.dataDir}/acme.json";
         # For wildcard certificates use Cloudflare DNS challenge.
         dnsChallenge = {
           provider = "cloudflare";
-          resolvers = [ "1.1.1.1:53" "8.8.8.8:53" ];
+          # source-id: CFG.network.acmeResolvers
+          resolvers = config.my.configs.network.acmeResolvers;
         };
       };
 
@@ -122,14 +125,13 @@ in
           "compression"
         ];
 
-        local-ip-whitelist.ipAllowList.sourceRange = [
-          "127.0.0.1/32"
-          "192.168.0.0/16"
-          "172.16.0.0/12"
-          "10.0.0.0/8"
-          "100.64.0.0/10"
-          "fd7a:115c:a1e0::/48"
-        ];
+        # source-id: CFG.network.lanCidrs
+        # source-id: CFG.network.tailnetCidrs
+        local-ip-whitelist.ipAllowList.sourceRange =
+          [ "127.0.0.1/32" ]
+          ++ config.my.configs.network.lanCidrs
+          ++ config.my.configs.network.tailnetCidrs
+          ++ [ "fd7a:115c:a1e0::/48" ];
 
         secure-headers.headers = {
           stsSeconds = 31536000;
@@ -158,7 +160,12 @@ in
 
         fail2ban.plugin.fail2ban = {
           logLevel = "INFO";
-          allowlist.ip = [ "127.0.0.1" "192.168.0.0/16" "172.16.0.0/12" "10.0.0.0/8" "100.64.0.0/10" ];
+          # source-id: CFG.network.lanCidrs
+          # source-id: CFG.network.tailnetCidrs
+          allowlist.ip =
+            [ "127.0.0.1" ]
+            ++ config.my.configs.network.lanCidrs
+            ++ config.my.configs.network.tailnetCidrs;
           rules = {
             bantime = "3h";
             findtime = "10m";
