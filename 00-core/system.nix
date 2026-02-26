@@ -2,7 +2,7 @@
 #   owner: core
 #   status: active
 #   scope: shared
-#   summary: system Modul
+#   summary: system Modul (Basis-Konfiguration & Bootloader)
 
 { config, lib, pkgs, ... }:
 {
@@ -14,14 +14,6 @@
       grub.enable = false;
       timeout = 3;  # Boot-Timeout von 5s auf 3s reduzieren
     };
-    
-    # Kernel-Parameter für bessere Intel-GPU-Performance (GuC/HuC Firmware)
-    kernelParams = [
-      "i915.enable_guc=2"
-    ];
-    
-    # Kernel-Module explizit laden
-    kernelModules = [ "i915" ];
 
     # Kernel-Sysctl-Härtung
     kernel.sysctl = {
@@ -63,7 +55,7 @@
   nix = {
     settings = {
       auto-optimise-store = true;
-      max-jobs = 4; # Voll ausnutzen (i3-9100)
+      max-jobs = 4;
       cores = 4;
 
       substituters = [
@@ -75,7 +67,6 @@
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCSeBw="
       ];
 
-      # Feature-Flags
       experimental-features = [ "nix-command" "flakes" ];
     };
 
@@ -110,17 +101,13 @@
     PATH = "/home/${config.my.configs.identity.user}/.npm-global/bin:$PATH";
   };
 
-  # source: /etc/git-hooks/pre-commit (managed by NixOS)
+  # source: /etc/git-hooks/pre-commit
   environment.etc."git-hooks/pre-commit" = {
     mode = "0755";
     text = ''
       #!/usr/bin/env bash
       set -uo pipefail
-
-      # Block commits with empty Nix files (accidental truncation guardrail).
-      # grep exits 1 if no match, so we use || true to prevent set -e from aborting.
       empty_files=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.nix$' || true)
-      
       if [ -n "$empty_files" ]; then
         for f in $empty_files; do
           if [ -f "$f" ] && [ ! -s "$f" ]; then

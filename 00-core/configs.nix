@@ -37,6 +37,22 @@
       };
     };
 
+    hardware = {
+      # source-id: CFG.hardware.intelGpu
+      intelGpu = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Aktiviert Intel GPU-Optimierungen (GuC/HuC, Treiber).";
+      };
+
+      # source-id: CFG.hardware.cpuMicrocode
+      updateMicrocode = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Aktiviert CPU-Microcode-Updates.";
+      };
+    };
+
     network = {
       # source-id: CFG.network.lanCidrs
       lanCidrs = lib.mkOption {
