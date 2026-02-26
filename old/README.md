@@ -1,13 +1,11 @@
-# docs/archive
+# 🗄️ Dokumentations-Archiv (Old)
 
-Dieser Ordner ist für hochgeladene Chat-Exporte, Blueprints und Alt-Dokumente gedacht.
+In diesem Ordner befinden sich alle historischen Dokumente, die nicht mehr Teil des aktuellen Handbuchs sind. 
 
-Wenn Dateien auf GitHub sichtbar sind, lokal aber fehlen, zuerst lokal synchronisieren:
+### ⚠️ Wichtiger Hinweis
+Die Informationen hier können veraltet sein oder sich auf frühere Versionen der Architektur beziehen. Sie dienen lediglich als:
+- Historische Referenz.
+- Quelle für ursprüngliche Ideen ("Goldnuggets").
+- Nachweis über den Entwicklungsprozess (Prompts & Reviews).
 
-```bash
-cd /etc/nixos
-git fetch origin
-git pull --ff-only
-```
-
-Danach können die Quellen in die Living Docs konsolidiert werden.
+Alle aktuell gültigen Informationen befinden sich ausschließlich im [**Handbuch-Ordner (/bibliothek)**](../bibliothek/Handbuch_Index.md).
