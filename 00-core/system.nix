@@ -33,20 +33,13 @@
 
   # -- NIX EINSTELLUNGEN ----------------------------------------------------
   nix = {
-    # Wir lassen die Default-Caches von NixOS arbeiten, um Key-Fehler zu vermeiden.
-    settings = {
-      auto-optimise-store = true;
-      max-jobs = 4;
-      cores = 4;
-      experimental-features = [ "nix-command" "flakes" ];
-    };
-
+    # Wir nutzen Standard-Einstellungen, um Fehler mit Cache-Keys zu vermeiden.
+    # NixOS nutzt per Default den offiziellen Cache (Binary First).
     gc = {
       automatic = true;
       dates = "Sun 03:30";
       options = "--delete-older-than 14d";
     };
-
     optimise.automatic = true;
   };
 
