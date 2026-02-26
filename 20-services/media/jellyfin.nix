@@ -14,6 +14,7 @@
     hardware.graphics.extraPackages = with pkgs; [
       intel-media-driver    # iHD für UHD 630 (Gen 9.5)
       intel-compute-runtime # OpenCL für tone-mapping
+      vpl-gpu-rt            # Intel VPL für neuere Codecs
     ];
 
     # LIBVA_DRIVER_NAME explizit setzen — verhindert Driver-Confusion

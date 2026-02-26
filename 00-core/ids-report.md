@@ -24,12 +24,6 @@ Sources:
 
 Sinks:
 
-## CFG.<gruppe>.<key>
-
-Sources:
-
-Sinks:
-
 ## CFG.identity.domain
 
 Sources:
@@ -74,7 +68,7 @@ Sinks:
 
 Sources:
 - /etc/nixos/00-core/configs.nix:25
-- /etc/nixos/00-core/system.nix:75
+- /etc/nixos/00-core/system.nix:108
 - /etc/nixos/90-policy/security-assertions.nix:17
 
 Sinks:
@@ -147,13 +141,6 @@ Sources:
 
 Sinks:
 
-## CFG.policy.assertions.canonical
-
-Sources:
-- /etc/nixos/00-core/server-rules.nix:12
-
-Sinks:
-
 ## CFG.ports.pocketId
 
 Sources:
@@ -205,12 +192,6 @@ Sources:
 
 Sinks:
 
-## CFG.server.bindAddresses
-
-Sources:
-
-Sinks:
-
 ## CFG.server.lanIP
 
 Sources:
@@ -234,14 +215,14 @@ Sinks:
 ## CFG.system.stateVersion
 
 Sources:
-- /etc/nixos/configuration.nix:47
+- /etc/nixos/configuration.nix:46
 
 Sinks:
 
 ## CFG.system.swap
 
 Sources:
-- /etc/nixos/configuration.nix:51
+- /etc/nixos/configuration.nix:50
 
 Sinks:
 

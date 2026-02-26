@@ -16,9 +16,8 @@
     ./00-core/firewall.nix
     ./00-core/motd.nix
     ./00-core/system.nix
-    ./00-core/aliases.nix
+    ./00-core/shell.nix
     ./00-core/fail2ban.nix
-    ./00-core/server-rules.nix # deprecated stub (TODO-ASSERTIONS-CONSOLIDATION-001)
     ./automation.nix
 
     # 10 — Infrastructure

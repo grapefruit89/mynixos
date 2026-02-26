@@ -30,6 +30,14 @@ in
       # [SEC-SSH-AUTH-001]/[SEC-SSH-AUTH-002]
       KbdInteractiveAuthentication = lib.mkForce allowPasswordFallback;
       AllowUsers = [ "${user}" ];
+
+      # Härtungs-Parameter (Audit Fixes)
+      LoginGraceTime = 20;              # Timeout bei Login-Prompt: 20 Sekunden
+      MaxAuthTries = 3;                 # Nur 3 Passwort-Versuche
+      ClientAliveInterval = 300;        # Keep-Alive alle 5 Minuten
+      ClientAliveCountMax = 2;          # Nach 2 fehlenden Responses: Disconnect
+      MaxSessions = 10;
+      PermitEmptyPasswords = false;
     };
 
     # Zugriff nur aus internen Netzen/Loopback/Tailscale-CGNAT.

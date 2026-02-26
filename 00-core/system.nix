@@ -7,9 +7,52 @@
 { config, lib, pkgs, ... }:
 {
   # -- BOOTLOADER -----------------------------------------------------------
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.grub.enable = false;
+  boot = {
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+      grub.enable = false;
+      timeout = 3;  # Boot-Timeout von 5s auf 3s reduzieren
+    };
+    
+    # Kernel-Parameter für bessere Intel-GPU-Performance (GuC/HuC Firmware)
+    kernelParams = [
+      "i915.enable_guc=2"
+    ];
+    
+    # Kernel-Module explizit laden
+    kernelModules = [ "i915" ];
+
+    # Kernel-Sysctl-Härtung
+    kernel.sysctl = {
+      # Netzwerk-Härtung
+      "net.ipv4.conf.all.rp_filter" = 1;
+      "net.ipv4.conf.default.rp_filter" = 1;
+      "net.ipv4.icmp_echo_ignore_broadcasts" = 1;
+      "net.ipv4.conf.all.accept_source_route" = 0;
+      "net.ipv6.conf.all.accept_source_route" = 0;
+      "net.ipv4.conf.default.accept_source_route" = 0;
+      "net.ipv6.conf.default.accept_source_route" = 0;
+      "net.ipv4.conf.all.accept_redirects" = 0;
+      "net.ipv6.conf.all.accept_redirects" = 0;
+      "net.ipv4.conf.default.accept_redirects" = 0;
+      "net.ipv6.conf.default.accept_redirects" = 0;
+      "net.ipv4.conf.all.secure_redirects" = 0;
+      "net.ipv4.conf.default.secure_redirects" = 0;
+      "net.ipv4.conf.all.log_martians" = 1;
+      "net.ipv4.conf.default.log_martians" = 1;
+      
+      # Kernel-Pointer-Protection
+      "kernel.kptr_restrict" = 2;
+      "kernel.dmesg_restrict" = 1;
+      
+      # SYN-Flood-Schutz
+      "net.ipv4.tcp_syncookies" = 1;
+      "net.ipv4.tcp_syn_retries" = 2;
+      "net.ipv4.tcp_synack_retries" = 2;
+      "net.ipv4.tcp_max_syn_backlog" = 4096;
+    };
+  };
 
   # -- SYSTEM BASIS ---------------------------------------------------------
   networking.networkmanager.enable = true;
@@ -19,14 +62,10 @@
   # -- NIX EINSTELLUNGEN ----------------------------------------------------
   nix = {
     settings = {
-      # Store-Optimierung: Hardlinks statt Kopien (spart ~30% NVMe-Platz)
       auto-optimise-store = true;
-
-      # Parallele Jobs: 4 Cores, aber 1 für System lassen
-      max-jobs = 3;
+      max-jobs = 4; # Voll ausnutzen (i3-9100)
       cores = 4;
 
-      # Binary Caches (schnellere Builds)
       substituters = [
         "https://cache.nixos.org"
         "https://nix-community.cachix.org"
@@ -36,25 +75,19 @@
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCSeBw="
       ];
 
-      # Flake-Features (auch ohne Flakes nützlich)
+      # Feature-Flags
       experimental-features = [ "nix-command" "flakes" ];
-
-      # Kein automatisches Garbage-Collect während Builds
-      keep-outputs = true;
-      keep-derivations = true;
     };
 
-    # Automatische GC: wöchentlich, 14 Tage Retention
     gc = {
       automatic = true;
-      dates = "Sun 03:30";      # Sonntag Nacht — HDDs können schlafen
+      dates = "Sun 03:30";
       options = "--delete-older-than 14d";
     };
 
-    # Store-Optimierung nach GC
     optimise = {
       automatic = true;
-      dates = [ "Sun 04:00" ];  # Nach GC
+      dates = [ "Sun 04:00" ];
     };
   };
 
@@ -78,14 +111,12 @@
   };
 
   # source: /etc/git-hooks/pre-commit (managed by NixOS)
-  # sink:   git core.hooksPath -> enforced for all local repositories on this host
   environment.etc."git-hooks/pre-commit" = {
     mode = "0755";
     text = ''
       #!/usr/bin/env bash
       set -euo pipefail
 
-      # Block commits with empty Nix files (accidental truncation guardrail).
       empty_files=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.nix$' | while read -r f; do
         [ -f "$f" ] || continue
         if [ ! -s "$f" ]; then
