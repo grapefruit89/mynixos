@@ -64,6 +64,7 @@ The core of our knowledge sharing is the structured library. Explore the details
 *   [🛠️ **02 Operations & Workflow**](./bibliothek/02_Betrieb.md) – Daily operation guide, aliases (`nsw`, `ntest`), the dashboard (MOTD), and maintenance.
 *   [🛡️ **03 Services & Security**](./bibliothek/03_Services_Sicherheit.md) – The 10k/20k Port Registry, Traefik setup, and security guardrails.
 *   [💡 **04 Backlog & Ideas**](./bibliothek/04-ROADMAP.md) – Future plans like Fastfetch-MOTD and automated backups.
+5. [🏠 **Home-Manager Guide**](./bibliothek/05_Home_Manager.md)
 
 ---
 *Created with ❤️ by Moritz & AI.*

@@ -71,6 +71,7 @@ description: Zentrale Wissensbasis für das Fujitsu Q958 NixOS Homelab.
 *   **Hardening:** SSH protection and Systemd Sandboxing.
 
 ### [04 — Backlog & Ideas](./04-ROADMAP.md)
+5. [🏠 **Home-Manager Guide**](./05_Home_Manager.md) - Eigene Dotfiles & Portabilität.
 > What's on the horizon?
 *   Future roadmap (Monitoring, Backups, Fastfetch).
 

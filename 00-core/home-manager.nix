@@ -2,7 +2,7 @@
 #   owner: core
 #   status: active
 #   scope: shared
-#   summary: Home-Manager Integration (Nativ als NixOS Modul)
+#   summary: Home-Manager Brücke (Importiert User-Profile)
 
 { config, lib, pkgs, ... }:
 let
@@ -15,13 +15,7 @@ in
 
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
+  home-manager.backupFileExtension = "hm-backup";
 
-  home-manager.users.${user} = {
-    home.stateVersion = "24.11";
-    
-    # Hier kommen später benutzerspezifische Configs rein
-    home.packages = with pkgs; [
-      # micro # Beispiel
-    ];
-  };
+  home-manager.users.${user} = import (../users + "/${user}/home.nix");
 }

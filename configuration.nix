@@ -33,6 +33,7 @@
     ./10-infrastructure/traefik-routes-internal.nix
     ./10-infrastructure/homepage.nix
     ./10-infrastructure/wireguard-vpn.nix
+    ./10-infrastructure/vpn-confinement.nix
     ./10-infrastructure/pocket-id.nix   # <-- Neu
 
     # 20 — Services
@@ -43,6 +44,7 @@
     ./20-services/apps/paperless.nix
     ./20-services/apps/miniflux.nix
     ./20-services/apps/n8n.nix
+    ./20-services/apps/scrutiny.nix
 
     # 90 — Policy
     # ./90-policy/security-assertions.nix

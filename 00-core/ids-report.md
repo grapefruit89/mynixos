@@ -61,7 +61,7 @@ Sources:
 - /etc/nixos/20-services/apps/audiobookshelf.nix:3
 - /etc/nixos/20-services/apps/readeck.nix:3
 - /etc/nixos/20-services/apps/paperless.nix:3
-- /etc/nixos/20-services/apps/scrutiny.nix:3
+- /etc/nixos/20-services/apps/scrutiny.nix:5
 - /etc/nixos/20-services/apps/miniflux.nix:3
 - /etc/nixos/20-services/apps/vaultwarden.nix:3
 - /etc/nixos/20-services/apps/monica.nix:3
@@ -161,6 +161,13 @@ Sources:
 
 Sinks:
 
+## CFG.network.vpn-confinement
+
+Sources:
+- /etc/nixos/00-core/registry.nix:23
+
+Sinks:
+
 ## CFG.policy.assertions.canonical
 
 Sources:
@@ -172,6 +179,13 @@ Sinks:
 
 Sources:
 - /etc/nixos/10-infrastructure/pocket-id.nix:8
+
+Sinks:
+
+## CFG.ports.scrutiny
+
+Sources:
+- /etc/nixos/20-services/apps/scrutiny.nix:8
 
 Sinks:
 
@@ -234,6 +248,13 @@ Sources:
 - /etc/nixos/00-core/configs.nix:181
 - /etc/nixos/10-infrastructure/adguardhome.nix:14
 - /etc/nixos/10-infrastructure/adguardhome.nix:28
+
+Sinks:
+
+## CFG.services.scrutiny
+
+Sources:
+- /etc/nixos/00-core/registry.nix:50
 
 Sinks:
 
