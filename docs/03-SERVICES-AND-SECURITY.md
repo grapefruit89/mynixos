@@ -11,20 +11,31 @@ description: Übersicht der Dienste, Ports und Sicherheitsmechanismen.
 
 ## 1. Dienst-Übersicht (Port Registry)
 
-Alle Ports werden zentral in `00-core/ports.nix` verwaltet, um Kollisionen zu vermeiden.
+Alle Ports werden zentral in `00-core/ports.nix` verwaltet. Wir nutzen das **10k/20k-Schema**:
+- **10xxx:** Infrastruktur-Dienste.
+- **20xxx:** Anwendungs-Services.
 
 | Dienst | Port | Zugriff via Traefik |
 | :--- | :--- | :--- |
 | Traefik (HTTPS) | 443 | - |
 | SSH (gehärtet) | 53844 | Nein (Direkt) |
-| Jellyfin | 8096 | jellyfin.${domain} |
-| Audiobookshelf | 8000 | abs.${domain} |
-| Vaultwarden | 2002 | vault.${domain} |
-| n8n | 2017 | n8n.${domain} |
-| Homepage | 8082 | ${domain} |
+| **Infrastruktur** | | |
+| AdGuard Home | 10000 | adguard.${domain} |
 | Pocket-ID | 10010 | auth.${domain} |
-| AdGuard Home | 3000 | adguard.${domain} |
-| Sabnzbd (VPN) | 8080 | sab.${domain} |
+| Homepage | 10082 | ${domain} |
+| Netdata | 10999 | netdata.${domain} |
+| **Services** | | |
+| Audiobookshelf | 20000 | abs.${domain} |
+| Vaultwarden | 20002 | vault.${domain} |
+| Readeck | 20007 | readeck.${domain} |
+| Miniflux | 20016 | rss.${domain} |
+| n8n | 20017 | n8n.${domain} |
+| Scrutiny | 20020 | scrutiny.${domain} |
+| Monica | 20031 | monica.${domain} |
+| Jellyseerr | 20055 | requests.${domain} |
+| Sabnzbd (VPN) | 20080 | sab.${domain} |
+| Jellyfin | 20096 | jellyfin.${domain} |
+| Paperless-ngx | 20981 | docs.${domain} |
 
 ## 2. Reverse Proxy (Traefik)
 

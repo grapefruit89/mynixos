@@ -2,43 +2,49 @@
 #   owner: core
 #   status: active
 #   scope: shared
-#   summary: ports Modul
+#   summary: ports Modul (Zentrale Register-Struktur 10k/20k)
 
 { lib, ... }:
 {
   options.my.ports = lib.mkOption {
     type = lib.types.attrsOf lib.types.port;
     default = { };
-    description = "Central port registry. Each service port is defined once.";
+    description = "Zentrales Port-Register. 10xxx = Infrastruktur, 20xxx = Services.";
   };
 
   config.my.ports = {
+    # ── SYSTEM & EDGE ────────────────────────────────────────────────────────
     ssh = 53844;
-
-    # HTTPS-only edge. Port 80 is intentionally not exposed.
     traefikHttps = 443;
-    adguard = 3000;
-    netdata = 19999;
-    uptimeKuma = 3001;
-    homepage = 8082;
-    ddnsUpdater = 8001;
-    pocketId = 10010;
 
-    jellyfin = 8096;
-    audiobookshelf = 8000;
-    sonarr = 8989;
-    radarr = 7878;
-    readarr = 8787;
-    prowlarr = 9696;
-    sabnzbd = 8080;
-    jellyseerr = 5055;
+    # ── 10-INFRASTRUCTURE (10xxx) ───────────────────────────────────────────
+    adguard     = 10000;
+    uptimeKuma  = 10001;
+    ddnsUpdater = 10002;
+    pocketId    = 10010;
+    homepage    = 10082;
+    netdata     = 10999;
 
-    vaultwarden = 2002;
-    miniflux = 2016;
-    n8n = 2017;
-    paperless = 28981;
-    scrutiny = 2020;
-    readeck = 2007;
-    monica = 2031;
+    # ── 20-SERVICES (20xxx) ─────────────────────────────────────────────────
+    # Media-Stack
+    audiobookshelf = 20000;
+    vaultwarden    = 20002;
+    readeck        = 20007;
+    miniflux       = 20016;
+    n8n            = 20017;
+    scrutiny       = 20020;
+    monica         = 20031; # Wait, user wanted 20xxx
+    jellyseerr     = 20055;
+    sabnzbd        = 20080;
+    jellyfin       = 20096;
+    
+    # Arr-Stack
+    radarr         = 20878;
+    readarr        = 20787;
+    sonarr         = 20989;
+    prowlarr       = 20696;
+    
+    # Tools
+    paperless      = 20981;
   };
 }
