@@ -2,42 +2,37 @@
 #   owner: core
 #   status: active
 #   scope: shared
-#   summary: Firewall — nftables-only Backend (SSH global offen für Bastelmodus)
+#   summary: Firewall — nftables-only Backend (Bastelmodus-aware)
 #   specIds: [SEC-NET-SSH-001, SEC-NET-SSH-002, SEC-NET-EDGE-001]
 
 { lib, config, ... }:
 let
+  # source-id: CFG.identity.bastelmodus
+  bastelmodus = config.my.configs.bastelmodus;
+
   # source-id: CFG.ports.ssh
   # sink: SSH-Dienstport in Interface- und Input-Regeln
   sshPort = config.my.ports.ssh;
 
   # source-id: CFG.network.lanCidrs
-  # sink: nftables source-range set für interne Netze
-  lanCidrs = if config ? my && config.my ? configs && config.my.configs ? network && config.my.configs.network ? lanCidrs
-    then config.my.configs.network.lanCidrs
-    else [ "10.0.0.0/8" "172.16.0.0/12" "192.168.0.0/16" ];
-
-  # source-id: CFG.network.tailnetCidrs
-  # sink: nftables source-range set für Tailnet
-  tailnetCidrs = if config ? my && config.my ? configs && config.my.configs ? network && config.my.configs.network ? tailnetCidrs
-    then config.my.configs.network.tailnetCidrs
-    else [ "100.64.0.0/10" ];
+  lanCidrs = config.my.configs.network.lanCidrs;
+  tailnetCidrs = config.my.configs.network.tailnetCidrs;
 
   rfc1918 = lib.concatStringsSep ", " lanCidrs;
   tailnet = lib.concatStringsSep ", " tailnetCidrs;
 in
 {
   config = {
+    # source-id: CFG.firewall.enabled
+    # sink: globale Host-Firewall (im Bastelmodus AUS)
+    networking.firewall.enable = !bastelmodus;
+
     # source-id: CFG.firewall.backend
     # sink: aktiviert nftables als einziges Firewall-Backend
     networking.nftables.enable = true;
 
-    # source-id: CFG.firewall.enabled
-    # sink: globale Host-Firewall aktiv
-    networking.firewall.enable = true;
-
     # source-id: CFG.ports.traefikHttps / CFG.ports.ssh
-    # sink: global eingehende Ports (HTTPS + SSH für Bastelmodus)
+    # sink: global eingehende Ports (HTTPS + SSH)
     networking.firewall.allowedTCPPorts = lib.mkForce [ 
       config.my.ports.traefikHttps 
       sshPort 

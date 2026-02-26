@@ -7,6 +7,13 @@
 { lib, config, ... }:
 {
   options.my.configs = {
+    # source-id: CFG.identity.bastelmodus
+    bastelmodus = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Aktiviert den Bastelmodus: Firewall aus, passwortloses Sudo, keine Security-Assertions.";
+    };
+
     identity = {
       # source-id: CFG.identity.domain
       domain = lib.mkOption {
