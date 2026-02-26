@@ -1,233 +1,134 @@
 {
-  "CFG.firewall.backend": {
-    "sources": [
-      "/00-core/firewall.nix:31"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.firewall.enabled": {
-    "sources": [
-      "/00-core/firewall.nix:35"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.firewall.extraInputRules": {
-    "sources": [
-      "/90-policy/security-assertions.nix:33"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.firewall.globalUdp": {
-    "sources": [
-      "/00-core/firewall.nix:43"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.identity.domain": {
-    "sources": [
-      "/00-core/configs.nix:11",
-      "/10-infrastructure/pocket-id.nix:3",
-      "/10-infrastructure/traefik-core.nix:3"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.identity.email": {
-    "sources": [
-      "/00-core/configs.nix:18",
-      "/10-infrastructure/traefik-core.nix:62"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.identity.host": {
-    "sources": [
-      "/00-core/host.nix:9",
-      "/00-core/configs.nix:32",
-      "/00-core/configs.nix:125"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.identity.user": {
-    "sources": [
-      "/00-core/configs.nix:25",
-      "/90-policy/security-assertions.nix:15"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.infrastructure.traefik.modules": {
-    "sources": [
-      "/10-infrastructure/traefik.nix:21"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.network.dnsBootstrap": {
-    "sources": [
-      "/00-core/configs.nix:65",
-      "/10-infrastructure/adguardhome.nix:22"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.network.dnsDoH": {
-    "sources": [
-      "/00-core/configs.nix:55",
-      "/10-infrastructure/adguardhome.nix:18"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.network.lanCidrs": {
-    "sources": [
-      "/00-core/firewall.nix:14",
-      "/00-core/firewall.nix:51",
-      "/00-core/configs.nix:41",
-      "/10-infrastructure/traefik-core.nix:7"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.network.tailnetCidrs": {
-    "sources": [
-      "/00-core/firewall.nix:20",
-      "/00-core/configs.nix:48",
-      "/10-infrastructure/traefik-core.nix:11"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.policy.assertions.canonical": {
-    "sources": [
-      "/00-core/server-rules.nix:12"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.ports.pocketId": {
-    "sources": [
-      "/10-infrastructure/pocket-id.nix:7",
-      "/10-infrastructure/pocket-id.nix:31",
-      "/10-infrastructure/traefik-core.nix:116"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.ports.ssh": {
-    "sources": [
-      "/00-core/firewall.nix:10",
-      "/00-core/firewall.nix:47",
-      "/90-policy/security-assertions.nix:21"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.ports.traefikHttps": {
-    "sources": [
-      "/00-core/firewall.nix:39",
-      "/90-policy/security-assertions.nix:25"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.secrets.sharedEnv": {
-    "sources": [
-      "/10-infrastructure/wireguard-vpn.nix:3",
-      "/90-policy/security-assertions.nix:29"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.secrets.wgPrivadoPrivateKeyVarName": {
-    "sources": [
-      "/10-infrastructure/wireguard-vpn.nix:11"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.secrets.wireguardPrivadoConf": {
-    "sources": [
-      "/10-infrastructure/wireguard-vpn.nix:7"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.server.lanIP": {
-    "sources": [
-      "/00-core/configs.nix:74",
-      "/00-core/configs.nix:131",
-      "/10-infrastructure/adguardhome.nix:10",
-      "/10-infrastructure/adguardhome.nix:27"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.server.tailscaleIP": {
-    "sources": [
-      "/00-core/configs.nix:82",
-      "/00-core/configs.nix:137",
-      "/10-infrastructure/adguardhome.nix:14",
-      "/10-infrastructure/adguardhome.nix:28"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.system.stateVersion": {
-    "sources": [
-      "/configuration.nix:45"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.system.swap": {
-    "sources": [
-      "/configuration.nix:49"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.systemd.sabnzbd.bindsTo": {
-    "sources": [
-      "/90-policy/security-assertions.nix:41"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.systemd.sshd.restartPolicy": {
-    "sources": [
-      "/90-policy/security-assertions.nix:49"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.systemd.sshd.wantedBy": {
-    "sources": [
-      "/90-policy/security-assertions.nix:53"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.systemd.traefik.environmentFile": {
-    "sources": [
-      "/90-policy/security-assertions.nix:37"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.users.authorizedKeys": {
-    "sources": [
-      "/90-policy/security-assertions.nix:45"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.vpn.privado.address": {
-    "sources": [
-      "/00-core/configs.nix:93",
-      "/10-infrastructure/wireguard-vpn.nix:15",
-      "/10-infrastructure/wireguard-vpn.nix:32"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.vpn.privado.dns": {
-    "sources": [
-      "/00-core/configs.nix:100",
-      "/10-infrastructure/wireguard-vpn.nix:19",
-      "/10-infrastructure/wireguard-vpn.nix:33"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.vpn.privado.endpoint": {
-    "sources": [
-      "/00-core/configs.nix:107",
-      "/10-infrastructure/wireguard-vpn.nix:27",
-      "/10-infrastructure/wireguard-vpn.nix:35"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   },
-  "CFG.vpn.privado.publicKey": {
-    "sources": [
-      "/00-core/configs.nix:114",
-      "/10-infrastructure/wireguard-vpn.nix:23",
-      "/10-infrastructure/wireguard-vpn.nix:34"
-    ],
+  "": {
+    "sources": [],
     "sinks": []
   }
 }

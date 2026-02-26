@@ -9,7 +9,8 @@ let
 
   localeProfile = config.my.locale.profile;
   homepageLanguage = if localeProfile == "EN" then "en" else "de";
-  homepageSettings = pkgs.writeText "homepage-settings.yaml" "language: ${homepageLanguage}\n";
+  homepageSettings = pkgs.writeText "homepage-settings.yaml" "language: ${homepageLanguage}
+";
 in
 {
   # Erstelle einen dedizierten Benutzer und eine Gruppe für den Homepage-Dienst
@@ -40,6 +41,24 @@ in
       Environment = [
         "HOMEPAGE_CONFIG=${homepageConfigDir}"
       ];
+
+      # [SEC-HOMEPAGE-SVC-001] Härtung
+      NoNewPrivileges = lib.mkForce true;
+      PrivateTmp = lib.mkForce true;
+      PrivateDevices = lib.mkForce true;
+
+      ProtectSystem = lib.mkForce "strict";
+      ReadWritePaths = [
+        homepageConfigDir
+      ];
+      ProtectHome = lib.mkForce true;
+
+      ProtectKernelTunables = lib.mkForce true;
+      ProtectKernelModules = lib.mkForce true;
+      RestrictRealtime = lib.mkForce true;
+      RestrictSUIDSGID = lib.mkForce true;
+
+      RestrictAddressFamilies = [ "AF_INET" "AF_INET6" "AF_UNIX" ];
     };
   };
 

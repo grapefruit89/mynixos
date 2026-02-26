@@ -85,6 +85,22 @@ in
       "d '${cfg.stateDir}' 0750 ${cfg.user} ${cfg.group} - -"
     ];
 
+    # [SEC-MEDIA-SVC-001] Basis-Härtung für alle media-lib Services
+    systemd.services.${name}.serviceConfig = {
+      NoNewPrivileges = lib.mkDefault true;
+      PrivateTmp = lib.mkDefault true;
+      PrivateDevices = lib.mkDefault true;
+      ProtectSystem = lib.mkDefault "strict";
+      ReadWritePaths = lib.mkDefault [ cfg.stateDir "/data/media" "/data/downloads" ];
+      ProtectHome = lib.mkDefault true;
+      ProtectKernelTunables = lib.mkDefault true;
+      ProtectKernelModules = lib.mkDefault true;
+      ProtectControlGroups = lib.mkDefault true;
+      RestrictRealtime = lib.mkDefault true;
+      RestrictSUIDSGID = lib.mkDefault true;
+      RestrictAddressFamilies = lib.mkDefault [ "AF_INET" "AF_INET6" "AF_UNIX" ];
+    };
+
     services.traefik.dynamicConfigOptions.http = lib.mkIf cfg.expose.enable {
       routers.${name} = {
         rule = "Host(`${cfg.expose.host}`)";

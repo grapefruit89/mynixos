@@ -3,80 +3,95 @@
 # meta:
 #   owner: core
 #   status: active
-#   summary: Scannt alle .nix/.md Dateien nach CFG.* IDs und generiert ids-report.md + ids-report.json
+#   summary: Scannt alle .nix Dateien nach CFG.* IDs und generiert ids-report.md + ids-report.json
+#
+# Verwendung: bash /etc/nixos/scripts/scan-ids.sh
+# Output: 00-core/ids-report.md und 00-core/ids-report.json (werden überschrieben)
 
 set -euo pipefail
 
-REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO_DIR="/etc/nixos"
 REPORT_MD="${REPO_DIR}/00-core/ids-report.md"
 REPORT_JSON="${REPO_DIR}/00-core/ids-report.json"
 
+# Alle bekannten CFG-IDs sammeln (aus source-id Kommentaren)
 mapfile -t ALL_IDS < <(
-  rg -o --no-heading --no-filename 'source-id:\s*CFG\.[^[:space:]]+' "${REPO_DIR}" -g '*.nix' -g '*.md' \
-    | sed -E 's/source-id:\s*//' \
+  grep -rn "source-id: CFG\." "${REPO_DIR}" \
+    --include="*.nix" \
+    --include="*.md" \
+    | grep -oP 'source-id: \K(CFG\.[^\s]+)' \
     | sort -u
 )
 
 echo "Gefundene IDs: ${#ALL_IDS[@]}"
 
+# Markdown generieren
 {
   echo "# IDs Report (automatisch generiert)"
-  echo
+  echo ""
   echo "> Generiert von: scripts/scan-ids.sh"
-  echo "> Stand: $(date -Iseconds)"
-  echo
+  echo "> Stand: $(date -I)"
+  echo ""
 
   for id in "${ALL_IDS[@]}"; do
     echo "## ${id}"
-    echo
+    echo ""
     echo "Sources:"
-    (rg -n --no-heading -F "source-id: ${id}" "${REPO_DIR}" -g '*.nix' -g '*.md' || true) | while IFS= read -r line; do
-      file=${line%%:*}
-      lineno=$(echo "$line" | cut -d: -f2)
-      rel=${file#${REPO_DIR}/}
-      echo "- ${rel}:${lineno}"
-    done
 
-    echo
+    # Quellen: Zeilen mit "source-id: ${id}"
+    while IFS= read -r line; do
+      file=$(echo "$line" | cut -d: -f1 | sed "s|${REPO_DIR}/||")
+      lineno=$(echo "$line" | cut -d: -f2)
+      echo "- /etc/nixos/${file}:${lineno}"
+    done < <(grep -rn "source-id: ${id}" "${REPO_DIR}" --include="*.nix" 2>/dev/null || true)
+
+    echo ""
     echo "Sinks:"
-    (rg -n --no-heading -F "${id}" "${REPO_DIR}" -g '*.nix' -g '*.md' || true) | while IFS= read -r line; do
-      file=${line%%:*}
-      lineno=$(echo "$line" | cut -d: -f2)
-      rel=${file#${REPO_DIR}/}
-      echo "- ${rel}:${lineno}"
-    done
 
-    echo
+    # Sinks: Zeilen wo die CFG-ID als Wert verwendet wird (sink-id Kommentar)
+    while IFS= read -r line; do
+      file=$(echo "$line" | cut -d: -f1 | sed "s|${REPO_DIR}/||")
+      lineno=$(echo "$line" | cut -d: -f2)
+      echo "- /etc/nixos/${file}:${lineno}"
+    done < <(grep -rn "sink.*${id}\|# sink-id: ${id}" "${REPO_DIR}" --include="*.nix" 2>/dev/null || true)
+
+    echo ""
   done
 } > "${REPORT_MD}"
 
-REPO_DIR_ENV="${REPO_DIR}" python3 - <<'PY' > "${REPORT_JSON}"
-import json, os, pathlib, re
+# JSON generieren
+{
+  echo "{"
+  first=true
+  for id in "${ALL_IDS[@]}"; do
+    if [ "$first" = true ]; then first=false; else echo ","; fi
 
-repo = pathlib.Path(os.environ['REPO_DIR_ENV'])
-all_ids = set()
-for p in repo.rglob('*'):
-    if p.is_file() and p.suffix in {'.nix', '.md'}:
-        text = p.read_text(errors='ignore')
-        all_ids.update(re.findall(r'source-id:\s*(CFG\.[^\s]+)', text))
+    sources=()
+    while IFS= read -r line; do
+      file=$(echo "$line" | cut -d: -f1 | sed "s|${REPO_DIR}/||")
+      lineno=$(echo "$line" | cut -d: -f2)
+      sources+=(""${file}:${lineno}"")
+    done < <(grep -rn "source-id: ${id}" "${REPO_DIR}" --include="*.nix" 2>/dev/null || true)
 
-out = {}
-for cid in sorted(all_ids):
-    src = []
-    sinks = []
-    for p in repo.rglob('*'):
-        if not (p.is_file() and p.suffix in {'.nix', '.md'}):
-            continue
-        rel = '/' + str(p.relative_to(repo))
-        for i, line in enumerate(p.read_text(errors='ignore').splitlines(), start=1):
-            if re.search(rf'source-id:\s*{re.escape(cid)}\b', line):
-                src.append(f"{rel}:{i}")
-            if re.search(rf'sink:.*{re.escape(cid)}\b', line) or re.search(rf'sink-id:\s*{re.escape(cid)}\b', line):
-                sinks.append(f"{rel}:{i}")
-    out[cid] = {"sources": src, "sinks": sinks}
+    sinks=()
+    while IFS= read -r line; do
+      file=$(echo "$line" | cut -d: -f1 | sed "s|${REPO_DIR}/||")
+      lineno=$(echo "$line" | cut -d: -f2)
+      sinks+=(""\/${file}:${lineno}"")
+    done < <(grep -rn "sink.*${id}" "${REPO_DIR}" --include="*.nix" 2>/dev/null || true)
 
-print(json.dumps(out, indent=2, ensure_ascii=False))
-PY
+    sources_json=$(IFS=,; echo "${sources[*]:-}")
+    sinks_json=$(IFS=,; echo "${sinks[*]:-}")
+
+    printf '  "": {
+    "sources": [],
+    "sinks": []
+  }' \
+      "${id}" "${sources_json}" "${sinks_json}"
+  done
+  echo ""
+  echo "}"
+} > "${REPORT_JSON}"
 
 echo "✅ Generiert:"
 echo "   ${REPORT_MD}"

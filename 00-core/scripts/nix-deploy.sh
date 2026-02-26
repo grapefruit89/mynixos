@@ -16,7 +16,7 @@ log_dir="$(dirname "$log_file")"
 mkdir -p "$log_dir"
 
 log() {
-  printf "[%s] %s
+  printf "[] %s
 " "$(date -Is)" "$*"
 }
 
@@ -94,6 +94,17 @@ ensure_ssh_agent() {
   fi
 }
 
+# IDs-Report aktualisieren vor dem Build
+if [ -x "${repo}/scripts/scan-ids.sh" ]; then
+  log "IDs-Report aktualisieren..."
+  bash "${repo}/scripts/scan-ids.sh"
+  # Wenn Änderungen entstanden sind, automatisch stagen:
+  if ! git -C "$repo" diff --quiet 00-core/ids-report.md; then
+    log "IDs-Report hat sich geändert, wird zum Commit hinzugefügt"
+    git -C "$repo" add 00-core/ids-report.md 00-core/ids-report.json
+  fi
+fi
+
 if [ "$run_dry" = "true" ]; then
   log "Running: nixos-rebuild dry-run"
   sudo nixos-rebuild dry-run
@@ -137,8 +148,8 @@ else
   log "Changes detected in $repo."
   read -r -p "Commit message (empty to skip): " msg
   if [ -n "$msg" ]; then
-    sudo git -C "$repo" add -A
-    sudo git -C "$repo" commit -m "$msg" --no-gpg-sign -n
+    git -C "$repo" add -A
+    git -C "$repo" commit -m "$msg" --no-gpg-sign -n
     log "commit created"
   else
     log "commit skipped"

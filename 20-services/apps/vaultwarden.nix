@@ -1,6 +1,5 @@
 { config, lib, pkgs, ... }:
 let
-  
   # source-id: CFG.identity.domain
   domain = config.my.configs.identity.domain;
 in
@@ -11,6 +10,37 @@ in
       ROCKET_ADDRESS = "127.0.0.1";
       ROCKET_PORT = config.my.ports.vaultwarden;
     };
+  };
+
+  # [SEC-VAULTWARDEN-SVC-001] systemd Härtung für Vaultwarden
+  systemd.services.vaultwarden.serviceConfig = {
+    NoNewPrivileges = lib.mkForce true;
+    PrivateTmp = lib.mkForce true;
+    PrivateDevices = lib.mkForce true;
+
+    ProtectSystem = lib.mkForce "strict";
+    ReadWritePaths = [
+      "/var/lib/bitwarden_rs"
+      "/var/lib/vaultwarden"
+    ];
+    ProtectHome = lib.mkForce true;
+
+    ProtectKernelTunables = lib.mkForce true;
+    ProtectKernelModules = lib.mkForce true;
+    ProtectControlGroups = lib.mkForce true;
+    RestrictRealtime = lib.mkForce true;
+    RestrictSUIDSGID = lib.mkForce true;
+
+    RestrictAddressFamilies = [ "AF_INET" "AF_UNIX" ];
+
+    MemoryDenyWriteExecute = true;
+
+    SystemCallFilter = [
+      "@system-service"
+      "~@privileged"
+      "~@resources"
+    ];
+    SystemCallArchitectures = "native";
   };
 
   services.traefik.dynamicConfigOptions.http = {

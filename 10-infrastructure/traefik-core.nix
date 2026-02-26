@@ -46,9 +46,10 @@ in
     group = "traefik";
     dataDir = "/var/lib/traefik";
     environmentFiles = [
-      # Format:
-      #   CLOUDFLARE_DNS_API_TOKEN=...
-      config.my.secrets.files.sharedEnv
+      # source: my.secrets.files.traefikEnv (nur CF-Token)
+      # source: my.secrets.files.sharedEnv (für andere Traefik-Plugins falls nötig)
+      config.my.secrets.files.traefikEnv
+      # config.my.secrets.files.sharedEnv # Fallback bis traefikEnv existiert
     ];
 
     staticConfigOptions = {
@@ -212,6 +213,29 @@ in
     };
   };
 
-  systemd.services.traefik.serviceConfig.Environment =
-    lib.mkAfter [ "TZ=${config.time.timeZone}" ];
+  systemd.services.traefik.serviceConfig = {
+    Environment = [ "TZ=${config.time.timeZone}" ];
+    
+    # [SEC-TRAEFIK-SVC-001] systemd Härtung
+    NoNewPrivileges = lib.mkForce true;
+    PrivateTmp = lib.mkForce true;
+
+    AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" ];
+    CapabilityBoundingSet = [ "CAP_NET_BIND_SERVICE" ];
+
+    ProtectSystem = lib.mkForce "strict";
+    ReadWritePaths = [
+      config.services.traefik.dataDir
+      "/var/log/traefik"
+    ];
+    ProtectHome = lib.mkForce true;
+
+    ProtectKernelTunables = lib.mkForce true;
+    ProtectKernelModules = lib.mkForce true;
+    ProtectControlGroups = lib.mkForce true;
+    RestrictRealtime = lib.mkForce true;
+    RestrictSUIDSGID = lib.mkForce true;
+
+    RestrictAddressFamilies = [ "AF_INET" "AF_INET6" "AF_UNIX" ];
+  };
 }

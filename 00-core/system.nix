@@ -16,7 +16,49 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  # -- PACKAGES -------------------------------------------------------------
+  # -- NIX EINSTELLUNGEN ----------------------------------------------------
+  nix = {
+    settings = {
+      # Store-Optimierung: Hardlinks statt Kopien (spart ~30% NVMe-Platz)
+      auto-optimise-store = true;
+
+      # Parallele Jobs: 4 Cores, aber 1 für System lassen
+      max-jobs = 3;
+      cores = 4;
+
+      # Binary Caches (schnellere Builds)
+      substituters = [
+        "https://cache.nixos.org"
+        "https://nix-community.cachix.org"
+      ];
+      trusted-public-keys = [
+        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCSeBw="
+      ];
+
+      # Flake-Features (auch ohne Flakes nützlich)
+      experimental-features = [ "nix-command" "flakes" ];
+
+      # Kein automatisches Garbage-Collect während Builds
+      keep-outputs = true;
+      keep-derivations = true;
+    };
+
+    # Automatische GC: wöchentlich, 14 Tage Retention
+    gc = {
+      automatic = true;
+      dates = "Sun 03:30";      # Sonntag Nacht — HDDs können schlafen
+      options = "--delete-older-than 14d";
+    };
+
+    # Store-Optimierung nach GC
+    optimise = {
+      automatic = true;
+      dates = [ "Sun 04:00" ];  # Nach GC
+    };
+  };
+
+  # -- PAKETE ---------------------------------------------------------------
   environment.systemPackages = with pkgs; [
     nodejs_22
     alejandra

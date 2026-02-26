@@ -15,6 +15,13 @@
         description = "Central runtime secrets env file (isomorphic names + source->sink comments).";
       };
 
+      # source-id: CFG.secrets.traefikEnv
+      traefikEnv = lib.mkOption {
+        type = lib.types.str;
+        default = "/etc/secrets/traefik.env";
+        description = "Traefik-exklusives Environment-File (nur CLOUDFLARE_DNS_API_TOKEN).";
+      };
+
       wireguardPrivadoConf = lib.mkOption {
         type = lib.types.str;
         default = "/etc/secrets/wireguard/privado.conf";
@@ -65,6 +72,13 @@
       RADARR_URL=http://127.0.0.1:7878
       PROWLARR_URL=http://127.0.0.1:9696
       SABNZBD_URL=http://127.0.0.1:8080
+    '';
+
+    environment.etc."secrets/traefik.env.example".text = ''
+      # Traefik-exklusive Secrets (nur Cloudflare DNS-01)
+      # Kopieren nach: /etc/secrets/traefik.env
+      # Berechtigungen: root:traefik 640
+      CLOUDFLARE_DNS_API_TOKEN=
     '';
 
     assertions = [
