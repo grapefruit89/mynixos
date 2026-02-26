@@ -2,14 +2,13 @@
 #   owner: core
 #   status: active
 #   scope: shared
-#   summary: Intelligente Speicher-Architektur (MergerFS + Smart Mover)
+#   summary: Intelligente Speicher-Architektur (MergerFS + Smart Mover) - Optimized
 
 { config, lib, pkgs, ... }:
 let
   cfg = config.my.profiles.services.storage-pool;
-  user = config.my.configs.identity.user;
   
-  # Optimierte Mount-Optionen für HDDs (sink: reduce wakeups)
+  # Optimierte Mount-Optionen für HDDs (IronicBadger-Style)
   hhdOptions = [
     "noatime"
     "nodiratime"
@@ -18,14 +17,15 @@ let
     "nofail"
   ];
 
-  # MergerFS Cache-Optionen (sink: browse without wakeup)
+  # MergerFS Premium-Optionen (sink: browse without wakeup)
   mergerfsOptions = [
     "cache.readdir=true"
     "cache.statfs=true"
     "cache.files=partial"
     "dropcacheonclose=true"
-    "category.create=mfs"
+    "category.create=mfs" # Most Free Space - verteilt Daten gleichmäßig
     "func.getattr=newest"
+    "fsname=mergerfs-pool"
   ];
 in
 {
