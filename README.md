@@ -65,6 +65,7 @@ The core of our knowledge sharing is the structured library. Explore the details
 *   [🛡️ **03 Services & Security**](./bibliothek/03_Services_Sicherheit.md) – The 10k/20k Port Registry, Traefik setup, and security guardrails.
 *   [💡 **04 Backlog & Ideas**](./bibliothek/04-ROADMAP.md) – Future plans like Fastfetch-MOTD and automated backups.
 5. [🏠 **Home-Manager Guide**](./bibliothek/05_Home_Manager.md)
+6. [💎 **Inspirationen & Best Practices**](./bibliothek/Inspirationen_aus_der_Reposammlung.md)
 
 ---
 *Created with ❤️ by Moritz & AI.*

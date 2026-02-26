@@ -72,6 +72,7 @@ description: Zentrale Wissensbasis für das Fujitsu Q958 NixOS Homelab.
 
 ### [04 — Backlog & Ideas](./04-ROADMAP.md)
 5. [🏠 **Home-Manager Guide**](./05_Home_Manager.md) - Eigene Dotfiles & Portabilität.
+6. [💎 **Inspirationen & Best Practices**](./Inspirationen_aus_der_Reposammlung.md) - Analyse der Profi-Repos.
 > What's on the horizon?
 *   Future roadmap (Monitoring, Backups, Fastfetch).
 
