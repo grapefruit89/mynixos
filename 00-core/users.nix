@@ -4,11 +4,7 @@
 #   scope: shared
 #   summary: users Modul
 
-{ config, ... }:
-let
-  # source-id: CFG.identity.user
-  user = config.my.identity.user;
-in
+{ ... }:
 {
   users.users.${user} = {
     isNormalUser = true;

@@ -7,15 +7,8 @@
 { lib, config, pkgs, ... }:
 let
   sshPort = config.my.ports.ssh;
-  # source-id: CFG.identity.user
-  user = config.my.identity.user;
-  hasAuthorizedKeys = (config.users.users.${user}.openssh.authorizedKeys.keys or [ ]) != [ ];
-  allowPasswordFallback = true;
-  # source-id: CFG.network.lanCidrs
-  lanCidrs = config.my.configs.network.lanCidrs;
-  # source-id: CFG.network.tailnetCidrs
-  tailnetCidrs = config.my.configs.network.tailnetCidrs;
-  matchCidrs = lib.concatStringsSep "," (lanCidrs ++ tailnetCidrs);
+  hasAuthorizedKeys = (config.users.users.moritz.openssh.authorizedKeys.keys or [ ]) != [ ];
+  allowPasswordFallback = !hasAuthorizedKeys;
 in
 {
   # [SEC-SSH-SVC-001] OpenSSH service must stay enabled.
@@ -32,7 +25,7 @@ in
       PasswordAuthentication = lib.mkForce allowPasswordFallback;
       # [SEC-SSH-AUTH-001]/[SEC-SSH-AUTH-002]
       KbdInteractiveAuthentication = lib.mkForce allowPasswordFallback;
-      AllowUsers = [ user ];
+      AllowUsers = [ "moritz" ];
     };
 
     # Zugriff nur aus internen Netzen/Loopback/Tailscale-CGNAT.
@@ -40,7 +33,7 @@ in
     extraConfig = ''
       Match Address 127.0.0.1,::1,${matchCidrs}
         PermitTTY yes
-        AllowUsers ${user}
+        AllowUsers moritz
     '';
   };
 
@@ -54,7 +47,7 @@ in
     };
     path = with pkgs; [ util-linux coreutils ];
     script = ''
-      msg="WARNING: No SSH authorized key for user '${user}' found. PasswordAuthentication/KbdInteractiveAuthentication are enabled as emergency fallback. Add key to disable password login."
+      msg="WARNING: No SSH authorized key for user 'moritz' found. PasswordAuthentication/KbdInteractiveAuthentication are enabled as emergency fallback. Add key to disable password login."
       echo "$msg" >&2
       logger -p authpriv.warning -t ssh-fallback "$msg"
     '';

@@ -2,86 +2,64 @@
 #   owner: core
 #   status: active
 #   scope: shared
-#   summary: SSH nur aus Heimnetzen/Tailnet, niemals offen ins Internet
+#   summary: Firewall — nftables-only Backend (iptables legacy entfernt)
+#   specIds: [SEC-NET-SSH-001, SEC-NET-SSH-002, SEC-NET-EDGE-001]
 
 { lib, config, ... }:
 let
   # source-id: CFG.ports.ssh
   # sink: SSH-Dienstport in Interface- und Input-Regeln
   sshPort = config.my.ports.ssh;
-  useNft = config.my.firewall.backend == "nftables";
+
   # source-id: CFG.network.lanCidrs
-  lanCidrs = config.my.configs.network.lanCidrs;
+  # sink: nftables source-range set für interne Netze
+  lanCidrs = if config ? my && config.my ? configs && config.my.configs ? network && config.my.configs.network ? lanCidrs
+    then config.my.configs.network.lanCidrs
+    else [ "10.0.0.0/8" "172.16.0.0/12" "192.168.0.0/16" ];
+
   # source-id: CFG.network.tailnetCidrs
-  tailnetCidrs = config.my.configs.network.tailnetCidrs;
+  # sink: nftables source-range set für Tailnet
+  tailnetCidrs = if config ? my && config.my ? configs && config.my.configs ? network && config.my.configs.network ? tailnetCidrs
+    then config.my.configs.network.tailnetCidrs
+    else [ "100.64.0.0/10" ];
+
   rfc1918 = lib.concatStringsSep ", " lanCidrs;
   tailnet = lib.concatStringsSep ", " tailnetCidrs;
 in
 {
-  options.my.firewall.backend = lib.mkOption {
-    type = lib.types.enum [ "iptables" "nftables" ];
-    default = "iptables";
-    description = "Firewall backend selector. Keep iptables until nftables is explicitly enabled.";
-  };
-
   config = {
-    networking.nftables.enable = useNft;
+    # source-id: CFG.firewall.backend
+    # sink: aktiviert nftables als einziges Firewall-Backend
+    networking.nftables.enable = true;
+
+    # source-id: CFG.firewall.enabled
+    # sink: globale Host-Firewall aktiv
     networking.firewall.enable = true;
 
-    # [SEC-NET-EDGE-001] Global inbound bleibt minimal: nur HTTPS.
+    # source-id: CFG.ports.traefikHttps
+    # sink: global eingehender Edge-Port (HTTPS)
     networking.firewall.allowedTCPPorts = lib.mkForce [ config.my.ports.traefikHttps ];
-    # mDNS for .local (Avahi)
+
+    # source-id: CFG.firewall.globalUdp
+    # sink: globales UDP-Expose (nur mDNS)
     networking.firewall.allowedUDPPorts = lib.mkForce [ 5353 ];
 
-    # [SEC-NET-SSH-002] SSH explizit ueber Tailscale Interface.
+    # source-id: CFG.ports.ssh
+    # sink: explizite SSH-Freigabe auf tailscale0
     networking.firewall.interfaces.tailscale0.allowedTCPPorts = lib.mkForce [ sshPort ];
 
-    # [SEC-NET-SSH-001]/[SEC-NET-SSH-002] SSH und DNS nur aus Heimnetzen + Tailscale-CGNAT.
-    # NOTE: extraInputRules are nftables-only; keep iptables mirror below for legacy backend.
+    # source-id: CFG.network.lanCidrs
+    # sink: interne Allow-Regeln für SSH/DNS/mDNS
     networking.firewall.extraInputRules = lib.mkForce ''
+      # SSH nur aus privaten Ranges + Tailnet
       ip saddr { ${rfc1918}, ${tailnet} } tcp dport ${toString sshPort} accept
 
+      # DNS nur intern
       ip saddr { ${rfc1918}, ${tailnet} } tcp dport 53 accept
       ip saddr { ${rfc1918}, ${tailnet} } udp dport 53 accept
 
+      # mDNS nur aus RFC1918-LAN
       ip saddr { ${rfc1918} } udp dport 5353 accept
     '';
-
-    # iptables backend mirror for LAN/Tailscale rules.
-    networking.firewall.extraCommands = lib.mkIf (!useNft) (lib.mkAfter ''
-      ${lib.concatMapStrings (cidr:
-        "/run/current-system/sw/bin/iptables -A nixos-fw -s ${cidr} -p tcp --dport ${toString sshPort} -j nixos-fw-accept\n"
-      ) (lanCidrs ++ tailnetCidrs)}
-
-      ${lib.concatMapStrings (cidr:
-        "/run/current-system/sw/bin/iptables -A nixos-fw -s ${cidr} -p tcp --dport 53 -j nixos-fw-accept\n"
-      ) (lanCidrs ++ tailnetCidrs)}
-
-      ${lib.concatMapStrings (cidr:
-        "/run/current-system/sw/bin/iptables -A nixos-fw -s ${cidr} -p udp --dport 53 -j nixos-fw-accept\n"
-      ) (lanCidrs ++ tailnetCidrs)}
-
-      ${lib.concatMapStrings (cidr:
-        "/run/current-system/sw/bin/iptables -A nixos-fw -s ${cidr} -p udp --dport 5353 -j nixos-fw-accept\n"
-      ) lanCidrs}
-    '');
-
-    networking.firewall.extraStopCommands = lib.mkIf (!useNft) (lib.mkAfter ''
-      ${lib.concatMapStrings (cidr:
-        "/run/current-system/sw/bin/iptables -D nixos-fw -s ${cidr} -p tcp --dport ${toString sshPort} -j nixos-fw-accept || true\n"
-      ) (lanCidrs ++ tailnetCidrs)}
-
-      ${lib.concatMapStrings (cidr:
-        "/run/current-system/sw/bin/iptables -D nixos-fw -s ${cidr} -p tcp --dport 53 -j nixos-fw-accept || true\n"
-      ) (lanCidrs ++ tailnetCidrs)}
-
-      ${lib.concatMapStrings (cidr:
-        "/run/current-system/sw/bin/iptables -D nixos-fw -s ${cidr} -p udp --dport 53 -j nixos-fw-accept || true\n"
-      ) (lanCidrs ++ tailnetCidrs)}
-
-      ${lib.concatMapStrings (cidr:
-        "/run/current-system/sw/bin/iptables -D nixos-fw -s ${cidr} -p udp --dport 5353 -j nixos-fw-accept || true\n"
-      ) lanCidrs}
-    '');
   };
 }

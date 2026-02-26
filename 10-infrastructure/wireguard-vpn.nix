@@ -1,12 +1,38 @@
 { config, ... }:
 let
+  # source-id: CFG.secrets.sharedEnv
+  # sink: input env-file for private key extraction
   envFile = config.my.secrets.files.sharedEnv;
+
+  # source-id: CFG.secrets.wireguardPrivadoConf
+  # sink: generated wg-quick config destination
   wgConfFile = config.my.secrets.files.wireguardPrivadoConf;
+
+  # source-id: CFG.secrets.wgPrivadoPrivateKeyVarName
+  # sink: env var key used to read WireGuard private key
   wgKeyVar = config.my.secrets.vars.wgPrivadoPrivateKeyVarName;
+
+  # source-id: CFG.vpn.privado.address
+  # sink: [Interface] Address in generated config
+  wgAddress = config.my.configs.vpn.privado.address;
+
+  # source-id: CFG.vpn.privado.dns
+  # sink: [Interface] DNS in generated config
+  wgDns = builtins.concatStringsSep "," config.my.configs.vpn.privado.dns;
+
+  # source-id: CFG.vpn.privado.publicKey
+  # sink: [Peer] PublicKey in generated config
+  wgPublicKey = config.my.configs.vpn.privado.publicKey;
+
+  # source-id: CFG.vpn.privado.endpoint
+  # sink: [Peer] Endpoint in generated config
+  wgEndpoint = config.my.configs.vpn.privado.endpoint;
 in
 {
-  # Traceability:
-  # source: ${envFile}:${wgKeyVar}
+  # source-id: CFG.vpn.privado.address
+  # source-id: CFG.vpn.privado.dns
+  # source-id: CFG.vpn.privado.publicKey
+  # source-id: CFG.vpn.privado.endpoint
   # sink: ${wgConfFile} -> networking.wg-quick.interfaces.privado.configFile
   system.activationScripts.wgPrivadoConfigFromEnv.text = ''
     set -eu
@@ -29,7 +55,6 @@ in
       esac
     done < "$env_file"
 
-    # Accept both quoted and unquoted env values.
     case "$key_value" in
       \"*\") key_value="''${key_value#\"}"; key_value="''${key_value%\"}" ;;
       \'*\') key_value="''${key_value#\'}"; key_value="''${key_value%\'}" ;;
@@ -46,13 +71,13 @@ in
     cat > "$out_file" <<CFG
 [Interface]
 PrivateKey = $key_value
-Address = 100.64.4.147/32
-DNS = 198.18.0.1,198.18.0.2
+Address = ${wgAddress}
+DNS = ${wgDns}
 
 [Peer]
-PublicKey = KgTUh3KLijVluDvNpzDCJJfrJ7EyLzYLmdHCksG4sRg=
+PublicKey = ${wgPublicKey}
 AllowedIPs = 0.0.0.0/0
-Endpoint = 91.148.237.21:51820
+Endpoint = ${wgEndpoint}
 CFG
 
     chown root:root "$out_file"

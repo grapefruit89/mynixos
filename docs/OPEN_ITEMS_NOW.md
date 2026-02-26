@@ -1,21 +1,8 @@
-# Open Items Now (bereinigt)
+# Open Items (Now)
 
-Stand: 2026-02-24
-Quelle: Aktive Konfiguration + kuratierte Inhalte aus `docs/archive/`
-
-## Hoch
-- Cloudflare/TLS-Operations regelmäßig prüfen (Token-Lebenszyklus, ACME-Status, Traefik-Health).
-
-## Mittel
-- Preflight-Script bei Struktur-/Serviceänderungen nachziehen (`/etc/nixos/scripts/preflight-switch.sh`).
-
-## Niedrig
-- Architekturdiagramm in `docs/META_DECISIONS_AND_GOLDNUGGETS.md` aktuell halten.
-
-## Bereits umgesetzt in diesem Lauf
-- `networking.firewall.enable = true`
-- `services.openssh.openFirewall = true`
-- MOTD/ToDo-Reminder vorhanden
-- ENV-Secrets-Härtung dokumentiert
-- Preflight-Check standardisiert
-- Archivdateien mit Kurz-Headern versehen
+## TODO-TRAEFIK-PUBLIC-001
+- Priorität: Mittel
+- Beschreibung: `traefik-routes-public.nix` implementieren
+- Inhalt: Öffentliche Traefik-Routen (Services die extern erreichbar sein sollen)
+- Pattern: Analog zu `traefik-routes-internal.nix` aufbauen
+- Vorbedingung: Domain + Cloudflare-Setup abgeschlossen

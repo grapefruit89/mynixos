@@ -1,8 +1,8 @@
 # meta:
 #   owner: core
-#   status: deprecated
+#   status: active
 #   scope: shared
-#   summary: locale moved to 00-core/locale.nix
+#   summary: de-config Modul
 
 { ... }:
 {

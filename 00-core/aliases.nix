@@ -5,7 +5,6 @@
 #   summary: aliases Modul
 
 { config, ... }:
-{ config, pkgs, ... }:
 let
   sshPort = toString config.my.ports.ssh;
   passwordAuth = toString (config.services.openssh.settings.PasswordAuthentication or false);
@@ -48,6 +47,17 @@ in
       echo "  nix-test   -> active until reboot"
       echo "  nix-switch -> persistent rebuild"
       echo "  nix-deploy -> test, optional switch, optional commit+push"
+      echo ""
+      echo "  Security Snapshot"
+      echo "  - SSH Port: ${sshPort}"
+      echo "  - PermitTTY: ${permitTTY}"
+      echo "  - PasswordAuthentication: ${passwordAuth}"
+      echo "  - KbdInteractiveAuthentication: ${kbdAuth}"
+      echo "  - ssh-password-fallback-warning unit present: ${fallbackUnitEnabled}"
+      if [ "${passwordAuth}" = "true" ]; then
+        echo "  [WARN] Passwort-SSH-Fallback ist aktiv (kein Key hinterlegt)."
+        echo "         Prüfe: journalctl -t ssh-fallback -n 20 --no-pager"
+      fi
       echo ""
       echo "  Security Snapshot"
       echo "  - SSH Port: ${sshPort}"
