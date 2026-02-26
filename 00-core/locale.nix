@@ -10,25 +10,29 @@ let
     DE = {
       timeZone = "Europe/Berlin";
       locale = "de_DE.UTF-8";
-      keyMap = "de";
+      keyMap = "de-latin1";
+      xkbLayout = "de";
       ntp = [ "0.de.pool.ntp.org" "1.de.pool.ntp.org" "2.de.pool.ntp.org" "3.de.pool.ntp.org" ];
     };
     AT = {
       timeZone = "Europe/Vienna";
       locale = "de_AT.UTF-8";
-      keyMap = "de";
+      keyMap = "de-latin1";
+      xkbLayout = "de";
       ntp = [ "0.at.pool.ntp.org" "1.at.pool.ntp.org" "2.at.pool.ntp.org" "3.at.pool.ntp.org" ];
     };
     CH = {
       timeZone = "Europe/Zurich";
       locale = "de_CH.UTF-8";
-      keyMap = "de";
+      keyMap = "de-latin1";
+      xkbLayout = "de";
       ntp = [ "0.ch.pool.ntp.org" "1.ch.pool.ntp.org" "2.ch.pool.ntp.org" "3.ch.pool.ntp.org" ];
     };
     EN = {
       timeZone = "Etc/UTC";
       locale = "en_GB.UTF-8";
       keyMap = "us";
+      xkbLayout = "us";
       ntp = [ "0.uk.pool.ntp.org" "1.uk.pool.ntp.org" "2.uk.pool.ntp.org" "3.uk.pool.ntp.org" ];
     };
   };
@@ -56,7 +60,13 @@ in
     i18n.defaultLocale = cfg.locale;
     i18n.supportedLocales = lib.mkForce [ "de_DE.UTF-8/UTF-8" "en_US.UTF-8/UTF-8" ];
 
-    console.keyMap = cfg.keyMap;
+    console.keyMap = lib.mkForce cfg.keyMap;
+
+    # Keyboard layout for X11 and Wayland
+    services.xserver.xkb = {
+      layout = cfg.xkbLayout;
+      variant = "";
+    };
 
     networking.timeServers = cfg.ntp;
 
