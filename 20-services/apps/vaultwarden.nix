@@ -14,13 +14,13 @@ in
 
   # [SEC-VAULTWARDEN-SVC-001] systemd Härtung für Vaultwarden
   systemd.services.vaultwarden.serviceConfig = {
+    # Vaultwarden hat keinen DynamicUser — explizite Härtung nötig
     NoNewPrivileges = lib.mkForce true;
     PrivateTmp = lib.mkForce true;
     PrivateDevices = lib.mkForce true;
 
     ProtectSystem = lib.mkForce "strict";
     ReadWritePaths = [
-      "/var/lib/bitwarden_rs"
       "/var/lib/vaultwarden"
     ];
     ProtectHome = lib.mkForce true;
@@ -31,10 +31,12 @@ in
     RestrictRealtime = lib.mkForce true;
     RestrictSUIDSGID = lib.mkForce true;
 
+    # Vaultwarden braucht nur TCP für localhost
     RestrictAddressFamilies = [ "AF_INET" "AF_UNIX" ];
 
     MemoryDenyWriteExecute = true;
 
+    # Syscall-Filter
     SystemCallFilter = [
       "@system-service"
       "~@privileged"
@@ -51,10 +53,8 @@ in
       middlewares = [ "secured-chain@file" ];
       service = "vaultwarden";
     };
-    services.vaultwarden = {
-      loadBalancer.servers = [{
-        url = "http://127.0.0.1:${toString config.my.ports.vaultwarden}";
-      }];
-    };
+    services.vaultwarden.loadBalancer.servers = [{
+      url = "http://127.0.0.1:${toString config.my.ports.vaultwarden}";
+    }];
   };
 }

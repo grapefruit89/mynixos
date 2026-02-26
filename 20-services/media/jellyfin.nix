@@ -35,6 +35,7 @@
       ProtectSystem = lib.mkForce "strict";
       ReadWritePaths = [
         "/var/lib/jellyfin"
+        "/var/cache/jellyfin"
         "/data/media"
       ];
       ProtectHome = lib.mkForce true;

@@ -40,6 +40,7 @@ in
       RestartSec = "5s";
       Environment = [
         "HOMEPAGE_CONFIG=${homepageConfigDir}"
+        "PORT=${toString homepagePort}"
       ];
 
       # [SEC-HOMEPAGE-SVC-001] Härtung
@@ -50,6 +51,7 @@ in
       ProtectSystem = lib.mkForce "strict";
       ReadWritePaths = [
         homepageConfigDir
+        "/var/lib/homepage-dashboard"
       ];
       ProtectHome = lib.mkForce true;
 
@@ -65,6 +67,7 @@ in
   # Stelle sicher, dass das Konfigurationsverzeichnis existiert
   systemd.tmpfiles.rules = [
     "d ${homepageConfigDir} 0755 ${homepageUser} ${homepageGroup} - -"
+    "d /var/lib/homepage-dashboard 0755 ${homepageUser} ${homepageGroup} - -"
   ];
 
   # Traefik Integration für den Homepage-Dienst
