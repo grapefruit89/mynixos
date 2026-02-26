@@ -8,6 +8,7 @@
     ./00-core/ports.nix
     ./00-core/host.nix
     ./00-core/de-config.nix
+    ./00-core/locale.nix
     ./00-core/secrets.nix
     ./00-core/users.nix
     ./00-core/ssh.nix

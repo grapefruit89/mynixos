@@ -32,7 +32,7 @@
 
    # source-id: CFG.identity.user
   environment.sessionVariables = {
-    PATH = "/home/${config.my.identity.user}/.npm-global/bin:$PATH";
+    PATH = "/home/${config.my.configs.identity.user}/.npm-global/bin:$PATH";
   };
 
   # source: /etc/git-hooks/pre-commit (managed by NixOS)

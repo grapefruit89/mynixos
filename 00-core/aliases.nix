@@ -4,13 +4,13 @@
 #   scope: shared
 #   summary: aliases Modul
 
-{ config, ... }:
+{ lib, config, pkgs, ... }:
 let
   sshPort = toString config.my.ports.ssh;
   passwordAuth = toString (config.services.openssh.settings.PasswordAuthentication or false);
   kbdAuth = toString (config.services.openssh.settings.KbdInteractiveAuthentication or false);
   permitTTY = toString (config.services.openssh.settings.PermitTTY or false);
-  fallbackUnitEnabled = toString ((config.systemd.services ? ssh-password-fallback-warning));
+  fallbackUnitEnabled = toString (config.systemd.services ? ssh-password-fallback-warning);
 in
 {
   environment.systemPackages = [ (pkgs.writeShellScriptBin "nix-deploy" (builtins.readFile ./scripts/nix-deploy.sh)) ];
@@ -47,28 +47,6 @@ in
       echo "  nix-test   -> active until reboot"
       echo "  nix-switch -> persistent rebuild"
       echo "  nix-deploy -> test, optional switch, optional commit+push"
-      echo ""
-      echo "  Security Snapshot"
-      echo "  - SSH Port: ${sshPort}"
-      echo "  - PermitTTY: ${permitTTY}"
-      echo "  - PasswordAuthentication: ${passwordAuth}"
-      echo "  - KbdInteractiveAuthentication: ${kbdAuth}"
-      echo "  - ssh-password-fallback-warning unit present: ${fallbackUnitEnabled}"
-      if [ "${passwordAuth}" = "true" ]; then
-        echo "  [WARN] Passwort-SSH-Fallback ist aktiv (kein Key hinterlegt)."
-        echo "         Prüfe: journalctl -t ssh-fallback -n 20 --no-pager"
-      fi
-      echo ""
-      echo "  Security Snapshot"
-      echo "  - SSH Port: ${sshPort}"
-      echo "  - PermitTTY: ${permitTTY}"
-      echo "  - PasswordAuthentication: ${passwordAuth}"
-      echo "  - KbdInteractiveAuthentication: ${kbdAuth}"
-      echo "  - ssh-password-fallback-warning unit present: ${fallbackUnitEnabled}"
-      if [ "${passwordAuth}" = "true" ]; then
-        echo "  [WARN] Passwort-SSH-Fallback ist aktiv (kein Key hinterlegt)."
-        echo "         Prüfe: journalctl -t ssh-fallback -n 20 --no-pager"
-      fi
       echo ""
       echo "  Security Snapshot"
       echo "  - SSH Port: ${sshPort}"

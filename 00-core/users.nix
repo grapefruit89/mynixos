@@ -4,7 +4,10 @@
 #   scope: shared
 #   summary: users Modul
 
-{ ... }:
+{ config, ... }:
+let
+  user = config.my.configs.identity.user;
+in
 {
   users.users.${user} = {
     isNormalUser = true;

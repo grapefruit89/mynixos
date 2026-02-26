@@ -68,6 +68,27 @@
         default = [ "1.1.1.1" "9.9.9.9" ];
         description = "Bootstrap DNS Server für DoH Auflösung.";
       };
+
+      # source-id: CFG.network.dnsNamed
+      dnsNamed = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [ "1.1.1.1" "9.9.9.9" ];
+        description = "Standard DNS Resolver.";
+      };
+
+      # source-id: CFG.network.dnsFallback
+      dnsFallback = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [ "1.1.1.1" "9.9.9.9" ];
+        description = "Fallback DNS Resolver.";
+      };
+
+      # source-id: CFG.network.acmeResolvers
+      acmeResolvers = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [ "1.1.1.1:53" "9.9.9.9:53" ];
+        description = "DNS Resolver für ACME-DNS-Challenge.";
+      };
     };
 
     server = {
