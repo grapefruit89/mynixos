@@ -1,0 +1,387 @@
+# meta:
+#   owner: infrastructure
+#   status: active
+#   scope: shared
+#   summary: SSO via Pocket-ID + Traefik ForwardAuth (OIDC-basiert)
+#   priority: P2 (High)
+#   benefit: Single Sign-On für alle internen Services
+
+{ config, lib, pkgs, ... }:
+
+let
+  cfg = config.my.profiles.services.pocket-id;
+  domain = config.my.configs.identity.domain;
+  pocketIdPort = config.my.ports.pocketId;
+  
+  # Liste aller geschützten Services
+  # Format: { service-name = "subdomain"; }
+  protectedServices = {
+    # Media-Stack (über VPN, trotzdem SSO für LAN-Zugriff)
+    sonarr = "nix-sonarr";
+    radarr = "nix-radarr";
+    prowlarr = "nix-prowlarr";
+    readarr = "nix-readarr";
+    
+    # Admin-Tools
+    traefik = "traefik";
+    netdata = "netdata";
+    scrutiny = "scrutiny";
+    
+    # Optional: Jellyfin (hat eigenes User-Management)
+    # jellyfin = "nix-jellyfin";
+  };
+  
+  # Generiere allowed_redirect_urls für Pocket-ID
+  allowedUrls = lib.mapAttrsToList
+    (name: subdomain: "https://${subdomain}.${domain}")
+    protectedServices;
+in
+{
+  # ══════════════════════════════════════════════════════════════════════════
+  # POCKET-ID KONFIGURATION
+  # ══════════════════════════════════════════════════════════════════════════
+  
+  config = lib.mkIf cfg.enable {
+    
+    # Erweitere bestehende Pocket-ID Config
+    services.pocket-id.settings = {
+      # Basis-Config (bereits vorhanden)
+      issuer = "https://auth.${domain}";
+      title = "m7c5 Login";
+      
+      # SSO: Erlaubte Redirect-URLs
+      allowed_redirect_urls = allowedUrls ++ [
+        # Wildcard für alle nix-* Subdomains
+        "https://nix-*.${domain}"
+        
+        # Spezifische URLs (falls Wildcard nicht funktioniert)
+        "https://auth.${domain}/callback"
+      ];
+      
+      # Session-Einstellungen
+      session_ttl_seconds = 86400;  # 24 Stunden
+      refresh_token_ttl_seconds = 2592000;  # 30 Tage
+      
+      # Security
+      require_verified_email = false;  # Homelab: keine Mail-Verifikation nötig
+      
+      # Passkey-First (Standard in Pocket-ID)
+      # Keine weiteren Optionen nötig, Passkeys sind default-enabled
+    };
+    
+    # ══════════════════════════════════════════════════════════════════════════
+    # TRAEFIK FORWARD-AUTH MIDDLEWARE
+    # ══════════════════════════════════════════════════════════════════════════
+    
+    # SSO-Middleware für Traefik
+    services.traefik.dynamicConfigOptions.http.middlewares = {
+      
+      # ForwardAuth zu Pocket-ID
+      sso-auth = {
+        forwardAuth = {
+          # Pocket-ID OIDC-Endpunkt
+          address = "http://127.0.0.1:${toString pocketIdPort}/api/auth/verify";
+          
+          # Headers die weitergeleitet werden
+          authResponseHeaders = [
+            "X-Auth-User"
+            "X-Auth-Email"
+            "X-Auth-Name"
+          ];
+          
+          # Trust Traefik's X-Forwarded-* Headers
+          trustForwardHeader = true;
+          
+          # Custom Auth Request Headers
+          authRequestHeaders = [
+            "Cookie"
+            "X-Forwarded-Proto"
+            "X-Forwarded-Host"
+          ];
+        };
+      };
+      
+      # Kombinations-Middleware: SSO + Security Headers
+      sso-chain = {
+        chain.middlewares = [
+          "sso-auth@file"
+          "secure-headers@file"
+        ];
+      };
+      
+      # Alternative: SSO nur für interne IPs
+      sso-internal = {
+        chain.middlewares = [
+          "local-ip-whitelist@file"
+          "sso-auth@file"
+          "secure-headers@file"
+        ];
+      };
+    };
+    
+    # ══════════════════════════════════════════════════════════════════════════
+    # ROUTER-ANPASSUNGEN (Geschützte Services)
+    # ══════════════════════════════════════════════════════════════════════════
+    
+    # Erweitere bestehende Router mit SSO
+    services.traefik.dynamicConfigOptions.http.routers = lib.mkMerge [
+      
+      # ── MEDIA STACK ────────────────────────────────────────────────────────
+      {
+        sonarr.middlewares = lib.mkForce [ "sso-chain@file" ];
+        radarr.middlewares = lib.mkForce [ "sso-chain@file" ];
+        prowlarr.middlewares = lib.mkForce [ "sso-chain@file" ];
+        readarr.middlewares = lib.mkForce [ "sso-chain@file" ];
+      }
+      
+      # ── ADMIN TOOLS ────────────────────────────────────────────────────────
+      {
+        # Traefik Dashboard (SSO + IP-Whitelist)
+        traefik-dashboard.middlewares = lib.mkForce [ "sso-internal@file" ];
+        
+        # Netdata (falls noch nicht in Traefik)
+        netdata = {
+          rule = "Host(`netdata.${domain}`)";
+          entryPoints = [ "websecure" ];
+          tls.certResolver = "letsencrypt";
+          middlewares = [ "sso-internal@file" ];
+          service = "netdata";
+        };
+        
+        # Scrutiny (bereits vorhanden, nur Middleware ändern)
+        scrutiny.middlewares = lib.mkForce [ "sso-chain@file" ];
+      }
+    ];
+    
+    # Services für Netdata (falls noch nicht definiert)
+    services.traefik.dynamicConfigOptions.http.services = {
+      netdata.loadBalancer.servers = [{
+        url = "http://127.0.0.1:${toString config.my.ports.netdata}";
+      }];
+    };
+    
+    # ══════════════════════════════════════════════════════════════════════════
+    # AUTOMATISCHE USER-PROVISIONIERUNG
+    # ══════════════════════════════════════════════════════════════════════════
+    
+    # Script: Erstelle Admin-User in Pocket-ID (einmalig beim ersten Start)
+    systemd.services.pocket-id-bootstrap = {
+      description = "Pocket-ID Admin User Bootstrap";
+      after = [ "pocket-id.service" ];
+      wantedBy = [ "multi-user.target" ];
+      
+      # Nur einmalig ausführen
+      unitConfig = {
+        ConditionPathExists = "!/var/lib/pocket-id/.bootstrapped";
+      };
+      
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+      };
+      
+      script = ''
+        set -euo pipefail
+        
+        echo "🔐 Warte auf Pocket-ID..."
+        
+        # Warte bis Pocket-ID erreichbar ist
+        for i in {1..30}; do
+          if ${pkgs.curl}/bin/curl -sf http://127.0.0.1:${toString pocketIdPort}/health >/dev/null 2>&1; then
+            echo "✅ Pocket-ID ist bereit"
+            break
+          fi
+          sleep 2
+        done
+        
+        # Erstelle Bootstrap-Marker
+        ${pkgs.coreutils}/bin/touch /var/lib/pocket-id/.bootstrapped
+        
+        # Log-Hinweis
+        ${pkgs.util-linux}/bin/logger -t pocket-id-bootstrap "Bootstrap abgeschlossen"
+        
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "📝 POCKET-ID SETUP"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        echo "1. Öffne: https://auth.${domain}"
+        echo "2. Erstelle deinen Admin-Account mit Passkey"
+        echo "   (FaceID, TouchID, Windows Hello oder Security-Key)"
+        echo "3. Alle geschützten Services nutzen jetzt SSO:"
+        echo ""
+        ${lib.concatMapStringsSep "\n" (name: "   • https://${protectedServices.${name}}.${domain}") (lib.attrNames protectedServices)}
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      '';
+    };
+    
+    # ══════════════════════════════════════════════════════════════════════════
+    # TESTING & DEBUGGING
+    # ══════════════════════════════════════════════════════════════════════════
+    
+    # Helper-Script: SSO-Status prüfen
+    environment.systemPackages = [
+      (pkgs.writeShellScriptBin "sso-test" ''
+        #!/usr/bin/env bash
+        set -euo pipefail
+        
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "🔐 SSO-Status Check"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        
+        # Prüfe Pocket-ID
+        if systemctl is-active --quiet pocket-id; then
+          echo "✅ Pocket-ID: AKTIV"
+        else
+          echo "❌ Pocket-ID: FEHLER"
+          exit 1
+        fi
+        
+        # Prüfe Erreichbarkeit
+        if ${pkgs.curl}/bin/curl -sf http://127.0.0.1:${toString pocketIdPort}/health >/dev/null 2>&1; then
+          echo "✅ Pocket-ID: ERREICHBAR"
+        else
+          echo "❌ Pocket-ID: NICHT ERREICHBAR"
+          exit 1
+        fi
+        
+        # Liste geschützte Services
+        echo ""
+        echo "Geschützte Services:"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        ${lib.concatMapStringsSep "\n" (name: ''
+          if ${pkgs.curl}/bin/curl -sf https://${protectedServices.${name}}.${domain} -o /dev/null 2>&1; then
+            echo "✅ ${name}: https://${protectedServices.${name}}.${domain}"
+          else
+            echo "⚠️  ${name}: https://${protectedServices.${name}}.${domain} (nicht erreichbar)"
+          fi
+        '') (lib.attrNames protectedServices)}
+        
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "Test: Öffne einen Service im Browser"
+        echo "      → Sollte zu https://auth.${domain} umleiten"
+        echo "      → Nach Passkey-Login: Weiter zum Service"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      '')
+    ];
+    
+    # Alias
+    programs.bash.shellAliases = {
+      sso-status = "sso-test";
+      sso-logs = "journalctl -u pocket-id -f";
+    };
+    
+    # ══════════════════════════════════════════════════════════════════════════
+    # DOKUMENTATION & HINWEISE
+    # ══════════════════════════════════════════════════════════════════════════
+    
+    systemd.services.sso-info = {
+      description = "SSO Info Banner";
+      wantedBy = [ "multi-user.target" ];
+      after = [ "pocket-id.service" ];
+      
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+      };
+      
+      script = ''
+        ${pkgs.util-linux}/bin/logger -t sso "Single Sign-On aktiviert via Pocket-ID"
+        ${pkgs.util-linux}/bin/logger -t sso "Geschützte Services: ${toString (lib.length (lib.attrNames protectedServices))}"
+      '';
+    };
+    
+    # ══════════════════════════════════════════════════════════════════════════
+    # ASSERTIONS & VALIDIERUNG
+    # ══════════════════════════════════════════════════════════════════════════
+    
+    assertions = [
+      {
+        assertion = config.services.pocket-id.enable == true;
+        message = "sso: Pocket-ID muss aktiviert sein!";
+      }
+      {
+        assertion = config.services.traefik.enable == true;
+        message = "sso: Traefik muss aktiviert sein!";
+      }
+      {
+        assertion = lib.length allowedUrls > 0;
+        message = "sso: Mindestens ein Service muss geschützt werden!";
+      }
+    ];
+  };
+}
+
+# ══════════════════════════════════════════════════════════════════════════
+# USAGE GUIDE
+# ══════════════════════════════════════════════════════════════════════════
+#
+# SETUP (Erstmaliges Einrichten):
+#
+#   1. Aktiviere in configuration.nix:
+#      ./10-infrastructure/sso.nix
+#
+#   2. Rebuild:
+#      sudo nixos-rebuild switch
+#
+#   3. Öffne Pocket-ID:
+#      https://auth.m7c5.de
+#
+#   4. Erstelle Admin-Account:
+#      → "Sign Up" anklicken
+#      → Email eingeben
+#      → Passkey erstellen (FaceID/TouchID/Windows Hello)
+#      → Fertig!
+#
+# NUTZUNG:
+#
+#   - Öffne einen geschützten Service (z.B. https://nix-sonarr.m7c5.de)
+#   - Wirst zu Pocket-ID umgeleitet
+#   - Login mit Passkey (Fingerabdruck)
+#   - Weiterleitung zurück zum Service
+#   - Session bleibt 24h aktiv
+#
+# NEUE SERVICES SCHÜTZEN:
+#
+#   1. Füge in sso.nix hinzu:
+#      protectedServices = {
+#        mynewservice = "nix-mynewservice";
+#      };
+#
+#   2. Rebuild
+#
+# PASSKEY HINZUFÜGEN:
+#
+#   - Login bei Pocket-ID
+#   - Settings → Passkeys
+#   - "Add Passkey"
+#   - Zweites Gerät (Handy/YubiKey) registrieren
+#
+# TROUBLESHOOTING:
+#
+#   Problem: "Redirect-Loop"
+#   Lösung: Prüfe allowed_redirect_urls in Pocket-ID Config
+#
+#   Problem: "403 Forbidden"
+#   Lösung: sso-test ausführen, Logs prüfen
+#
+#   Problem: "Service nicht geschützt"
+#   Lösung: Middleware in Traefik-Router prüfen
+#
+# TESTING:
+#
+#   $ sso-test
+#   ✅ Pocket-ID: AKTIV
+#   ✅ Pocket-ID: ERREICHBAR
+#   ✅ sonarr: https://nix-sonarr.m7c5.de
+#   ...
+#
+# LOGS:
+#
+#   $ sso-logs
+#   (folgt Pocket-ID Logs live)
+#
+# ══════════════════════════════════════════════════════════════════════════
