@@ -10,6 +10,7 @@ Hier findest du alle wichtigen Informationen zum Betrieb und zur Architektur:
 *   **[Architektur & Netzwerk](docs/architecture.md)** – Aufbau der Module und Firewall-Konzept.
 *   **[Fehlerbehebung](docs/recovery.md)** – Notfallpläne für SSH und Boot-Probleme.
 *   **[Projektstatus](docs/status.md)** – Aktueller Stand und Roadmap.
+*   **[Implementierungs-Bericht V2](docs/IMPLEMENTIERUNGS_REPORT_V2.md)** – Details zum großen System-Umbau.
 *   **[Historie](docs/history.md)** – Chronik der wichtigsten Änderungen.
 
 ## 🛠️ Schnellstart
