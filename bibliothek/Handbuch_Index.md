@@ -40,7 +40,7 @@ description: Zentrale Wissensbasis für das Fujitsu Q958 NixOS Homelab.
 *   **VPN:** Der NFTables Killswitch für den Media-Stack.
 *   **Härtung:** SSH-Schutz und Systemd Sandboxing.
 
-### [04 — Backlog & Ideen](./04_Backlog_Ideen.md)
+### [04 — Roadmap & Zukunft](./04-ROADMAP.md)
 > Wohin geht die Reise?
 *   Zukünftige Projekte (Monitoring, Backups, Fastfetch).
 
@@ -70,7 +70,7 @@ description: Zentrale Wissensbasis für das Fujitsu Q958 NixOS Homelab.
 *   **VPN:** The NFTables Killswitch for the media stack.
 *   **Hardening:** SSH protection and Systemd Sandboxing.
 
-### [04 — Backlog & Ideas](./04_Backlog_Ideen.md)
+### [04 — Backlog & Ideas](./04-ROADMAP.md)
 > What's on the horizon?
 *   Future roadmap (Monitoring, Backups, Fastfetch).
 

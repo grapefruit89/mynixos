@@ -34,7 +34,7 @@ in
     # source-id: CFG.ports.traefikHttps / CFG.ports.ssh
     # sink: global eingehende Ports (HTTPS + SSH)
     networking.firewall.allowedTCPPorts = lib.mkForce [ 
-      config.my.ports.traefikHttps 
+      config.my.ports.traefikHttps 80 
       sshPort 
     ];
 

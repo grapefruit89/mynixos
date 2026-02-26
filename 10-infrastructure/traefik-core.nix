@@ -1,15 +1,12 @@
 { config, lib, pkgs, ... }:
 let
   # source-id: CFG.identity.domain
-  # sink: wildcard cert domains + router host rules
   domain = config.my.configs.identity.domain;
 
   # source-id: CFG.network.lanCidrs
-  # sink: traefik local whitelist + trusted proxy ranges
   lanCidrs = config.my.configs.network.lanCidrs;
 
   # source-id: CFG.network.tailnetCidrs
-  # sink: traefik local whitelist + allowlist
   tailnetCidrs = config.my.configs.network.tailnetCidrs;
 
   trustedIPs = [
@@ -46,10 +43,7 @@ in
     group = "traefik";
     dataDir = "/var/lib/traefik";
     environmentFiles = [
-      # source: my.secrets.files.traefikEnv (nur CF-Token)
-      # source: my.secrets.files.sharedEnv (für andere Traefik-Plugins falls nötig)
       config.my.secrets.files.traefikEnv
-      # config.my.secrets.files.sharedEnv # Fallback bis traefikEnv existiert
     ];
 
     staticConfigOptions = {
@@ -67,19 +61,18 @@ in
       };
 
       certificatesResolvers.letsencrypt.acme = {
-        # source-id: CFG.identity.email
-        # sink: ACME contact mail
         email = config.my.configs.identity.email;
         storage = "${config.services.traefik.dataDir}/acme.json";
-        # For wildcard certificates use Cloudflare DNS challenge.
         dnsChallenge = {
           provider = "cloudflare";
-          # source-id: CFG.network.acmeResolvers
           resolvers = config.my.configs.network.acmeResolvers;
         };
       };
 
       entryPoints = {
+        web = {
+          address = ":80";
+        };
         websecure = {
           address = ":443";
           http.tls = {
@@ -113,8 +106,6 @@ in
     dynamicConfigOptions = {
       http.middlewares = {
         "pocket-id-auth".forwardAuth = {
-          # source-id: CFG.ports.pocketId
-          # sink: forward-auth backend for pocket-id
           address = "http://127.0.0.1:${toString config.my.ports.pocketId}";
           authResponseHeaders = [ "X-Forwarded-User" ];
         };
@@ -141,16 +132,6 @@ in
           [ "127.0.0.1/32" ] ++ lanCidrs ++ tailnetCidrs ++ [ "fd7a:115c:a1e0::/48" ];
 
         secure-headers.headers = {
-          stsSeconds = 31536000;
-          stsIncludeSubdomains = true;
-          stsPreload = true;
-          forceSTSHeader = true;
-          browserXssFilter = true;
-          contentTypeNosniff = true;
-          frameDeny = true;
-        };
-
-        security-headers.headers = {
           stsSeconds = 31536000;
           stsIncludeSubdomains = true;
           stsPreload = true;
@@ -215,27 +196,21 @@ in
 
   systemd.services.traefik.serviceConfig = {
     Environment = [ "TZ=${config.time.timeZone}" ];
-    
-    # [SEC-TRAEFIK-SVC-001] systemd Härtung
     NoNewPrivileges = lib.mkForce true;
     PrivateTmp = lib.mkForce true;
-
     AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" ];
     CapabilityBoundingSet = [ "CAP_NET_BIND_SERVICE" ];
-
     ProtectSystem = lib.mkForce "strict";
     ReadWritePaths = [
       config.services.traefik.dataDir
       "/var/log/traefik"
     ];
     ProtectHome = lib.mkForce true;
-
     ProtectKernelTunables = lib.mkForce true;
     ProtectKernelModules = lib.mkForce true;
     ProtectControlGroups = lib.mkForce true;
     RestrictRealtime = lib.mkForce true;
     RestrictSUIDSGID = lib.mkForce true;
-
     RestrictAddressFamilies = [ "AF_INET" "AF_INET6" "AF_UNIX" ];
   };
 }

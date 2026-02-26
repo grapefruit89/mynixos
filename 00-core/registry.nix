@@ -10,19 +10,33 @@
     hardware.q958.enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Aktiviert das Hardware-Profil für Fujitsu Q958 (Intel GPU, Microcode).";
+      description = "Aktiviert das Hardware-Profil für Fujitsu Q958.";
     };
 
     networking.systemd-networkd.enable = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Nutzt systemd-networkd statt NetworkManager für DHCP + Avahi.";
+      description = "Nutzt systemd-networkd statt NetworkManager.";
     };
 
-    services.vpn-killswitch.enable = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Aktiviert den NFTables-basierten VPN Killswitch für die Download-Gruppe.";
+    services = {
+      vpn-killswitch.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = false;
+        description = "Aktiviert den NFTables VPN Killswitch.";
+      };
+      
+      pocket-id.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Aktiviert den Pocket-ID Authentifizierungsdienst.";
+      };
+
+      storage-pool.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Aktiviert die MergerFS Speicher-Architektur.";
+      };
     };
   };
 }

@@ -35,7 +35,6 @@ in
       ExecStartPre = "${pkgs.coreutils}/bin/install -D -m 0644 -o ${homepageUser} -g ${homepageGroup} ${homepageSettings} ${homepageConfigDir}/settings.yaml";
       ExecStart = "${pkgs.homepage-dashboard}/bin/homepage --host 127.0.0.1 --port ${toString homepagePort} --config ${homepageConfigDir}";
 
-      # Manual refresh (optional): systemctl restart homepage
       Restart = "always";
       RestartSec = "5s";
       Environment = [
@@ -47,19 +46,16 @@ in
       NoNewPrivileges = lib.mkForce true;
       PrivateTmp = lib.mkForce true;
       PrivateDevices = lib.mkForce true;
-
       ProtectSystem = lib.mkForce "strict";
       ReadWritePaths = [
         homepageConfigDir
         "/var/lib/homepage-dashboard"
       ];
       ProtectHome = lib.mkForce true;
-
       ProtectKernelTunables = lib.mkForce true;
       ProtectKernelModules = lib.mkForce true;
       RestrictRealtime = lib.mkForce true;
       RestrictSUIDSGID = lib.mkForce true;
-
       RestrictAddressFamilies = [ "AF_INET" "AF_INET6" "AF_UNIX" ];
     };
   };
@@ -73,8 +69,9 @@ in
   # Traefik Integration für den Homepage-Dienst
   services.traefik.dynamicConfigOptions.http = {
     routers.homepage = {
-      rule = "Host(`${domain}`) || Host(`www.${domain}`)";
-      entryPoints = [ "websecure" ];
+      # source: nixhome.local (Avahi) integration
+      rule = "Host(`${domain}`) || Host(`www.${domain}`) || Host(`nixhome.local`)";
+      entryPoints = [ "web" "websecure" ];
       tls.certResolver = "letsencrypt";
       middlewares = [ "secured-chain@file" ];
       service = "homepage";

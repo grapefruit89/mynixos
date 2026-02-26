@@ -2,13 +2,15 @@
 {
   imports = [
     ./hosts/q958/hardware-configuration.nix
-    ./hosts/q958/hardware-profile.nix      # <-- Neu: Hardware-Cockpit
+    ./hosts/q958/hardware-profile.nix
 
-    # 00 — Core (Die Schaltzentrale)
-    ./00-core/registry.nix      # <-- Neu: Feature-Toggles
+    # 00 — Core
+    ./00-core/registry.nix
     ./00-core/configs.nix
-    ./00-core/network.nix       # <-- Neu: systemd-networkd + Avahi
-    ./00-core/killswitch.nix    # <-- Neu: VPN Killswitch
+    ./00-core/network.nix
+    ./00-core/storage.nix       # <-- Neu
+    ./00-core/backup.nix        # <-- Neu
+    ./00-core/killswitch.nix
     ./00-core/user-preferences.nix
     ./00-core/principles.nix
     ./00-core/logging.nix
@@ -31,6 +33,7 @@
     ./10-infrastructure/traefik-routes-internal.nix
     ./10-infrastructure/homepage.nix
     ./10-infrastructure/wireguard-vpn.nix
+    ./10-infrastructure/pocket-id.nix   # <-- Neu
 
     # 20 — Services
     ./20-services/media/default.nix
