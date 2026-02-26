@@ -3,12 +3,13 @@
   imports = [
     ./hosts/q958/hardware-configuration.nix
 
-    # 00 — Core
+    # 00 — Core (Reihenfolge ist wichtig: configs.nix muss zuerst)
     ./00-core/configs.nix
+    ./00-core/principles.nix
+    ./00-core/logging.nix
+    ./00-core/locale.nix
     ./00-core/ports.nix
     ./00-core/host.nix
-    ./00-core/de-config.nix
-    ./00-core/locale.nix
     ./00-core/secrets.nix
     ./00-core/users.nix
     ./00-core/ssh.nix
@@ -19,7 +20,6 @@
     ./00-core/fail2ban.nix
     ./00-core/server-rules.nix # deprecated stub (TODO-ASSERTIONS-CONSOLIDATION-001)
     ./automation.nix
-    # ./00-core/storage.nix
 
     # 10 — Infrastructure
     ./10-infrastructure/tailscale.nix
