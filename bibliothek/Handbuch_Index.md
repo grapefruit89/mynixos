@@ -4,12 +4,15 @@ author: Moritz
 last_updated: 2026-02-26
 status: active
 source_id: DOC-IDX-001
-description: Zentrales Inhaltsverzeichnis / Central Table of Contents
+description: Zentrale Wissensbasis für das Fujitsu Q958 NixOS Homelab.
 ---
 
 # 📖 Das Homelab Handbuch / The Homelab Handbook
 
-[🇩🇪 **Deutsch**](#de) | [🇺🇸 **English**](#en)
+<p align="center">
+  <a href="#de"><img src="https://raw.githubusercontent.com/lipis/flag-icons/main/flags/4x3/de.svg" width="30px"> **Deutsch**</a> | 
+  <a href="#en"><img src="https://raw.githubusercontent.com/lipis/flag-icons/main/flags/4x3/us.svg" width="30px"> **English**</a>
+</p>
 
 ---
 
@@ -17,22 +20,29 @@ description: Zentrales Inhaltsverzeichnis / Central Table of Contents
 ## 🇩🇪 Inhaltsverzeichnis (DE)
 
 ### [01 — Architektur & Hardware](./01_Architektur.md)
-- Hardware-Specs (Fujitsu Q958, i3-9100).
-- Grafik-Optimierung (QuickSync, GuC/HuC).
-- 3-Schichten-Architektur & Speicherstrategie.
+> Wie ist der Server aufgebaut?
+*   **Hardware:** Details zum Fujitsu Q958 & i3-9100.
+*   **Grafik:** Konfiguration von Intel QuickSync (iHD, GuC/HuC).
+*   **Layer:** Erklärung der Schichten-Struktur (00/10/20).
+*   **Speicher:** HDD Spindown (HD-Idle) und Boot-Partition Management.
 
 ### [02 — Betrieb & Workflow](./02_Betrieb.md)
-- Der "Edit-Test-Switch" Zyklus.
-- Shell-Aliase & Dashboard (MOTD).
-- Wartung & Platzmanagement.
+> Wie bediene ich das System im Alltag?
+*   **Zyklus:** Änderungen editieren, mit `ntest` prüfen und per `nsw` aktivieren.
+*   **Aliase:** Alle Shortcuts für Git, Nix und System-Wartung.
+*   **Dashboard:** Das MOTD-Dashboard beim Login verstehen.
+*   **Platzmangel:** Rettungsanker für volle `/boot`-Partitionen.
 
 ### [03 — Services & Sicherheit](./03_Services_Sicherheit.md)
-- Port-Registry (10k/20k Schema).
-- Traefik, ACME & Killswitch.
-- Systemd Sandboxing.
+> Welche Dienste laufen und wie sind sie abgesichert?
+*   **Ports:** Das konsistente 10k/20k Port-Register.
+*   **Edge:** Traefik Reverse-Proxy mit ACME (LetsEncrypt).
+*   **VPN:** Der NFTables Killswitch für den Media-Stack.
+*   **Härtung:** SSH-Schutz und Systemd Sandboxing.
 
 ### [04 — Backlog & Ideen](./04_Backlog_Ideen.md)
-- Zukünftige Features & Ideen.
+> Wohin geht die Reise?
+*   Zukünftige Projekte (Monitoring, Backups, Fastfetch).
 
 ---
 
@@ -40,22 +50,29 @@ description: Zentrales Inhaltsverzeichnis / Central Table of Contents
 ## 🇺🇸 Table of Contents (EN)
 
 ### [01 — Architecture & Hardware](./01_Architektur.md)
-- Hardware specs (Fujitsu Q958, i3-9100).
-- Graphics optimization (QuickSync, GuC/HuC).
-- 3-Layer architecture & storage strategy.
+> How is the server built?
+*   **Hardware:** Deep dive into Fujitsu Q958 & i3-9100 specs.
+*   **Graphics:** Configuring Intel QuickSync (iHD, GuC/HuC).
+*   **Layering:** Understanding the 00/10/20 structure.
+*   **Storage:** HDD Spindown (HD-Idle) and Boot partition management.
 
 ### [02 — Operations & Workflow](./02_Betrieb.md)
-- The "Edit-Test-Switch" cycle.
-- Shell aliases & dashboard (MOTD).
-- Maintenance & space management.
+> How do I manage the system day-to-day?
+*   **The Cycle:** Edit changes, test with `ntest`, and persist with `nsw`.
+*   **Aliases:** Comprehensive list of shortcuts for Git, Nix, and maintenance.
+*   **Dashboard:** Understanding the MOTD system info on login.
+*   **Space:** Survival guide for full `/boot` partitions.
 
 ### [03 — Services & Security](./03_Services_Sicherheit.md)
-- Port registry (10k/20k schema).
-- Traefik, ACME & killswitch.
-- Systemd sandboxing.
+> Which services are active and how are they secured?
+*   **Ports:** The consistent 10k/20k Port Registry.
+*   **Edge:** Traefik Reverse-Proxy with ACME (LetsEncrypt).
+*   **VPN:** The NFTables Killswitch for the media stack.
+*   **Hardening:** SSH protection and Systemd Sandboxing.
 
 ### [04 — Backlog & Ideas](./04_Backlog_Ideen.md)
-- Future features & roadmap.
+> What's on the horizon?
+*   Future roadmap (Monitoring, Backups, Fastfetch).
 
 ---
-👉 [AI_CONTEXT.md](./AI_CONTEXT.md)
+👉 [**AI_CONTEXT.md**](./AI_CONTEXT.md)
