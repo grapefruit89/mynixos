@@ -27,7 +27,6 @@ Sinks:
 ## CFG.hardware.cpuMicrocode
 
 Sources:
-- /etc/nixos/00-core/hardware.nix:12
 - /etc/nixos/00-core/configs.nix:55
 
 Sinks:
@@ -35,7 +34,6 @@ Sinks:
 ## CFG.hardware.intelGpu
 
 Sources:
-- /etc/nixos/00-core/hardware.nix:16
 - /etc/nixos/00-core/configs.nix:48
 
 Sinks:
