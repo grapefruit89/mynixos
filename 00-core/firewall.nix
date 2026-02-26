@@ -2,7 +2,7 @@
 #   owner: core
 #   status: active
 #   scope: shared
-#   summary: Firewall — nftables-only Backend (iptables legacy entfernt)
+#   summary: Firewall — nftables-only Backend (SSH global offen für Bastelmodus)
 #   specIds: [SEC-NET-SSH-001, SEC-NET-SSH-002, SEC-NET-EDGE-001]
 
 { lib, config, ... }:
@@ -36,24 +36,20 @@ in
     # sink: globale Host-Firewall aktiv
     networking.firewall.enable = true;
 
-    # source-id: CFG.ports.traefikHttps
-    # sink: global eingehender Edge-Port (HTTPS)
-    networking.firewall.allowedTCPPorts = lib.mkForce [ config.my.ports.traefikHttps ];
+    # source-id: CFG.ports.traefikHttps / CFG.ports.ssh
+    # sink: global eingehende Ports (HTTPS + SSH für Bastelmodus)
+    networking.firewall.allowedTCPPorts = lib.mkForce [ 
+      config.my.ports.traefikHttps 
+      sshPort 
+    ];
 
     # source-id: CFG.firewall.globalUdp
     # sink: globales UDP-Expose (nur mDNS)
     networking.firewall.allowedUDPPorts = lib.mkForce [ 5353 ];
 
-    # source-id: CFG.ports.ssh
-    # sink: explizite SSH-Freigabe auf tailscale0
-    networking.firewall.interfaces.tailscale0.allowedTCPPorts = lib.mkForce [ sshPort ];
-
     # source-id: CFG.network.lanCidrs
-    # sink: interne Allow-Regeln für SSH/DNS/mDNS
+    # sink: interne Allow-Regeln für DNS/mDNS
     networking.firewall.extraInputRules = lib.mkForce ''
-      # SSH nur aus privaten Ranges + Tailnet
-      ip saddr { ${rfc1918}, ${tailnet} } tcp dport ${toString sshPort} accept
-
       # DNS nur intern
       ip saddr { ${rfc1918}, ${tailnet} } tcp dport 53 accept
       ip saddr { ${rfc1918}, ${tailnet} } udp dport 53 accept
