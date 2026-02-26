@@ -30,6 +30,7 @@
   - Environment variable: `LIBVA_DRIVER_NAME = "iHD"`.
   - User groups: User `moritz` must be added to `video` and `render` groups.
 - **Storage:** Implement `services.hd-idle` for HDD spindown (no `mergerfs`).
+-- source https://blog.ktz.me/how-to-enable-intel-quicksync-on-nixos-with-a-supermicro-x13sae-f-and-an-intel-i5-13600k-2/
 
 ### C. Networking & VPN (`00-system` & `10-infrastructure`)
 - **Networkd & Avahi:** Do NOT configure a static IP. Use `systemd-networkd` set to DHCP (IP is managed by the router). Enable Avahi (`nssmdns4 = true`, `publish.workstation = true`) so the server is reachable at `nixhome.local`.
@@ -40,6 +41,3 @@
 - Configure the environment for user `moritz` including:
   - Aliases: `nsw` (rebuild switch without flakes), `ntest`, `nclean` (store optimization).
   - An informative MOTD (Message of the Day) on SSH login displaying these aliases.
-
-## 4. OUTPUT FORMAT
-Deliver the solution as distinct, well-structured Nix configuration files. Use Markdown blocks for each file. Ensure the code perfectly aligns with the required layer structure and relies exclusively on the validated context.
