@@ -1,4 +1,4 @@
-# 🚀 Umsetzungs-Hilfe: Audit-Fixes & Optimierungen
+# 🚀 Umsetzungs-Hilfe: Audit-Fixes & Optimierungen (V2)
 
 Diese Anleitung hilft dir, die vorgenommenen Änderungen am System zu verstehen und zu verifizieren.
 
@@ -17,7 +17,7 @@ Prüfe, ob die Firmware korrekt geladen wurde:
 ```bash
 dmesg | grep -i guc
 ```
-Du solltest Meldungen über geladene GuC/HuC Binaries sehen.
+Du solltest Meldungen über geladene GuC/HuC Binaries (z.B. `kbl_guc_70.1.1.bin`) sehen.
 
 ### Hardware (Microcode)
 ```bash
@@ -25,16 +25,17 @@ dmesg | grep microcode
 ```
 
 ### Sicherheit (SSH)
-Teste die neuen Timeouts:
-1. Verbinde dich per SSH.
-2. Warte ohne Eingabe. Die Verbindung sollte nach den definierten Intervallen (5 Min) geprüft werden.
-3. Versuche dich mit falschem Passwort einzuloggen. Nach 3 Versuchen sollte der Disconnect erfolgen.
+Teste die neuen Timeouts und Limits:
+*   Login-Prompt bricht nach 20s ab.
+*   Nach 3 Fehlversuchen wird die Verbindung getrennt.
+
+### Traefik
+Prüfe die Rate-Limits in den Logs, falls du viele parallele Anfragen machst.
 
 ## 3. Der neue Shell-Workflow
 Dein Terminal sieht jetzt professioneller aus!
 - **MOTD:** Beim Einloggen siehst du sofort den Status von Traefik, SSH und Jellyfin.
 - **Aliase:** Benutze `ll` für eine schicke Dateiliste (`eza`) oder `cat` für Syntax-Highlighting (`bat`).
-- **Nix-Tools:** Probiere `nix-tree` aus, um Abhängigkeiten zu sehen.
 
 ## 4. Platzmangel beheben
 Falls deine Boot-Partition wieder voll läuft, nutze den neuen Befehl:

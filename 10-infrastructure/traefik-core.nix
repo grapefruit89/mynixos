@@ -161,8 +161,8 @@ in
         };
 
         rate-limit.rateLimit = {
-          average = 100;
-          burst = 200;
+          average = 50;
+          burst = 100;
         };
 
         fail2ban.plugin.fail2ban = {

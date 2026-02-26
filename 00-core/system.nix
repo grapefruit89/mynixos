@@ -115,20 +115,20 @@
     mode = "0755";
     text = ''
       #!/usr/bin/env bash
-      set -euo pipefail
+      set -uo pipefail
 
-      empty_files=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.nix$' | while read -r f; do
-        [ -f "$f" ] || continue
-        if [ ! -s "$f" ]; then
-          echo "$f"
-        fi
-      done)
-
-      if [ -n "''${empty_files:-}" ]; then
-        echo "ERROR: Empty .nix files staged for commit:" >&2
-        echo "$empty_files" >&2
-        echo "Abort commit. Restore/fix files first." >&2
-        exit 1
+      # Block commits with empty Nix files (accidental truncation guardrail).
+      # grep exits 1 if no match, so we use || true to prevent set -e from aborting.
+      empty_files=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.nix$' || true)
+      
+      if [ -n "$empty_files" ]; then
+        for f in $empty_files; do
+          if [ -f "$f" ] && [ ! -s "$f" ]; then
+            echo "ERROR: Empty .nix file staged for commit: $f" >&2
+            echo "Abort commit. Restore/fix files first." >&2
+            exit 1
+          fi
+        done
       fi
     '';
   };
