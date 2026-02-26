@@ -161,13 +161,6 @@ Sources:
 
 Sinks:
 
-## CFG.network.vpn-confinement
-
-Sources:
-- /etc/nixos/00-core/registry.nix:23
-
-Sinks:
-
 ## CFG.policy.assertions.canonical
 
 Sources:
@@ -248,13 +241,6 @@ Sources:
 - /etc/nixos/00-core/configs.nix:181
 - /etc/nixos/10-infrastructure/adguardhome.nix:14
 - /etc/nixos/10-infrastructure/adguardhome.nix:28
-
-Sinks:
-
-## CFG.services.scrutiny
-
-Sources:
-- /etc/nixos/00-core/registry.nix:50
 
 Sinks:
 

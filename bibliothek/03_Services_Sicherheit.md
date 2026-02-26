@@ -35,6 +35,8 @@ Alle Ports werden zentral in `00-core/ports.nix` verwaltet. Wir nutzen das **10k
 | Jellyseerr | 20055 | requests.${domain} |
 | Sabnzbd (VPN) | 20080 | sab.${domain} |
 | Jellyfin | 20096 | jellyfin.${domain} |
+| FileBrowser | 20001 | files.${domain} |
+| Cockpit | 10090 | admin.${domain} |
 | Paperless-ngx | 20981 | docs.${domain} |
 
 ## 2. Reverse Proxy (Traefik)

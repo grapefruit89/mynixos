@@ -20,7 +20,6 @@
         description = "Nutzt systemd-networkd statt NetworkManager.";
       };
       
-      # source-id: CFG.network.vpn-confinement
       vpn-confinement.enable = lib.mkOption {
         type = lib.types.bool;
         default = true;
@@ -32,7 +31,7 @@
       vpn-killswitch.enable = lib.mkOption {
         type = lib.types.bool;
         default = false;
-        description = "Aktiviert den NFTables VPN Killswitch (Legacy-Alternative).";
+        description = "Aktiviert den NFTables VPN Killswitch.";
       };
       
       pocket-id.enable = lib.mkOption {
@@ -47,11 +46,22 @@
         description = "Aktiviert die MergerFS Speicher-Architektur.";
       };
 
-      # source-id: CFG.services.scrutiny
       scrutiny.enable = lib.mkOption {
         type = lib.types.bool;
         default = true;
-        description = "Aktiviert das Scrutiny Dashboard für HDD-Monitoring.";
+        description = "Aktiviert das Scrutiny Dashboard.";
+      };
+
+      cockpit.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Aktiviert das Cockpit Admin-Dashboard.";
+      };
+
+      filebrowser.enable = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Aktiviert den FileBrowser.";
       };
     };
   };

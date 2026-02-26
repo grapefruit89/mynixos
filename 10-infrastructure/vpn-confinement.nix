@@ -2,7 +2,7 @@
 #   owner: core
 #   status: active
 #   scope: shared
-#   summary: VPN Confinement via Netzwerk-Namespaces (Zero-Leak Strategie)
+#   summary: VPN Confinement via Netzwerk-Namespaces (Nixarr-Inspiration)
 
 { config, lib, pkgs, ... }:
 let
@@ -12,7 +12,6 @@ in
 {
   config = lib.mkIf cfg.enable {
     # ── NAMESPACE SETUP ──────────────────────────────────────────────────────
-    # Erstellt den Namespace 'vpn' beim Systemstart
     systemd.services.netns-vpn = {
       description = "VPN Network Namespace";
       before = [ "network.target" ];
@@ -27,11 +26,10 @@ in
       };
     };
 
-    # ── WIREGUARD INTEGRATION ────────────────────────────────────────────────
-    # Wir binden das Wireguard-Interface direkt in den Namespace
-    # (Dies erfordert Anpassungen in wireguard-vpn.nix - wir nutzen hier den Pfad)
-    
-    # [NOTIZ] Für volle Nixarr-Funktionalität müssten wir Dienste
-    # mit 'NetworkNamespacePath=/run/netns/vpn' starten.
+    # ── WIREGUARD NAMESPACE INTEGRATION ─────────────────────────────────────
+    # Hinweis: Damit das funktioniert, muss das Wireguard-Interface 'privado' 
+    # beim Start in den Namespace verschoben werden.
+    # Wir bereiten hier die Logik vor, um Dienste via 'NetworkNamespacePath' 
+    # im systemd-Service zu isolieren.
   };
 }

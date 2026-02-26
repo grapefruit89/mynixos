@@ -24,10 +24,12 @@
     pocketId    = 10010;
     homepage    = 10082;
     netdata     = 10999;
+    cockpit     = 10090;
 
     # ── 20-SERVICES (20xxx) ─────────────────────────────────────────────────
     # Media-Stack
     audiobookshelf = 20000;
+    filebrowser = 20001;
     vaultwarden    = 20002;
     readeck        = 20007;
     miniflux       = 20016;
