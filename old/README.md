@@ -1,11 +1,15 @@
-# 🗄️ Dokumentations-Archiv (Old)
+# 🗄️ Dokumentations-Archiv / Documentation Archive
 
-In diesem Ordner befinden sich alle historischen Dokumente, die nicht mehr Teil des aktuellen Handbuchs sind. 
+[🇩🇪 **Deutsch**](#de) | [🇺🇸 **English**](#en)
 
-### ⚠️ Wichtiger Hinweis
-Die Informationen hier können veraltet sein oder sich auf frühere Versionen der Architektur beziehen. Sie dienen lediglich als:
-- Historische Referenz.
-- Quelle für ursprüngliche Ideen ("Goldnuggets").
-- Nachweis über den Entwicklungsprozess (Prompts & Reviews).
+---
 
-Alle aktuell gültigen Informationen befinden sich ausschließlich im [**Handbuch-Ordner (/bibliothek)**](../bibliothek/Handbuch_Index.md).
+<a name="de"></a>
+## 🇩🇪 Deutsch
+In diesem Ordner befinden sich historische Dokumente (Logs, Entwürfe, Prompts). Sie dienen als Referenz und Wissensquelle für vergangene Entscheidungen. Aktuelle Infos findest du im [**Handbuch**](../bibliothek/Handbuch_Index.md).
+
+---
+
+<a name="en"></a>
+## 🇺🇸 English
+This folder contains historical documents (logs, drafts, prompts). They serve as a reference and source of knowledge for past decisions. For current information, please refer to the [**Handbook**](../bibliothek/Handbuch_Index.md).
