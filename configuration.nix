@@ -5,6 +5,7 @@
     ./00-core/ssh-rescue.nix
     ./00-core/kernel-slim.nix
     ./00-core/shell-premium.nix
+    <sops-nix/modules/sops>
     ./10-infrastructure/sso.nix
     ./hosts/q958/hardware-configuration.nix
     ./hosts/q958/hardware-profile.nix

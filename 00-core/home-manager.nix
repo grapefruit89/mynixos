@@ -1,10 +1,7 @@
 { config, lib, pkgs, ... }:
 let
   user = config.my.configs.identity.user;
-  secretsFile = ./../.local-secrets.nix;
-  secrets = if builtins.pathExists secretsFile then import secretsFile else { 
-    github = ""; cloudflare = ""; tailscale = ""; 
-  };
+  envFile = config.my.secrets.files.sharedEnv;
 in
 {
   imports = [ <home-manager/nixos> ];
@@ -13,10 +10,18 @@ in
   home-manager.backupFileExtension = "hm-backup";
   home-manager.users.${user} = { ... }: {
     imports = [ (./.. + "/users/${user}/home.nix") ];
-    home.sessionVariables = {
-      GITHUB_TOKEN = secrets.github;
-      GITHUB_PERSONAL_ACCESS_TOKEN = secrets.github;
-    };
+    
+    # SECURITY: Do not use home.sessionVariables for secrets (store leak)
+    # Instead, source the SOPS rendered environment file in bash
+    programs.bash.initExtra = ''
+      if [ -f "${envFile}" ]; then
+        # Export all variables from the SOPS env file
+        set -a
+        source "${envFile}"
+        set +a
+      fi
+    '';
+
     programs.bash.shellAliases = {
       godmode = "gemini --yolo --include-directories /etc/nixos,/home/moritz";
     };
