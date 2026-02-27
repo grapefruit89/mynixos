@@ -2,10 +2,9 @@
 
 {
   environment.systemPackages = with pkgs; [
-    aider-chat         # Der Architekt (Git + KI)
-    open-interpreter   # Der Operator (Systemzugriff)
-    uv                 # Motor für die nix-mcp Erweiterung
-    python3      # Benötigt für uv / nix-mcp auf NixOS
+    aider-chat         # Git-Architekt
+    open-interpreter   # System-Operator
+    uv                 # Motor für nix-mcp
   ];
 
   programs.bash.shellAliases = {
