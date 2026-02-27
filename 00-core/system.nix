@@ -35,11 +35,6 @@
   nix = {
     # Wir nutzen Standard-Einstellungen, um Fehler mit Cache-Keys zu vermeiden.
     # NixOS nutzt per Default den offiziellen Cache (Binary First).
-    gc = {
-      automatic = true;
-      dates = "Sun 03:30";
-      options = "--delete-older-than 14d";
-    };
     optimise.automatic = true;
   };
 

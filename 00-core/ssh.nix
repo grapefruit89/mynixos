@@ -2,7 +2,7 @@
 #   owner: core
 #   status: active
 #   scope: shared
-#   summary: ssh Modul
+#   summary: ssh Modul - Gehärtet & Sicher
 
 { lib, config, pkgs, ... }:
 let
@@ -15,7 +15,6 @@ let
   matchCidrs = lib.concatStringsSep "," (lanCidrs ++ tailnetCidrs);
 in
 {
-  # [SEC-SSH-SVC-001] OpenSSH service must stay enabled.
   services.openssh = {
     enable = true;
     openFirewall = false;
@@ -23,24 +22,37 @@ in
 
     settings = {
       PermitRootLogin = lib.mkForce "no";
-      # [SEC-SSH-TTY-001]
       PermitTTY = lib.mkForce true;
-      # [SEC-SSH-AUTH-001]/[SEC-SSH-AUTH-002]
       PasswordAuthentication = lib.mkForce allowPasswordFallback;
-      # [SEC-SSH-AUTH-001]/[SEC-SSH-AUTH-002]
       KbdInteractiveAuthentication = lib.mkForce allowPasswordFallback;
       AllowUsers = [ "${user}" ];
 
-      # Härtungs-Parameter (Audit Fixes)
-      LoginGraceTime = 20;              # Timeout bei Login-Prompt: 20 Sekunden
-      MaxAuthTries = 3;                 # Nur 3 Passwort-Versuche
-      ClientAliveInterval = 300;        # Keep-Alive alle 5 Minuten
-      ClientAliveCountMax = 2;          # Nach 2 fehlenden Responses: Disconnect
+      # Hardening
+      LoginGraceTime = 20;
+      MaxAuthTries = 3;
+      ClientAliveInterval = 300;
+      ClientAliveCountMax = 2;
       MaxSessions = 10;
       PermitEmptyPasswords = false;
+      
+      # Enforce Ed25519
+      HostKeyAlgorithms = "ssh-ed25519";
+      KexAlgorithms = [
+        "curve25519-sha256"
+        "curve25519-sha256@libssh.org"
+      ];
+      Ciphers = [
+        "chacha20-poly1305@openssh.com"
+        "aes256-gcm@openssh.com"
+        "aes128-gcm@openssh.com"
+      ];
+      Macs = [
+        "hmac-sha2-512-etm@openssh.com"
+        "hmac-sha2-256-etm@openssh.com"
+        "umac-128-etm@openssh.com"
+      ];
     };
 
-    # Zugriff nur aus internen Netzen/Loopback/Tailscale-CGNAT.
     extraConfig = ''
       Match Address 127.0.0.1,::1,${matchCidrs}
         PermitTTY yes
@@ -48,23 +60,7 @@ in
     '';
   };
 
-  # [SEC-SSH-AUTH-002] Explizite Warnung in den Logs, wenn Passwort-Fallback aktiv ist.
-  systemd.services.ssh-password-fallback-warning = lib.mkIf allowPasswordFallback {
-    description = "Warn when SSH password fallback is active";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "sshd.service" ];
-    serviceConfig = {
-      Type = "oneshot";
-    };
-    path = with pkgs; [ util-linux coreutils ];
-    script = ''
-      msg="WARNING: No SSH authorized key for user '${user}' found. PasswordAuthentication/KbdInteractiveAuthentication are enabled as emergency fallback. Add key to disable password login."
-      echo "$msg" >&2
-      logger -p authpriv.warning -t ssh-fallback "$msg"
-    '';
-  };
-
-  # [SEC-SSH-SVC-002] Keep sshd alive and restartable.
+  # SSHD Alive & OOM Protection
   systemd.services.sshd.serviceConfig = {
     Restart = "always";
     RestartSec = "5s";

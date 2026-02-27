@@ -61,9 +61,9 @@
 
   programs.git = {
     enable = true;
-    userName = "Moritz Baumeister";
-    userEmail = "moritzbaumeister@gmail.com";
-    extraConfig = {
+    settings = {
+      user.name = "Moritz Baumeister";
+      user.email = "moritzbaumeister@gmail.com";
       pull.rebase = false;
       init.defaultBranch = "main";
     };
