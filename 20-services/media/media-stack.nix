@@ -4,13 +4,9 @@
     # source-id: CFG.identity.domain
     defaults.domain = config.my.configs.identity.domain;
 
-    # CONFINEMENT PREPARED (Set to "media-vault" once VPN handshake is fixed)
-    sonarr.netns = null;
-    radarr.netns = null;
-    prowlarr.netns = null;
-    readarr.netns = null;
-    sabnzbd.netns = null;
-    jellyseerr.netns = null;
+    # FULL-STACK CONFINEMENT (Phase 3, Step 2)
+    # All services below are physically isolated in 'media-vault'
+    defaults.netns = "media-vault";
 
     jellyfin.enable = true;
     sonarr.enable = true;

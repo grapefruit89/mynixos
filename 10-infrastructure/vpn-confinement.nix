@@ -2,7 +2,7 @@
 #   owner: infrastructure
 #   status: active
 #   scope: shared
-#   summary: VPN Confinement v1.6 (The Vault)
+#   summary: VPN Confinement v1.7 (The Vault)
 #   description: Physische Isolation des Media-Stacks in einen Network-Namespace (netns).
 
 { config, lib, pkgs, ... }:
@@ -68,7 +68,7 @@ in
       # 1. Interface im Host erstellen
       ip link add privado type wireguard
       
-      # 2. Konfiguration im Host anwenden
+      # 2. Konfiguration im Host anwenden (UDP socket stays in host ns)
       wg set privado private-key ${wgKey} peer ${wgConfig.publicKey} endpoint ${wgConfig.endpoint} allowed-ips 0.0.0.0/0
       
       # 3. Interface in den Namespace verschieben
@@ -78,10 +78,10 @@ in
       ip netns exec ${nsName} ip addr add ${wgConfig.address} dev privado
       ip netns exec ${nsName} ip link set privado up
       
-      # 5. DEFAULT ROUTE ÜBER VPN
+      # 5. DEFAULT ROUTE ÜBER VPN (The Vault's only way out)
       ip netns exec ${nsName} ip route add default dev privado || true
 
-      # 6. TRIGGER HANDSHAKE (Ping DNS server of provider)
+      # 6. TRIGGER HANDSHAKE
       ip netns exec ${nsName} ping -c 1 ${lib.head wgConfig.dns} || true
     '';
   };
