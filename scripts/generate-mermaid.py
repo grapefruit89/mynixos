@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import os
 import sys
-import requests
 import json
+import urllib.request
 
 # Minimal Architect Script for NixOS Layer Visualization
 # Usage: ./generate-mermaid.py <API_KEY>
@@ -19,12 +19,10 @@ def get_file_structure(startpath):
         level = root.replace(startpath, '').count(os.sep)
         indent = ' ' * 4 * (level)
         structure.append(f"{indent}{os.path.basename(root)}/")
-        subindent = ' ' * 4 * (level + 1)
         for f in files:
             if f.endswith(".nix"):
-                structure.append(f"{subindent}{f}")
-    return "
-".join(structure)
+                structure.append(f"{indent}    {f}")
+    return chr(10).join(structure)
 
 def get_main_imports():
     try:
@@ -61,20 +59,21 @@ data = {
     "contents": [{"parts": [{"text": prompt}]}]
 }
 
-response = requests.post(url, headers=headers, data=json.dumps(data))
-if response.status_code == 200:
-    result = response.json()
-    text = result['candidates'][0]['content']['parts'][0]['text']
-    # Extract mermaid block
-    if "```mermaid" in text:
-        mermaid_code = text.split("```mermaid")[1].split("```")[0].strip()
-        print("# 🏗️ System Architecture (Auto-Generated)
-")
-        print("```mermaid")
-        print(mermaid_code)
-        print("```")
-    else:
-        print(text)
-else:
-    print(f"Error: {response.status_code} - {response.text}")
+req = urllib.request.Request(url, data=json.dumps(data).encode('utf-8'), headers=headers)
+try:
+    with urllib.request.urlopen(req) as response:
+        result = json.loads(response.read().decode('utf-8'))
+        text = result['candidates'][0]['content']['parts'][0]['text']
+        # Extract mermaid block
+        if "```mermaid" in text:
+            mermaid_code = text.split("```mermaid")[1].split("```")[0].strip()
+            print("# 🏗️ System Architecture (Auto-Generated)")
+            print()
+            print("```mermaid")
+            print(mermaid_code)
+            print("```")
+        else:
+            print(text)
+except Exception as e:
+    print(f"Error: {e}")
     sys.exit(1)

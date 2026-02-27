@@ -2,11 +2,9 @@
 let
   myLib = import ../../lib/helpers.nix { inherit lib; };
   cfg = config.my.profiles.services.filebrowser;
-  port = config.my.ports.filebrowser;
   serviceBase = myLib.mkService {
     inherit config;
     name = "filebrowser";
-    port = port;
     useSSO = false;
     description = "Web File Manager";
   };
@@ -17,7 +15,7 @@ lib.mkIf cfg.enable (lib.mkMerge [
     services.filebrowser = {
       enable = true;
       settings = {
-        port = port;
+        port = config.my.ports.filebrowser;
         address = "127.0.0.1";
         root = "/mnt/storage";
       };

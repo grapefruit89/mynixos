@@ -1,12 +1,10 @@
 { config, lib, ... }:
 let
   myLib = import ../../lib/helpers.nix { inherit lib; };
-  port = config.my.ports.monica;
   appKeyFile = "/var/lib/monica/app-key";
   serviceBase = myLib.mkService {
     inherit config;
     name = "monica";
-    port = port;
     useSSO = false;
     description = "Personal CRM";
   };
@@ -23,13 +21,12 @@ lib.mkMerge [
       nginx.listen = [
         {
           addr = "127.0.0.1";
-          inherit port;
+          port = config.my.ports.monica;
           ssl = false;
         }
       ];
     };
 
-    # App Key Setup
     system.activationScripts.monicaAppKeyFile.text = ''
       set -eu
       install -d -m 0750 -o monica -g monica /var/lib/monica

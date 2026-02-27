@@ -1,11 +1,10 @@
 { config, lib, ... }:
 let
   myLib = import ../../lib/helpers.nix { inherit lib; };
-  port = config.my.ports.miniflux;
+  # port is now automatically looked up in config.my.ports.miniflux
   serviceBase = myLib.mkService {
     inherit config;
     name = "miniflux";
-    port = port;
     useSSO = false;
     description = "RSS Reader";
   };
@@ -16,7 +15,9 @@ lib.mkMerge [
     services.miniflux = {
       enable = true;
       config = {
-        LISTEN_ADDR = "127.0.0.1:${toString port}";
+        # Still using config.my.ports here for the service itself, 
+        # but the Traefik routing is now abstracted.
+        LISTEN_ADDR = "127.0.0.1:${toString config.my.ports.miniflux}";
         CREATE_ADMIN = 0;
       };
     };

@@ -12,20 +12,13 @@ let
   cfg = config.my.profiles.services.pocket-id;
   domain = config.my.configs.identity.domain;
   pocketIdPort = config.my.ports.pocketId;
+  dnsMap = import ./dns-map.nix;
   
-  protectedServices = {
-    sonarr = "nix-sonarr";
-    radarr = "nix-radarr";
-    prowlarr = "nix-prowlarr";
-    readarr = "nix-readarr";
-    traefik = "traefik";
-    netdata = "netdata";
-    scrutiny = "scrutiny";
-  };
-  
-  allowedUrls = lib.mapAttrsToList
-    (name: subdomain: "https://${subdomain}.${domain}")
-    protectedServices;
+  # Ensure all URLs are strings and have the correct scheme
+  allUrls = (map (h: "https://${h}") (lib.attrValues dnsMap.dnsMapping)) ++ [
+    "https://auth.${domain}/callback"
+    "https://*.nix.${domain}/*"
+  ];
 in
 {
   config = lib.mkIf cfg.enable {
@@ -34,10 +27,8 @@ in
       issuer = "https://auth.${domain}";
       title = "m7c5 Login";
       
-      # SSO: Erlaubte Redirect-URLs (Lockdown active)
-      allowed_redirect_urls = lib.concatStringsSep "," (allowedUrls ++ [
-        "https://auth.${domain}/callback"
-      ]);
+      # SSO: Dynamic Redirect URLs (Flattened to String)
+      allowed_redirect_urls = lib.concatStringsSep "," allUrls;
       
       session_ttl_seconds = 86400;
       refresh_token_ttl_seconds = 2592000;
@@ -63,26 +54,7 @@ in
       };
     };
     
-    services.traefik.dynamicConfigOptions.http.routers = lib.mkMerge [
-      {
-        sonarr.middlewares = lib.mkForce [ "sso-chain@file" ];
-        radarr.middlewares = lib.mkForce [ "sso-chain@file" ];
-        prowlarr.middlewares = lib.mkForce [ "sso-chain@file" ];
-        readarr.middlewares = lib.mkForce [ "sso-chain@file" ];
-      }
-      {
-        traefik-dashboard.middlewares = lib.mkForce [ "sso-internal@file" ];
-        netdata = {
-          rule = "Host(`netdata.${domain}`)";
-          entryPoints = [ "websecure" ];
-          tls.certResolver = "letsencrypt";
-          middlewares = [ "sso-internal@file" ];
-          service = "netdata";
-        };
-        scrutiny.middlewares = lib.mkForce [ "sso-chain@file" ];
-      }
-    ];
-    
+    # Global Netdata LoadBalancer (Infrastructure)
     services.traefik.dynamicConfigOptions.http.services = {
       netdata.loadBalancer.servers = [{
         url = "http://127.0.0.1:${toString config.my.ports.netdata}";
@@ -111,7 +83,8 @@ in
     environment.systemPackages = [
       (pkgs.writeShellScriptBin "sso-test" ''
         #!/usr/bin/env bash
-        echo "SSO Status Check"
+        echo "SSO Status Check (Pocket-ID + Traefik)"
+        systemctl status pocket-id --no-pager
       '')
     ];
     
@@ -119,7 +92,7 @@ in
       sso-status = "sso-test";
       sso-logs = "journalctl -u pocket-id -f";
     };
-    
+
     assertions = [
       {
         assertion = config.services.pocket-id.enable == true;

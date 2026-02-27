@@ -1,11 +1,9 @@
 { config, lib, ... }:
 let
   myLib = import ../../lib/helpers.nix { inherit lib; };
-  port = config.my.ports.n8n;
   serviceBase = myLib.mkService {
     inherit config;
     name = "n8n";
-    port = port;
     useSSO = false;
     description = "Workflow Automation";
   };
@@ -16,7 +14,7 @@ lib.mkMerge [
     services.n8n = {
       enable = true;
       environment = {
-        N8N_PORT = toString port;
+        N8N_PORT = toString config.my.ports.n8n;
         N8N_HOST = "127.0.0.1";
         N8N_EDITOR_BASE_URL = "https://n8n.${config.my.configs.identity.domain}";
         EXECUTIONS_DATA_PRUNE = "true";

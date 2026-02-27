@@ -2,47 +2,14 @@
 #   owner: core
 #   status: active
 #   scope: shared
-#   summary: Kernel-Schlankheitskur – Deaktiviert ungenutzte Module (Q958-spezifisch)
+#   summary: Kernel-Schlankheitskur v2.2 – Ultra-Minimal Initrd for 96MB /boot
 #   priority: P3 (Medium)
-#   benefit: ~300MB RAM-Ersparnis, 3s schnellerer Boot
+#   benefit: Shrunk initrd size, faster boot, better security
 
 { config, lib, pkgs, ... }:
 
 let
   cfg = config.my.profiles.hardware.q958;
-  
-  # Messung: RAM-Verbrauch vor/nach Optimierung
-  ramBenchmark = pkgs.writeShellScriptBin "ram-benchmark" ''
-    #!/usr/bin/env bash
-    
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "🔬 Kernel RAM-Footprint Analyse"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo ""
-    
-    # Gesamt-RAM
-    TOTAL=$(free -m | awk 'NR==2 {print $2}')
-    USED=$(free -m | awk 'NR==2 {print $3}')
-    FREE=$(free -m | awk 'NR==2 {print $4}')
-    CACHED=$(free -m | awk 'NR==2 {print $6}')
-    
-    echo "Gesamt-RAM:   ''${TOTAL} MB"
-    echo "Verwendet:    ''${USED} MB"
-    echo "Frei:         ''${FREE} MB"
-    echo "Cache:        ''${CACHED} MB"
-    echo ""
-    
-    # Geladene Kernel-Module
-    MODULES=$(lsmod | wc -l)
-    echo "Geladene Module: $((MODULES - 1))"
-    echo ""
-    
-    # Top 10 RAM-Fresser (Module)
-    echo "Top 10 RAM-intensive Module:"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    lsmod | sort -k2 -n -r | head -11 | tail -10 | awk '{printf "%-20s %6s KB
-", $1, $2}'
-  '';
 in
 {
   # ══════════════════════════════════════════════════════════════════════════
@@ -80,13 +47,26 @@ in
   };
   
   # ══════════════════════════════════════════════════════════════════════════
-  # INITRD-OPTIMIERUNG (schnellerer Boot + Platzersparnis auf /boot)
+  # INITRD-OPTIMIERUNG (EXPERT-ONLY: Shrinking for 96MB Survival)
   # ══════════════════════════════════════════════════════════════════════════
   
+  # Disable inclusion of standard modules
   boot.initrd.includeDefaultModules = lib.mkForce false;
+  
+  # Manual selection of CRITICAL modules for Q958 boot
   boot.initrd.availableKernelModules = lib.mkForce [
-    "ahci" "sd_mod" "xhci_pci" "usbhid" "usb_storage" "nvme"
+    # Storage (Coffee Lake / SATA / NVME)
+    "ahci" "sd_mod" "nvme"
+    
+    # Input/Bus (For emergency console)
+    "xhci_pci" "usbhid" "usb_storage"
+    
+    # Filesystem (Ext4 is standard)
+    "ext4"
   ];
+
+  # Compress initrd with zstd (Best balance between size and speed)
+  boot.initrd.compressor = "zstd";
   
   # ══════════════════════════════════════════════════════════════════════════
   # MONITORING & DEBUGGING
@@ -94,15 +74,10 @@ in
   
   environment.systemPackages = with pkgs; [
     perf
-    ramBenchmark
     kmod
     pciutils
     usbutils
   ];
-  
-  programs.bash.shellAliases = {
-    ram-bench = "${ramBenchmark}/bin/ram-benchmark";
-  };
   
   # ══════════════════════════════════════════════════════════════════════════
   # BOOT-PARAMETER
