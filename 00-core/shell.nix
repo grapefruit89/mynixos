@@ -99,6 +99,11 @@ in
   };
   
   programs.bash.interactiveShellInit = lib.mkIf (user == "moritz") ''
+    # ble.sh Initialisierung (muss früh erfolgen)
+    if [[ $- == *i* ]] && [[ -f ${pkgs.blesh}/share/blesh/ble.sh ]]; then
+      source ${pkgs.blesh}/share/blesh/ble.sh
+    fi
+
     if [ -n "$SSH_CONNECTION" ] || [ "$TERM" = "xterm-256color" ]; then
       echo ""
       ${pkgs.fastfetch}/bin/fastfetch --config ${fastfetchConfig}
@@ -113,7 +118,7 @@ in
   
   environment.systemPackages = with pkgs; [
     bat eza ripgrep fd nix-tree nix-diff nixfmt fastfetch duf dust htop
-    serviceStatusScript
+    serviceStatusScript blesh
   ];
   
   programs.git = {
