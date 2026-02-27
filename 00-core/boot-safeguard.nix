@@ -2,251 +2,64 @@
 #   owner: core
 #   status: active
 #   scope: shared
-#   summary: Boot-Partition Safeguard – Verhindert Overflow durch aggressive GC
+#   summary: Boot-Partition Safeguard – Optimiert für 1000MB (1GB)
 #   priority: P0 (Blocker)
-#   issue: Boot-Partition nur 96MB, füllt sich bei ~6 Generationen
 
 { config, lib, pkgs, ... }:
 
 let
-  # Schwellwerte für Warnungen
-  warningThreshold = 75;  # % Füllstand
-  criticalThreshold = 85; # % Füllstand
+  # Schwellwerte für 1000MB Partition (in Prozent)
+  warningThreshold = 70; # Warnung ab 700MB belegt
+  criticalThreshold = 90; # Kritisch ab 900MB belegt
   
-  # Space-Check Script
   bootSpaceCheck = pkgs.writeShellScriptBin "boot-space-check" ''
     #!/usr/bin/env bash
     set -euo pipefail
-    
-    # Farben für Terminal-Output
     RED='\033[0;31m'
     YELLOW='\033[1;33m'
     GREEN='\033[0;32m'
-    NC='\033[0m' # No Color
-    
-    # Boot-Partition Füllstand ermitteln
+    NC='\033[0m'
     BOOT_USAGE=$(df /boot | tail -1 | awk '{print $5}' | sed 's/%//')
     BOOT_AVAIL=$(df -h /boot | tail -1 | awk '{print $4}')
-    
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "🔍 Boot-Partition Status"
+    echo "🔍 Boot-Partition Status (Zielgröße: 1000MB)"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    
-    # Status-Anzeige mit Farben
-    if [ "$BOOT_USAGE" -ge ${toString criticalThreshold} ]; then
+    if [ "$BOOT_USAGE" -ge 90 ]; then
       echo -e "Status:   ''${RED}KRITISCH''${NC} (''${BOOT_USAGE}%)"
-      echo -e "Frei:     ''${RED}''${BOOT_AVAIL}''${NC}"
-      echo ""
-      echo "🚨 AKTION ERFORDERLICH:"
-      echo "   sudo nix-collect-garbage --delete-older-than 3d"
-      echo "   sudo nixos-rebuild switch --rollback"
       EXIT_CODE=2
-    elif [ "$BOOT_USAGE" -ge ${toString warningThreshold} ]; then
+    elif [ "$BOOT_USAGE" -ge 70 ]; then
       echo -e "Status:   ''${YELLOW}WARNUNG''${NC} (''${BOOT_USAGE}%)"
-      echo -e "Frei:     ''${YELLOW}''${BOOT_AVAIL}''${NC}"
-      echo ""
-      echo "⚠️  Empfehlung: Alte Generationen löschen"
-      echo "   nclean (oder: sudo nix-collect-garbage)"
       EXIT_CODE=1
     else
       echo -e "Status:   ''${GREEN}OK''${NC} (''${BOOT_USAGE}%)"
-      echo -e "Frei:     ''${GREEN}''${BOOT_AVAIL}''${NC}"
       EXIT_CODE=0
     fi
-    
+    echo -e "Frei:     ''${BOOT_AVAIL}"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    
-    # Generationen auflisten
-    echo ""
-    echo "📦 Installierte Generationen:"
-    sudo nix-env -p /nix/var/nix/profiles/system --list-generations | tail -6
-    
     exit $EXIT_CODE
-  '';
-  
-  # Pre-Build Hook (verhindert Build bei vollem /boot)
-  preBuildCheck = pkgs.writeShellScriptBin "pre-build-check" ''
-    #!/usr/bin/env bash
-    set -euo pipefail
-    
-    BOOT_USAGE=$(df /boot | tail -1 | awk '{print $5}' | sed 's/%//')
-    
-    if [ "$BOOT_USAGE" -ge ${toString criticalThreshold} ]; then
-      echo "❌ FEHLER: /boot ist zu ''${BOOT_USAGE}% voll!"
-      echo ""
-      echo "nixos-rebuild wurde abgebrochen, um ein volles /boot zu verhindern."
-      echo ""
-      echo "Lösung:"
-      echo "  1. sudo nix-collect-garbage --delete-older-than 3d"
-      echo "  2. sudo nixos-rebuild boot  (keine neue Generation auf /boot)"
-      echo "  3. sudo reboot"
-      echo "  4. Dann: sudo nix-collect-garbage -d  (löscht alte boot-Einträge)"
-      echo ""
-      exit 1
-    fi
-    
-    echo "✅ /boot Check: OK (''${BOOT_USAGE}%)"
-  '';
-  
-  # Emergency Cleanup Script
-  emergencyCleanup = pkgs.writeShellScriptBin "boot-emergency-cleanup" ''
-    #!/usr/bin/env bash
-    set -euo pipefail
-    
-    echo "🚨 NOTFALL-CLEANUP für /boot"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo ""
-    
-    # Aktuelle Generationen anzeigen
-    echo "Vorher:"
-    sudo nix-env -p /nix/var/nix/profiles/system --list-generations
-    echo ""
-    
-    # Nur die letzten 3 Generationen behalten
-    read -p "Alle außer den letzten 3 Generationen löschen? [y/N]: " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-      sudo nix-env -p /nix/var/nix/profiles/system --delete-generations +3
-      sudo nix-collect-garbage -d
-      
-      echo ""
-      echo "Nachher:"
-      sudo nix-env -p /nix/var/nix/profiles/system --list-generations
-      
-      echo ""
-      echo "✅ Cleanup abgeschlossen"
-      echo "   Neuer /boot Füllstand:"
-      df -h /boot | tail -1
-    else
-      echo "Abgebrochen."
-    fi
   '';
 in
 {
-  # ══════════════════════════════════════════════════════════════════════════
-  # KONFIGURATION: Aggressive GC + Generation-Limit
-  # ══════════════════════════════════════════════════════════════════════════
-  
-  # Automatische Garbage Collection (TÄGLICH statt wöchentlich)
+  # Konfiguration für große Boot-Partition
+  boot.loader.systemd-boot.configurationLimit = lib.mkForce 20;
+
   nix.gc = {
     automatic = true;
-    dates = "daily";
-    options = "--delete-older-than 7d";
+    dates = "weekly";
+    options = "--delete-older-than 30d";
     persistent = true;
   };
-  
-  # Maximale Anzahl Generationen auf /boot (KRITISCH!)
-  boot.loader.systemd-boot.configurationLimit = 5;
-  
-  # ══════════════════════════════════════════════════════════════════════════
-  # SYSTEMD SERVICES: Monitoring & Pre-Build Check
-  # ══════════════════════════════════════════════════════════════════════════
-  
-  systemd.services.boot-space-monitor = {
-    description = "Boot Partition Space Monitor";
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${bootSpaceCheck}/bin/boot-space-check";
-      StandardOutput = "journal";
-      StandardError = "journal";
-    };
-  };
-  
-  systemd.timers.boot-space-monitor = {
-    wantedBy = [ "timers.target" ];
-    timerConfig = {
-      OnCalendar = "daily";
-      OnBootSec = "5min";
-      Persistent = true;
-    };
-  };
-  
-  systemd.services.pre-build-check = {
-    description = "Pre-Build Boot Space Check";
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${preBuildCheck}/bin/pre-build-check";
-    };
-  };
-  
-  # ══════════════════════════════════════════════════════════════════════════
-  # SHELL INTEGRATION: Warnungen + Helper
-  # ══════════════════════════════════════════════════════════════════════════
-  
+
+  environment.systemPackages = [ bootSpaceCheck ];
+
   programs.bash.shellAliases = {
     boot-check = "${bootSpaceCheck}/bin/boot-space-check";
-    boot-emergency = "${emergencyCleanup}/bin/boot-emergency-cleanup";
   };
-  
-  environment.systemPackages = [
-    bootSpaceCheck
-    preBuildCheck
-    emergencyCleanup
-    (pkgs.writeShellScriptBin "nixos-rebuild-safe" ''
-      #!/usr/bin/env bash
-      set -euo pipefail
-      
-      # Pre-Build Check
-      if ! ${preBuildCheck}/bin/pre-build-check; then
-        echo ""
-        echo "Abbruch durch boot-space-check."
-        exit 1
-      fi
-      
-      # Original nixos-rebuild aufrufen
-      exec ${pkgs.nixos-rebuild}/bin/nixos-rebuild "$@"
-    '')
-  ];
-  
-  # ══════════════════════════════════════════════════════════════════════════
-  # ERWEITERTE NIX-EINSTELLUNGEN
-  # ══════════════════════════════════════════════════════════════════════════
-  
-  nix.settings = {
-    auto-optimise-store = true;
-    max-jobs = lib.mkDefault 2;
-    cores = lib.mkDefault 2;
-    warn-dirty = true;
-  };
-  
-  programs.bash.shellAliases = {
-    nsw-safe = "sudo nixos-rebuild-safe switch";
-    ntest-safe = "sudo nixos-rebuild-safe test";
-  };
-  
-  # ══════════════════════════════════════════════════════════════════════════
-  # ASSERTIONS
-  # ══════════════════════════════════════════════════════════════════════════
-  
+
   assertions = [
     {
-      assertion = config.boot.loader.systemd-boot.configurationLimit <= 10;
-      message = "boot-safeguard: configurationLimit sollte <= 10 sein";
-    }
-    {
-      assertion = config.nix.gc.automatic == true;
-      message = "boot-safeguard: nix.gc.automatic muss aktiviert sein!";
+      assertion = config.boot.loader.systemd-boot.configurationLimit <= 30;
+      message = "boot-safeguard: Limit für 1000MB Partition angepasst.";
     }
   ];
-  
-  # ══════════════════════════════════════════════════════════════════════════
-  # DOKUMENTATION
-  # ══════════════════════════════════════════════════════════════════════════
-  
-  systemd.services.boot-safeguard-info = {
-    description = "Boot Safeguard Info Message";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "network.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-    };
-    script = ''
-      ${pkgs.coreutils}/bin/cat <<'EOF' | ${pkgs.util-linux}/bin/logger -t boot-safeguard
-      ╔════════════════════════════════════════════════════════════════╗
-      ║  BOOT-SAFEGUARD AKTIV                                          ║
-      ╚════════════════════════════════════════════════════════════════╝
-      EOF
-    '';
-  };
 }

@@ -6,6 +6,8 @@
 
 { lib, config, ... }:
 {
+  imports = [ ../10-infrastructure/vpn-live-config.nix ];
+
   options.my.configs = {
     # source-id: CFG.identity.bastelmodus
     bastelmodus = lib.mkOption {
@@ -186,3 +188,4 @@
     ];
   };
 }
+

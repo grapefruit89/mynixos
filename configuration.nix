@@ -43,6 +43,7 @@
     ./10-infrastructure/cockpit.nix
     # ./10-infrastructure/wireguard-vpn.nix # Replaced by netns confinement
     ./10-infrastructure/vpn-confinement.nix
+    ./10-infrastructure/secret-ingest.nix
     ./10-infrastructure/pocket-id.nix
     ./10-infrastructure/dns-automation.nix
 
