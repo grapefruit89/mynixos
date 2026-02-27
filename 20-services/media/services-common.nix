@@ -27,13 +27,19 @@
       default = "secure-headers@file";
       description = "Traefik middleware for security headers.";
     };
+
+    netns = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      description = "Network Namespace to run media services in (VPN Confinement).";
+    };
   };
 
   config.assertions = [
     {
       assertion = config.my.media.defaults.domain != null;
       # source-id: CFG.identity.domain
-      message = "my.media.defaults.domain must be set (e.g. \"${config.my.configs.identity.domain}\") for generated media hostnames.";
+      message = "my.media.defaults.domain must be set for generated media hostnames.";
     }
   ];
 }

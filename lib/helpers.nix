@@ -3,50 +3,37 @@ let
   dnsMap = import ../10-infrastructure/dns-map.nix;
 in
 {
-  # mkService: The Isomorphic Service Generator (v2.2)
-  # Standards: Zero-Trust Hardening, Auto-Port Injection, Traefik & SSO.
+  # mkService: v2.3 (Confinement Ready)
   mkService = { 
     config,
     name, 
-    port ? null, # Optional: Auto-injected from config.my.ports if null
+    port ? null,
     useSSO ? true, 
     description ? "Managed Service",
     readWritePaths ? [],
-    allowNetwork ? true
+    allowNetwork ? true,
+    netns ? null # NEW: Optionaler Network-Namespace
   }: let
-    # AUTOMATIC PORT INJECTION (Fixes VIO-01)
-    # Priority: 1. Explicit argument, 2. Port Registry, 3. Error
     finalPort = if port != null then port 
                 else if config.my.ports ? ${name} then config.my.ports.${name}
-                else throw "mkService: No port defined for service '${name}' in config.my.ports or as argument.";
+                else throw "mkService: No port defined for ${name}";
   in {
-    # Systemd Hardening (Aviation Grade)
-    systemd.services."${name}".serviceConfig = {
-      Description = lib.mkDefault description;
-      ProtectSystem = lib.mkDefault "strict";
-      ProtectHome = lib.mkDefault true;
-      PrivateTmp = lib.mkDefault true;
-      PrivateDevices = lib.mkDefault true;
-      NoNewPrivileges = lib.mkDefault true;
-      Restart = lib.mkDefault "always";
-      
-      # Security Toggles
-      ProtectKernelTunables = lib.mkDefault true;
-      ProtectKernelModules = lib.mkDefault true;
-      ProtectControlGroups = lib.mkDefault true;
-      RestrictRealtime = lib.mkDefault true;
-      RestrictSUIDSGID = lib.mkDefault true;
-      MemoryDenyWriteExecute = lib.mkDefault true;
-      LockPersonality = lib.mkDefault true;
-      
-      # Sandbox dynamic paths
-      ReadWritePaths = lib.mkDefault readWritePaths;
-      
-      # Network restriction
-      RestrictAddressFamilies = lib.mkDefault (if allowNetwork then [ "AF_INET" "AF_INET6" "AF_UNIX" ] else [ "AF_UNIX" ]);
+    systemd.services."${name}" = {
+      serviceConfig = {
+        Description = lib.mkDefault description;
+        ProtectSystem = lib.mkDefault "strict";
+        ProtectHome = lib.mkDefault true;
+        PrivateTmp = lib.mkDefault true;
+        PrivateDevices = lib.mkDefault true;
+        NoNewPrivileges = lib.mkDefault true;
+        Restart = lib.mkDefault "always";
+        ReadWritePaths = lib.mkDefault readWritePaths;
+        
+        # NAMESPACE INJECTION
+        NetworkNamespacePath = lib.mkIf (netns != null) "/run/netns/${netns}";
+      };
     };
 
-    # Automatic Traefik Configuration
     services.traefik.dynamicConfigOptions.http = {
       routers."${name}" = {
         rule = lib.mkDefault (let
@@ -54,12 +41,15 @@ in
                  then dnsMap.dnsMapping.${name} 
                  else "${name}.nix.${dnsMap.baseDomain}";
         in "Host(`${host}`)");
-        service = lib.mkDefault name;
+        service = name;
         entryPoints = lib.mkDefault [ "websecure" ];
         tls.certResolver = lib.mkDefault "letsencrypt";
         middlewares = lib.mkDefault (if useSSO then [ "sso-chain@file" ] else [ "secured-chain@file" ]);
       };
-      services."${name}".loadBalancer.servers = lib.mkDefault [{ url = "http://127.0.0.1:${toString finalPort}"; }];
+      # ROUTING HINWEIS: Wenn netns aktiv ist, muss die IP hier auf das veth-Interface (10.200.1.2) zeigen.
+      services."${name}".loadBalancer.servers = lib.mkDefault [{ 
+        url = "http://${if netns != null then "10.200.1.2" else "127.0.0.1"}:${toString finalPort}"; 
+      }];
     };
   };
 }

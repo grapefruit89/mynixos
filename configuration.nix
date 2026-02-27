@@ -17,7 +17,7 @@
     ./00-core/network.nix
     ./00-core/storage.nix
     ./00-core/backup.nix
-    ./00-core/killswitch.nix
+    # ./00-core/killswitch.nix # Replaced by netns confinement
     ./00-core/user-preferences.nix
     ./00-core/principles.nix
     ./00-core/logging.nix
@@ -41,10 +41,9 @@
     ./10-infrastructure/traefik-routes-internal.nix
     ./10-infrastructure/homepage.nix
     ./10-infrastructure/cockpit.nix
-    ./10-infrastructure/wireguard-vpn.nix
+    # ./10-infrastructure/wireguard-vpn.nix # Replaced by netns confinement
     ./10-infrastructure/vpn-confinement.nix
     ./10-infrastructure/pocket-id.nix
-    ./10-infrastructure/homepage.nix
     ./10-infrastructure/dns-automation.nix
 
     # 20 — Services

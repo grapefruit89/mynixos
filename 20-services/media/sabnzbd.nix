@@ -14,23 +14,18 @@
     users.groups.sabnzbd.gid = lib.mkForce 194;
     users.users.sabnzbd.uid = lib.mkForce 984;
 
-    # Killswitch-ish behavior:
-    # - Sabnzbd is tied to wg-quick-privado lifecycle
-    # - service traffic is restricted to loopback + privado interface
+    # Netns Integration via _lib.nix
+    # Legacy Killswitch removed.
     systemd.services.sabnzbd = {
-      bindsTo = [ "wg-quick-privado.service" ];
-      partOf = [ "wg-quick-privado.service" ];
-      requires = [ "wg-quick-privado.service" ];
-      after = [ "wg-quick-privado.service" ];
+      # No longer binding to wg-quick-privado as we use wireguard-vault in netns
+      bindsTo = lib.mkForce [ ];
+      partOf = lib.mkForce [ ];
+      requires = lib.mkForce [ "wireguard-vault.service" ];
+      after = lib.mkForce [ "wireguard-vault.service" ];
       
       serviceConfig = {
-        RestrictNetworkInterfaces = [ "lo" "privado" ];
-
-        # [SEC-SABNZBD-VPN-001] DNS-Leak mitigation: systemd-resolved bypassen
-        # source-id: CFG.vpn.privado.dns
-        Environment = [
-          "DNSSERVERS=${lib.concatStringsSep "," config.my.configs.vpn.privado.dns}"
-        ];
+        # RestrictNetworkInterfaces removed as it's handled by netns isolation
+        RestrictNetworkInterfaces = lib.mkForce [ ];
 
         # [SEC-SABNZBD-SVC-001] Härtung
         NoNewPrivileges = lib.mkForce true;

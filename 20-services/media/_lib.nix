@@ -45,6 +45,12 @@ in
       description = "System group for ${name}.";
     };
 
+    netns = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = common.netns;
+      description = "Network Namespace for this specific service (defaults to global media netns).";
+    };
+
     expose = {
       enable = lib.mkOption {
         type = lib.types.bool;
@@ -99,6 +105,9 @@ in
       RestrictRealtime = lib.mkDefault true;
       RestrictSUIDSGID = lib.mkDefault true;
       RestrictAddressFamilies = lib.mkDefault [ "AF_INET" "AF_INET6" "AF_UNIX" ];
+
+      # CONFINEMENT INJECTION (The Vault)
+      NetworkNamespacePath = lib.mkIf (cfg.netns != null) "/run/netns/${cfg.netns}";
     };
 
     services.traefik.dynamicConfigOptions.http = lib.mkIf cfg.expose.enable {
@@ -111,7 +120,7 @@ in
       };
 
       services.${name}.loadBalancer.servers = [
-        { url = "http://127.0.0.1:${toString port}"; }
+        { url = "http://${if cfg.netns != null then "10.200.1.2" else "127.0.0.1"}:${toString port}"; }
       ];
     };
   };
