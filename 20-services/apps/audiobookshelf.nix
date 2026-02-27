@@ -1,28 +1,22 @@
-{ config, ... }:
+{ config, lib, ... }:
 let
-  # source-id: CFG.identity.domain
-  domain = config.my.configs.identity.domain;
+  myLib = import ../../lib/helpers.nix { inherit lib; };
   port = config.my.ports.audiobookshelf;
-in
-{
-  # source: my.ports.audiobookshelf
-  # sink:   services.audiobookshelf + traefik router nix-audiobookshelf.${domain}
-  services.audiobookshelf = {
-    enable = true;
-    host = "127.0.0.1";
+  serviceBase = myLib.mkService {
+    inherit config;
+    name = "audiobookshelf";
     port = port;
+    useSSO = false;
+    description = "Audiobook Server";
   };
-
-  services.traefik.dynamicConfigOptions.http = {
-    routers.audiobookshelf = {
-      rule = "Host(`nix-audiobookshelf.${domain}`)";
-      entryPoints = [ "websecure" ];
-      tls.certResolver = "letsencrypt";
-      middlewares = [ "secure-headers@file" ];
-      service = "audiobookshelf";
+in
+lib.mkMerge [
+  serviceBase
+  {
+    services.audiobookshelf = {
+      enable = true;
+      host = "127.0.0.1";
+      port = port;
     };
-    services.audiobookshelf.loadBalancer.servers = [
-      { url = "http://127.0.0.1:${toString port}"; }
-    ];
-  };
-}
+  }
+]

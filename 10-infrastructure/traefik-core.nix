@@ -43,7 +43,7 @@ in
     group = "traefik";
     dataDir = "/var/lib/traefik";
     environmentFiles = [
-      config.my.secrets.files.traefikEnv
+      config.my.secrets.files.sharedEnv
     ];
 
     staticConfigOptions = {
@@ -139,6 +139,9 @@ in
           browserXssFilter = true;
           contentTypeNosniff = true;
           frameDeny = true;
+          customResponseHeaders = {
+            "Content-Security-Policy" = "frame-ancestors 'self' https://*.${domain};";
+          };
         };
 
         rate-limit.rateLimit = {

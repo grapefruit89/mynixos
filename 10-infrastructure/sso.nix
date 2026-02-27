@@ -34,8 +34,10 @@ in
       issuer = "https://auth.${domain}";
       title = "m7c5 Login";
       
-      # Commented out due to type error in older module versions
-      # allowed_redirect_urls = allowedUrls;
+      # SSO: Erlaubte Redirect-URLs (Lockdown active)
+      allowed_redirect_urls = lib.concatStringsSep "," (allowedUrls ++ [
+        "https://auth.${domain}/callback"
+      ]);
       
       session_ttl_seconds = 86400;
       refresh_token_ttl_seconds = 2592000;

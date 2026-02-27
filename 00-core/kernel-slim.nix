@@ -80,11 +80,12 @@ in
   };
   
   # ══════════════════════════════════════════════════════════════════════════
-  # INITRD-OPTIMIERUNG (schnellerer Boot)
+  # INITRD-OPTIMIERUNG (schnellerer Boot + Platzersparnis auf /boot)
   # ══════════════════════════════════════════════════════════════════════════
   
+  boot.initrd.includeDefaultModules = lib.mkForce false;
   boot.initrd.availableKernelModules = lib.mkForce [
-    "ahci" "sd_mod" "xhci_pci" "usbhid" "usb_storage"
+    "ahci" "sd_mod" "xhci_pci" "usbhid" "usb_storage" "nvme"
   ];
   
   # ══════════════════════════════════════════════════════════════════════════

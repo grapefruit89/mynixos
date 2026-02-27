@@ -1,4 +1,4 @@
-{ ... }:
+{ lib, pkgs, config, ... }:
 {
   imports = [
     ./00-core/boot-safeguard.nix

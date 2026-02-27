@@ -29,3 +29,10 @@ Dieses Dokument dient als Einstiegspunkt für jede KI, die an dieser Konfigurati
 ## 3. Wissens-IDs (Traceability)
 
 Dieses Repository nutzt `source-id` und `sink` Kommentare. Wenn du Code änderst, stelle sicher, dass die Verbindung zwischen Definition (`source-id`) und Verwendung (`sink`) erhalten bleibt.
+
+## 4. Architekt-Direktiven (Phase 3)
+
+*   **System Scan:** Wann immer ein "System Scan" angefordert wird oder der Prozess via CI (GitHub Actions) läuft, analysiere die Dateistruktur auf strukturelle Isomorphie.
+*   **Visualisierung:** Erstelle ein Mermaid.js Diagramm (graph TB), das die aktuelle 00/10/20 Layer-Hierarchie widerspiegelt.
+*   **Dependency Hell:** Suche explizit nach zirkulären Imports oder Layer-Verletzungen (z.B. 00-core importiert 20-services) und markiere diese Knoten im Diagramm ROT.
+*   **Stil:** Nutze klare Gruppierungen (subgraphs) und professionelle Mermaid-Syntax.

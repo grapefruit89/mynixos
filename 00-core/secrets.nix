@@ -1,18 +1,25 @@
-{ config, lib, ... }:
-let
-  secrets = import ../.local-secrets.nix;
-in
+{ lib, ... }:
 {
   options.my.secrets = {
-    sonarr_api_key = lib.mkOption { type = lib.types.str; default = secrets.sonarr_api_key; };
-    radarr_api_key = lib.mkOption { type = lib.types.str; default = secrets.radarr_api_key; };
-    readarr_api_key = lib.mkOption { type = lib.types.str; default = secrets.readarr_api_key; };
-    cloudflare_token = lib.mkOption { type = lib.types.str; default = secrets.cloudflare; };
-    
+    # CRITICAL: These paths point to files OUTSIDE the Nix store.
+    # Services must read them at runtime (e.g., via EnvironmentFile).
     files = {
-      wireguardPrivadoConf = lib.mkOption { type = lib.types.str; default = "/etc/nixos/00-core/wireguard-privado.conf"; };
-      sharedEnv = lib.mkOption { type = lib.types.str; default = "/etc/nixos/.env"; };
-      traefikEnv = lib.mkOption { type = lib.types.str; default = "/etc/nixos/.env"; };
+      sharedEnv = lib.mkOption { 
+        type = lib.types.str; 
+        default = "/etc/nixos/secrets.env"; 
+      };
+      sshGithubKey = lib.mkOption { 
+        type = lib.types.str; 
+        default = "/etc/nixos/ssh_github.key"; 
+      };
+      sshUnraidKey = lib.mkOption { 
+        type = lib.types.str; 
+        default = "/etc/nixos/ssh_unraid.key"; 
+      };
+      wireguardPrivadoConf = lib.mkOption { 
+        type = lib.types.str; 
+        default = "/etc/nixos/00-core/wireguard-privado.conf"; 
+      };
     };
 
     vars = {

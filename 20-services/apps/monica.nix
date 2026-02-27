@@ -1,27 +1,26 @@
-{ config, ... }:
+{ config, lib, ... }:
 let
-  # source-id: CFG.identity.domain
-  domain = config.my.configs.identity.domain;
+  myLib = import ../../lib/helpers.nix { inherit lib; };
   port = config.my.ports.monica;
-  host = "nix-monica.${domain}";
   appKeyFile = "/var/lib/monica/app-key";
+  serviceBase = myLib.mkService {
+    inherit config;
+    name = "monica";
+    port = port;
+    useSSO = false;
+    description = "Personal CRM";
+  };
 in
-{
-  # source: my.ports.monica + ${appKeyFile}
-  # sink: services.monica (phpfpm+nginx localhost) + services.traefik router/service
-  services.monica = {
-    enable = true;
-    hostname = host;
-    appURL = "https://${host}";
-    inherit appKeyFile;
+lib.mkMerge [
+  serviceBase
+  {
+    services.monica = {
+      enable = true;
+      hostname = "nix-monica.${config.my.configs.identity.domain}";
+      appURL = "https://nix-monica.${config.my.configs.identity.domain}";
+      inherit appKeyFile;
 
-    # Monica's upstream module uses nginx; keep it local-only behind Traefik.
-    nginx = {
-      forceSSL = false;
-      enableACME = false;
-      addSSL = false;
-      onlySSL = false;
-      listen = [
+      nginx.listen = [
         {
           addr = "127.0.0.1";
           inherit port;
@@ -29,30 +28,16 @@ in
         }
       ];
     };
-  };
 
-  # source: appKeyFile path
-  # sink: readable by monica-setup service user
-  system.activationScripts.monicaAppKeyFile.text = ''
-    set -eu
-    install -d -m 0750 -o monica -g monica /var/lib/monica
-    if [ ! -s ${appKeyFile} ]; then
-      head -c 32 /dev/urandom | base64 > ${appKeyFile}
-    fi
-    chown monica:monica ${appKeyFile}
-    chmod 0600 ${appKeyFile}
-  '';
-
-  services.traefik.dynamicConfigOptions.http = {
-    routers.monica = {
-      rule = "Host(`${host}`)";
-      entryPoints = [ "websecure" ];
-      tls.certResolver = "letsencrypt";
-      middlewares = [ "secure-headers@file" ];
-      service = "monica";
-    };
-    services.monica.loadBalancer.servers = [
-      { url = "http://127.0.0.1:${toString port}"; }
-    ];
-  };
-}
+    # App Key Setup
+    system.activationScripts.monicaAppKeyFile.text = ''
+      set -eu
+      install -d -m 0750 -o monica -g monica /var/lib/monica
+      if [ ! -s ${appKeyFile} ]; then
+        head -c 32 /dev/urandom | base64 > ${appKeyFile}
+      fi
+      chown monica:monica ${appKeyFile}
+      chmod 0600 ${appKeyFile}
+    '';
+  }
+]

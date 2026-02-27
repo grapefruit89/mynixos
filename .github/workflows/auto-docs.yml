@@ -1,0 +1,42 @@
+name: "Auto-Generate Architecture Diagram"
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '**.nix'
+      - 'scripts/generate-mermaid.py'
+
+jobs:
+  update-diagram:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          pip install requests
+
+      - name: Generate Mermaid Diagram
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          # The script expects /etc/nixos structure locally, but in CI it's in the current dir
+          # We'll temporarily fake the path or adjust the script to be relative
+          sed -i 's|/etc/nixos/|.|g' scripts/generate-mermaid.py
+          python3 scripts/generate-mermaid.py > ARCHITECTURE.md
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "SRE-Bot"
+          git config --global user.email "sre-bot@m7c5.de"
+          git add ARCHITECTURE.md
+          git commit -m "docs: auto-update architecture diagram [skip ci]" || echo "No changes to commit"
+          git push

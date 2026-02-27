@@ -1,11 +1,19 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, ... }:
 let
+  myLib = import ../../lib/helpers.nix { inherit lib; };
   cfg = config.my.profiles.services.filebrowser;
-  domain = config.my.configs.identity.domain;
   port = config.my.ports.filebrowser;
+  serviceBase = myLib.mkService {
+    inherit config;
+    name = "filebrowser";
+    port = port;
+    useSSO = false;
+    description = "Web File Manager";
+  };
 in
-{
-  config = lib.mkIf cfg.enable {
+lib.mkIf cfg.enable (lib.mkMerge [
+  serviceBase
+  {
     services.filebrowser = {
       enable = true;
       settings = {
@@ -15,27 +23,12 @@ in
       };
     };
 
-    services.traefik.dynamicConfigOptions.http = {
-      routers.filebrowser = {
-        rule = "Host(`files.${domain}`)";
-        entryPoints = [ "websecure" ];
-        tls.certResolver = "letsencrypt";
-        middlewares = [ "secured-chain@file" ];
-        service = "filebrowser";
-      };
-      services.filebrowser.loadBalancer.servers = [{
-        url = "http://127.0.0.1:${toString port}";
-      }];
-    };
-
     systemd.services.filebrowser.serviceConfig = {
-      NoNewPrivileges = lib.mkForce true;
-      ProtectHome = lib.mkForce true;
       ProtectSystem = lib.mkForce "strict";
       ReadWritePaths = [ 
         "/var/lib/filebrowser"
         "/mnt/storage" 
       ];
     };
-  };
-}
+  }
+])

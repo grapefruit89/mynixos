@@ -1,28 +1,22 @@
-{ config, ... }:
+{ config, lib, ... }:
 let
-  # source-id: CFG.identity.domain
-  domain = config.my.configs.identity.domain;
+  myLib = import ../../lib/helpers.nix { inherit lib; };
   port = config.my.ports.paperless;
-in
-{
-  # source: my.ports.paperless
-  # sink:   services.paperless + traefik router nix-paperless.${domain}
-  services.paperless = {
-    enable = true;
-    address = "127.0.0.1";
+  serviceBase = myLib.mkService {
+    inherit config;
+    name = "paperless";
     port = port;
+    useSSO = false;
+    description = "Document Management System";
   };
-
-  services.traefik.dynamicConfigOptions.http = {
-    routers.paperless = {
-      rule = "Host(`nix-paperless.${domain}`)";
-      entryPoints = [ "websecure" ];
-      tls.certResolver = "letsencrypt";
-      middlewares = [ "secure-headers@file" ];
-      service = "paperless";
+in
+lib.mkMerge [
+  serviceBase
+  {
+    services.paperless = {
+      enable = true;
+      address = "127.0.0.1";
+      port = port;
     };
-    services.paperless.loadBalancer.servers = [
-      { url = "http://127.0.0.1:${toString port}"; }
-    ];
-  };
-}
+  }
+]

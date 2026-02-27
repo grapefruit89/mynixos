@@ -1,12 +1,14 @@
 { config, pkgs, lib, ... }:
 let
   dnsMap = import ./dns-map.nix;
-  secrets = import ../.local-secrets.nix;
 in
 {
   services.homepage-dashboard = {
     enable = true;
     
+    # Path to secrets file outside the store
+    environmentFile = config.my.secrets.files.sharedEnv;
+
     # Sinnvolle Gruppenstruktur statt einfacher Liste
     services = [
       {
@@ -19,7 +21,7 @@ in
               widget = {
                 type = "sonarr";
                 url = "http://127.0.0.1:8989";
-                key = secrets.sonarr_api_key;
+                key = "{{HOMEPAGE_VAR_SONARR_API_KEY}}";
               };
             };
           }
@@ -31,7 +33,7 @@ in
               widget = {
                 type = "radarr";
                 url = "http://127.0.0.1:7878";
-                key = secrets.radarr_api_key;
+                key = "{{HOMEPAGE_VAR_RADARR_API_KEY}}";
               };
             };
           }
@@ -84,10 +86,10 @@ in
 
   # Traefik Router: Erreichbar unter nixhome.m7c5.de
   services.traefik.dynamicConfigOptions.http.routers.homepage = {
-    rule = "Host(\"nixhome.${dnsMap.baseDomain}\")";
+    rule = "Host(`nixhome.${dnsMap.baseDomain}`)";
     service = "homepage-dashboard";
     entryPoints = [ "websecure" ];
-    tls.certResolver = "cloudflare";
+    tls.certResolver = "letsencrypt"; # Changed to letsencrypt as per traefik-core config
   };
   
   services.traefik.dynamicConfigOptions.http.services.homepage-dashboard.loadBalancer.servers = [{
