@@ -11,3 +11,5 @@ secrets/
 *.key
 *.p12
 *.kdbx
+.local-secrets.nix
+.secrets-local.nix
