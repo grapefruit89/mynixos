@@ -16,8 +16,6 @@ in
     home.sessionVariables = {
       GITHUB_TOKEN = secrets.github;
       GITHUB_PERSONAL_ACCESS_TOKEN = secrets.github;
-      CLOUDFLARE_API_TOKEN = secrets.cloudflare;
-      TAILSCALE_AUTH_KEY = secrets.tailscale;
     };
     programs.bash.shellAliases = {
       godmode = "gemini --yolo --include-directories /etc/nixos,/home/moritz";

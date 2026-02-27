@@ -1,0 +1,13 @@
+- Media:
+    - Sonarr:
+        icon: sonarr.png
+        href: https://sonarr.nix.m7c5.de
+        description: TV Serien Management
+    - Radarr:
+        icon: radarr.png
+        href: https://radarr.nix.m7c5.de
+        description: Filme Management
+- System:
+    - Traefik:
+        icon: traefik.png
+        href: https://traefik.nix.m7c5.de

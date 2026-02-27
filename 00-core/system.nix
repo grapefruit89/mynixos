@@ -33,10 +33,11 @@
 
   # -- NIX EINSTELLUNGEN ----------------------------------------------------
   nix = {
-    # Wir nutzen Standard-Einstellungen, um Fehler mit Cache-Keys zu vermeiden.
-    # NixOS nutzt per Default den offiziellen Cache (Binary First).
     optimise.automatic = true;
   };
+
+  # -- COMPATIBILITY --------------------------------------------------------
+  programs.nix-ld.enable = true;
 
   # -- PAKETE ---------------------------------------------------------------
   environment.systemPackages = with pkgs; [

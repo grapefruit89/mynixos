@@ -1,18 +1,21 @@
 { ... }:
 {
   imports = [
+    ./00-core/boot-safeguard.nix
+    ./00-core/ssh-rescue.nix
+    ./00-core/kernel-slim.nix
+    ./00-core/shell-premium.nix
+    ./10-infrastructure/sso.nix
     ./hosts/q958/hardware-configuration.nix
     ./hosts/q958/hardware-profile.nix
 
     # 00 — Core
     ./00-core/registry.nix
     ./00-core/configs.nix
+    ./00-core/secrets.nix
     ./00-core/network.nix
     ./00-core/storage.nix
     ./00-core/backup.nix
-    ./00-core/boot-safeguard.nix # <-- Neu: Schutz vor /boot Überlauf
-    ./00-core/ssh-rescue.nix     # <-- Neu: Notfall-SSH-Zugang
-    ./00-core/kernel-slim.nix    # <-- Neu: Kernel-Optimierung
     ./00-core/killswitch.nix
     ./00-core/user-preferences.nix
     ./00-core/principles.nix
@@ -40,7 +43,8 @@
     ./10-infrastructure/wireguard-vpn.nix
     ./10-infrastructure/vpn-confinement.nix
     ./10-infrastructure/pocket-id.nix
-    ./10-infrastructure/sso.nix       # <-- Neu: SSO Gate
+    ./10-infrastructure/homepage.nix
+    ./10-infrastructure/dns-automation.nix
 
     # 20 — Services
     ./20-services/media/default.nix

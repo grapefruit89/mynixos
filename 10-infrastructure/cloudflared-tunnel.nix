@@ -24,8 +24,8 @@ in
 
     wildcardPrefix = lib.mkOption {
       type = lib.types.str;
-      default = "nix-*";
-      description = "Subdomain wildcard routed through tunnel (default: nix-*).";
+      default = "*.nix";
+      description = "Subdomain wildcard routed through tunnel (default: *.nix).";
     };
   };
 

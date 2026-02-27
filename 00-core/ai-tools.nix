@@ -1,24 +1,20 @@
 { pkgs, ... }:
-
 {
   environment.systemPackages = with pkgs; [
-    aider-chat         # Git-KI
-    uv                 # Notwendig für nix-mcp
-    blesh              # Graue History-Vorschläge (Auto-Complete)
-    inshellisense      # IDE-Style Menüs für Befehle (Discovery)
-    fzf                # Bonus: Schnelle Dateisuche
+    aider-chat uv python3 blesh inshellisense fzf jq curl
   ];
 
   programs.bash.interactiveShellInit = ''
-    # 1. ble.sh laden und Multiline-Modus deaktivieren (Enter führt sofort aus)
+    # ble.sh laden (Fix: Ohne ungültige Flags)
     if [[ -f ${pkgs.blesh}/share/blesh/ble.sh ]]; then
-      source ${pkgs.blesh}/share/blesh/ble.sh --no-multiline
-      bind 'RETURN: accept-line'
+      source ${pkgs.blesh}/share/blesh/ble.sh
+      # Multiline-Modus via bleopt deaktivieren, falls unterstützt
+      bleopt edit_multi_line=0 2>/dev/null || true
     fi
 
-    # 2. inshellisense für gemini aktivieren
+    # inshellisense nur bei Bedarf
     if command -v inshellisense > /dev/null; then
-      alias gemini='inshellisense bind gemini -- gemini'
+       alias gemini-hint='inshellisense bind gemini -- gemini'
     fi
   '';
 }

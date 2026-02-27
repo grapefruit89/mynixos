@@ -13,3 +13,4 @@ secrets/
 *.kdbx
 .local-secrets.nix
 .secrets-local.nix
+wireguard-privado.conf

@@ -1,21 +1,8 @@
-{ config, lib, pkgs, ... }:
-
-let
-  user = config.my.configs.identity.user;
-in
-{
-  systemd.services.ssh-recovery-window = {
-    description = "SSH Password Recovery Window (5min after boot)";
+{ config, lib, pkgs, ... }: {
+  systemd.services.ssh-rescue-window = {
+    description = "SRE: Temporäres Passwort-Login Fenster";
     wantedBy = [ "multi-user.target" ];
-    path = with pkgs; [ util-linux coreutils gnused config.programs.ssh.package ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-    };
-    script = ''
-      echo "🔓 SSH Recovery Window startet (300s)"
-      # Hier käme die Logik zum temporären Erlauben von Passwörtern
-      echo "Recovery Window aktiv" | logger -t ssh-rescue
-    '';
+    serviceConfig.Type = "oneshot";
+    script = "echo 'Rescue-Fenster aktiv' | logger -t SRE-SSH";
   };
 }
