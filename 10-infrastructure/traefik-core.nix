@@ -204,23 +204,25 @@ in
     };
   };
 
-  systemd.services.traefik.serviceConfig = {
-    Environment = [ "TZ=${config.time.timeZone}" ];
-    NoNewPrivileges = lib.mkForce true;
-    PrivateTmp = lib.mkForce true;
-    AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" ];
-    CapabilityBoundingSet = [ "CAP_NET_BIND_SERVICE" ];
-    ProtectSystem = lib.mkForce "strict";
-    ReadWritePaths = [
-      config.services.traefik.dataDir
-      "/var/log/traefik"
-    ];
-    ProtectHome = lib.mkForce true;
-    ProtectKernelTunables = lib.mkForce true;
-    ProtectKernelModules = lib.mkForce true;
-    ProtectControlGroups = lib.mkForce true;
-    RestrictRealtime = lib.mkForce true;
-    RestrictSUIDSGID = lib.mkForce true;
-    RestrictAddressFamilies = [ "AF_INET" "AF_INET6" "AF_UNIX" ];
+  systemd.services.traefik = lib.mkIf (config.my.profiles.networking.reverseProxy == "traefik") {
+    serviceConfig = {
+      Environment = [ "TZ=${config.time.timeZone}" ];
+      NoNewPrivileges = lib.mkForce true;
+      PrivateTmp = lib.mkForce true;
+      AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" ];
+      CapabilityBoundingSet = [ "CAP_NET_BIND_SERVICE" ];
+      ProtectSystem = lib.mkForce "strict";
+      ReadWritePaths = [
+        config.services.traefik.dataDir
+        "/var/log/traefik"
+      ];
+      ProtectHome = lib.mkForce true;
+      ProtectKernelTunables = lib.mkForce true;
+      ProtectKernelModules = lib.mkForce true;
+      ProtectControlGroups = lib.mkForce true;
+      RestrictRealtime = lib.mkForce true;
+      RestrictSUIDSGID = lib.mkForce true;
+      RestrictAddressFamilies = [ "AF_INET" "AF_INET6" "AF_UNIX" ];
+    };
   };
 }

@@ -46,7 +46,7 @@ let
   
   serviceStatusScript = pkgs.writeShellScriptBin "check-services" ''
     #!/usr/bin/env bash
-    SERVICES=("sshd:SSH" "traefik:Traefik" "tailscaled:Tailscale" "jellyfin:Jellyfin" "fail2ban:Fail2ban")
+    SERVICES=("sshd:SSH" "caddy:Caddy" "tailscaled:Tailscale" "jellyfin:Jellyfin" "fail2ban:Fail2ban")
     echo ""
     echo "🔧 Service Status:"
     for entry in "''${SERVICES[@]}"; do
@@ -118,6 +118,7 @@ in
   programs.bash.shellAliases = lib.mkIf (user == "moritz") {
     # NIX REBUILD & SYNC
     nsw = "${nixSafeSwitchScript}/bin/nix-safe-switch";
+    nsw-dry = "sudo nixos-rebuild dry-activate -I nixos-config=/etc/nixos/configuration.nix";
     ntest = "sudo nixos-rebuild test";
     ndry = lib.mkForce "sudo nixos-rebuild dry-activate"; # Dry-Run Update
     nboot = "sudo nixos-rebuild boot";

@@ -1,8 +1,8 @@
 { config, lib, pkgs, ... }:
 let
   # Erkennung von wenig RAM (<= 4GB)
-  # Wir nutzen hier den Wert aus der Symbiosis-Config, falls vorhanden, sonst Default
-  ramGB = config.my.symbiosis.ramGB or 16; 
+  # Wir nutzen hier den Wert aus der Hardware-Config
+  ramGB = config.my.configs.hardware.ramGB or 16; 
   isLowRam = ramGB <= 4;
 in
 {
@@ -21,10 +21,18 @@ in
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
     ];
 
+    # 1. DOWNLOADS PRIORISIEREN
+    # Versuche immer erst den Download, auch bei Abhängigkeiten von Abhängigkeiten.
+    builders-use-substitutes = true;
+
+    # 2. DER NOTFALL-FALLBACK
+    # Falls das Paket nicht im Cache ist: Baue es lokal, anstatt abzubrechen.
+    fallback = true;
+
     # 🛡️ OOM-SCHUTZ (Optimiert für 4GB RAM)
     # Verhindert, dass der Rebuild das System einfriert
-    max-jobs = if isLowRam then lib.mkForce 1 else lib.mkDefault 2;
-    cores = if isLowRam then lib.mkForce 2 else lib.mkDefault 2;
+    max-jobs = if isLowRam then lib.mkForce 1 else lib.mkDefault 1;
+    cores = if isLowRam then lib.mkForce 2 else lib.mkDefault 1; # Nutze pro Job nur einen Kern um System flüssig zu halten.
     
     # Automatische Optimierung des Stores (Hardlinks sparen Platz auf dem Stick)
     auto-optimise-store = true;

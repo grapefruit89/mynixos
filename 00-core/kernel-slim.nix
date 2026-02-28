@@ -2,7 +2,7 @@
 #   owner: core
 #   status: active
 #   scope: shared
-#   summary: Smart Kernel Config – WiFi Support für Portabilität
+#   summary: Aggressive Kernel Slimming - Support für moderne Consumer-Hardware (ca. 2016+)
 #   priority: P3 (Medium)
 
 { config, lib, pkgs, ... }:
@@ -15,24 +15,51 @@
   boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_latest;
   
   # ══════════════════════════════════════════════════════════════════════════
-  # HARDWARE SUPPORT (Claude-Empfehlung: WiFi ist Pflicht für den Stick)
+  # AGGRESSIVE MODULE BLACKLIST (Kein Legacy-Dreck, keine Exoten)
   # ══════════════════════════════════════════════════════════════════════════
   
-  hardware.enableAllFirmware = true;
-  networking.wireless.enable = lib.mkDefault false; # Nutze i.d.R. NM oder iwd
-  
-  # WiFi-Treiber NICHT blacklisten (wichtig für Portabilität)
   boot.blacklistedKernelModules = [
-    # Nur echte Exoten oder unnötige HW-Beschleunigung blacklisten
+    # 💾 Uralte Dateisysteme (Über no-legacy.nix hinaus)
+    "minix" "qnx4" "qnx6" "squashfs" "befs" "bfs" "efs" "erofs" "hpfs" "sysv" "ufs" "adfs" "affs"
+    
+    # 📻 Amateur-Radio & Exoten (Sicherheitsrisiko & Bloat)
+    "ax25" "rose" "netrom" "6pack" "bpqether" "scc" "yam" "baycom_ser_fdx" "baycom_ser_hdx"
+    
+    # 🏭 Industrie-Busse & Exoten
+    "can" "vcan" "slcan" "gw" "can-raw" "can-gw" "appletalk" "psnap" "p8022" "p8023" "ipx"
+    
+    # 📟 Parallele & Uralte Schnittstellen
+    "parport" "parport_pc" "ppdev" "lp" "floppy"
+    
+    # 📠 ISDN & Analoge Modems
+    "isdn" "mishid" "hisax" "avmfritz"
+    
+    # 🕹️ Uralte Eingabegeräte & PC-Speaker
+    "gameport" "lightning" "analog" "joydump" "pcspkr"
+    
+    # Unbenutzte Grafiktreiber (Intel-only System)
     "nouveau" "radeon" "amdgpu" "mgag200" "ast"
-    "pcspkr" "iTCO_wdt" "iTCO_vendor_support"
-    "thunderbolt"
+    
+    # Sonstiges
+    "iTCO_wdt" "iTCO_vendor_support" "thunderbolt"
   ];
   
   # ══════════════════════════════════════════════════════════════════════════
-  # KERNEL HARDENING & PERFORMANCE TUNING
+  # KERNEL HARDENING & 32-BIT DEAKTIVIERUNG
   # ══════════════════════════════════════════════════════════════════════════
   
+  boot.kernelParams = [
+    # Deaktivierung von 32-Bit Emulation (ia32_emulation=0)
+    # Verhindert 32-bit Malware auf 64-bit Systemen.
+    "ia32_emulation=0"
+    
+    "quiet"
+    "loglevel=3"
+    "systemd.show_status=auto"
+    "rd.udev.log_level=3"
+    "logo.nologo"
+  ];
+
   boot.kernel.sysctl = {
     "net.ipv4.conf.all.rp_filter" = lib.mkForce 1;
     "net.ipv4.conf.default.rp_filter" = lib.mkForce 1;
@@ -45,33 +72,33 @@
   };
   
   # ══════════════════════════════════════════════════════════════════════════
-  # INITRD-OPTIMIERUNG (Portabler machen)
+  # INITRD-OPTIMIERUNG (Der "Clean Room" Effekt)
   # ══════════════════════════════════════════════════════════════════════════
   
-  # Wir nehmen Standardmodule wieder rein, um den Stick portabel zu machen
-  boot.initrd.includeDefaultModules = lib.mkForce true;
+  # Nur das absolut Notwendige in die initrd packen
+  boot.initrd.includeDefaultModules = lib.mkForce false;
   
-  # Zusätzliche kritische WiFi-Firmware/Treiber oft in initrd nötig? 
-  # Meistens reicht post-boot.
   boot.initrd.availableKernelModules = [
-    "ahci" "sd_mod" "nvme" "xhci_pci" "usbhid" "usb_storage" "ext4"
+    # Moderne Storage-Treiber
+    "nvme" "ahci" "xhci_pci" "usbhid" "usb_storage" "sd_mod"
+    # Dateisysteme für den Boot
+    "ext4" "vfat"
   ];
 
   boot.initrd.compressor = "zstd";
   
   # ══════════════════════════════════════════════════════════════════════════
-  # MONITORING & DEBUGGING
+  # HARDWARE SUPPORT (WiFi & Firmware)
+  # ══════════════════════════════════════════════════════════════════════════
+  
+  hardware.enableAllFirmware = true;
+  networking.wireless.enable = lib.mkDefault false;
+  
+  # ══════════════════════════════════════════════════════════════════════════
+  # TOOLING
   # ══════════════════════════════════════════════════════════════════════════
   
   environment.systemPackages = with pkgs; [
     pciutils usbutils iw wirelesstools
-  ];
-  
-  boot.kernelParams = [
-    "quiet"
-    "loglevel=3"
-    "systemd.show_status=auto"
-    "rd.udev.log_level=3"
-    "logo.nologo"
   ];
 }

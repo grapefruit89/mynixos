@@ -60,8 +60,8 @@ in
       '';
     };
     
-    # Deaktiviere Traefik-Konfigurationen, falls sie noch irgendwo existieren
-    services.traefik.dynamicConfigOptions.http.routers."${name}" = lib.mkForce null;
-    services.traefik.dynamicConfigOptions.http.services."${name}" = lib.mkForce null;
+    # Deaktiviere Traefik-Konfigurationen nur wenn Traefik überhaupt aktiv ist
+    services.traefik.dynamicConfigOptions.http.routers."${name}" = lib.mkIf config.services.traefik.enable (lib.mkForce null);
+    services.traefik.dynamicConfigOptions.http.services."${name}" = lib.mkIf config.services.traefik.enable (lib.mkForce null);
   };
 }
