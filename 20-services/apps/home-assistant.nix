@@ -20,22 +20,31 @@ let
   serviceBase = myLib.mkService {
     inherit config;
     name = "homeassistant";
-    useSSO = false; # HA has its own robust auth
-    description = "Home Automation (Full Declarative Core)";
+    useSSO = false;
+    description = "Home Automation (Fully Declarative Exhaustion)";
   };
 in
 lib.mkMerge [
   serviceBase
   {
+    # 🚀 HOME ASSISTANT EXHAUSTION
     services.home-assistant = {
       enable = true;
-      extraPackages = python3Packages: with python3Packages; [
-        psycopg2
-        pychromecast
-      ];
       
-      # 🚀 VOLL-DEKLARATIVE KONFIGURATION
-      # Verhindert UI-Konfig-Drift und macht das Setup 100% reproduzierbar.
+      # DEKLARATIVE KOMPONENTEN
+      # Alle Abhängigkeiten werden von Nix automatisch gelöst
+      extraComponents = [
+        "default_config"
+        "met"
+        "esphome"
+        "prometheus"
+        "mobile_app"
+        "sun"
+        "radio_browser"
+        "google_translate"
+      ];
+
+      # VOLL-DEKLARATIVE CONFIGURATION.YAML
       config = {
         homeassistant = {
           name = "NixHome";
@@ -45,39 +54,55 @@ lib.mkMerge [
           internal_url = "http://localhost:8123";
         };
 
+        # SRE: Observability Integration
+        prometheus = {
+          namespace = "hass";
+        };
+
+        # Web-Server Hardening
         http = {
           use_x_forwarded_for = true;
           trusted_proxies = [ "127.0.0.1" "::1" ];
         };
 
-        # Deklarative Dashboards (Lovelace)
+        # Deklarative Dashboards
         lovelace.mode = "yaml";
-
-        # Standard-Komponenten & Integrationen
-        frontend = { };
-        config = { };
-        history = { };
-        logbook = { };
-        map = { };
-        mobile_app = { };
-        sun = { };
-        system_health = { };
-        updater = { };
-        zeroconf = { };
-        
-        # SRE: Observability
-        prometheus = { };
       };
+
+      # LOVELACE UI IN NIX
+      lovelaceConfig = {
+        title = "NixHome Control Center";
+        views = [
+          {
+            title = "Hauptansicht";
+            icon = "mdi:home";
+            cards = [
+              {
+                type = "vertical-stack";
+                cards = [
+                  { type = "weather-forecast"; entity = "weather.home"; }
+                  { type = "entities"; entities = [ "sun.sun" ]; }
+                ];
+              }
+            ];
+          }
+        ];
+      };
+    };
+
+    # Hardening & Performance (UHD 630 Offloading falls möglich)
+    systemd.services.home-assistant.serviceConfig = {
+      DeviceAllow = [ "/dev/dri/renderD128" ]; # GPU Zugriff für Video-Processing
+      OOMScoreAdjust = 300; # HA darf im Notfall sterben (vor SSH/Caddy)
     };
   }
 ]
 
 
-
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:1c2355a6a1a0d84da8c6d629cc23403e74cfa9fb97369f515c82eb0fad25c6b1
+ *   checksum: sha256:e21426d28e3f3544e145dd5702d3b5187986c7eb3982676127a485ebf6afe7be
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

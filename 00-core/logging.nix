@@ -12,20 +12,35 @@
  *   status: audited
  * ---
  */
-{ ... }:
+{ lib, ... }:
 {
+  # 🚀 JOURNALD EXHAUSTION
+  # Maximale Nutzung deklarativer Journald-Steuerung
   services.journald.extraConfig = ''
     Storage=persistent
+    Compress=yes
     SystemMaxUse=500M
     SystemMaxFileSize=50M
     MaxRetentionSec=7day
+    RateLimitIntervalSec=30s
+    RateLimitBurst=10000
+    ForwardToSyslog=no
+    ForwardToConsole=no
+    TTYPath=/dev/tty12
+    MaxLevelConsole=info
+    MaxLevelStore=debug
   '';
 
+  # SRE: Automatisierte Journal-Bereinigung via Tmpfiles (Sicherheitsnetz)
   systemd.tmpfiles.rules = [
     "d /var/log/journal 2755 root systemd-journal - -"
+    "z /var/log/journal 2755 root systemd-journal - -"
   ];
-}
 
+  # Deaktiviere redundante Logging-Dienste für Performance
+  services.rsyslog.enable = false;
+  services.syslog-ng.enable = false;
+}
 
 
 
@@ -33,7 +48,7 @@
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:70b630be5c9fb5f90cca54c7dc8356f0b07f3e2740e894391d2dea092c1c607b
+ *   checksum: sha256:45756be05df2df059c728a5b14c9810a0049ceb6524b71ca1fc86ba1b82bf9de
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

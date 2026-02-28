@@ -17,37 +17,75 @@ let
   cfg = config.my.profiles.networking.systemd-networkd;
 in
 {
-  # ── NETWORKD ─────────────────────────────────────────────────────────────
+  # ── NETWORKD EXHAUSTION ──────────────────────────────────────────────────
   networking.useNetworkd = lib.mkIf cfg.enable true;
   networking.useDHCP = lib.mkIf cfg.enable false;
   networking.networkmanager.enable = lib.mkIf cfg.enable (lib.mkForce false);
 
   systemd.network.enable = lib.mkIf cfg.enable true;
-  systemd.network.networks."10-lan".matchConfig.Name = "en*";
-  systemd.network.networks."10-lan".networkConfig.DHCP = "yes";
-  systemd.network.networks."10-lan".linkConfig.RequiredForOnline = "yes";
-  systemd.network.networks."10-lan".address = [ "10.254.0.1/24" ];
+  
+  # Globale networkd Einstellungen
+  systemd.network.config.networkConfig.IPv6PrivacyExtensions = "kernel";
+  systemd.network.config.networkConfig.ManageTemporaryAddress = true;
+
+  systemd.network.networks."10-lan" = lib.mkIf cfg.enable {
+    matchConfig.Name = "en*";
+    networkConfig = {
+      DHCP = "yes";
+      IPv6AcceptRA = true;
+      IPForward = "yes";
+      IPMasquerade = "no";
+      MulticastDNS = "yes";
+      LLMNR = "yes";
+    };
+    linkConfig = {
+      RequiredForOnline = "yes";
+      Unmanaged = "no";
+    };
+    address = [ "10.254.0.1/24" ];
+  };
+
+  # ── DNS & RESOLVED EXHAUSTION ─────────────────────────────────────────────
+  services.resolved = lib.mkIf cfg.enable {
+    enable = true;
+    dnssec = "allow-downgrade";
+    domains = [ "~." ]; # Global resolver
+    fallbackDns = [ "1.1.1.1" "8.8.8.8" ];
+    extraConfig = ''
+      DNSOverTLS=yes
+      Cache=yes
+      CacheMaxAgeSec=86400
+    '';
+  };
 
   # ── AVAHI (mDNS) ──────────────────────────────────────────────────────────
-  services.avahi.enable = lib.mkIf cfg.enable true;
-  services.avahi.nssmdns4 = lib.mkIf cfg.enable true;
-  services.avahi.publish.enable = lib.mkIf cfg.enable true;
-  services.avahi.publish.addresses = lib.mkIf cfg.enable true;
-  services.avahi.publish.workstation = lib.mkIf cfg.enable true;
-
-  # ── DNS RESOLUTION ────────────────────────────────────────────────────────
-  services.resolved.enable = lib.mkIf cfg.enable true;
+  services.avahi = lib.mkIf cfg.enable {
+    enable = true;
+    nssmdns4 = true;
+    ipv4 = true;
+    ipv6 = true;
+    publish = {
+      enable = true;
+      addresses = true;
+      workstation = true;
+      userServices = true;
+    };
+    extraServiceFiles.ssh = "${pkgs.avahi}/etc/avahi/services/ssh.service";
+  };
 
   # ── PERFORMANCE (TCP BBR & Buffers) ──────────────────────────────────────
-  boot.kernel.sysctl."net.core.default_qdisc" = lib.mkIf cfg.enable "fq";
-  boot.kernel.sysctl."net.ipv4.tcp_congestion_control" = lib.mkIf cfg.enable "bbr";
-  boot.kernel.sysctl."net.core.rmem_max" = lib.mkIf cfg.enable 33554432;
-  boot.kernel.sysctl."net.core.wmem_max" = lib.mkIf cfg.enable 33554432;
-  boot.kernel.sysctl."net.ipv4.tcp_rmem" = lib.mkIf cfg.enable "4096 87380 33554432";
-  boot.kernel.sysctl."net.ipv4.tcp_wmem" = lib.mkIf cfg.enable "4096 65536 33554432";
-  boot.kernel.sysctl."net.core.netdev_max_backlog" = lib.mkIf cfg.enable 5000;
+  boot.kernel.sysctl = lib.mkIf cfg.enable {
+    "net.core.default_qdisc" = "fq";
+    "net.ipv4.tcp_congestion_control" = "bbr";
+    "net.core.rmem_max" = 33554432;
+    "net.core.wmem_max" = 33554432;
+    "net.ipv4.tcp_rmem" = "4096 87380 33554432";
+    "net.ipv4.tcp_wmem" = "4096 65536 33554432";
+    "net.core.netdev_max_backlog" = 10000; # Erhöht für SRE-Last
+    "net.ipv4.tcp_slow_start_after_idle" = 0;
+    "net.ipv4.tcp_mtu_probing" = 1;
+  };
 }
-
 
 
 
@@ -55,7 +93,7 @@ in
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:ee018ed82a6531f6e83cf7852f117c1de017bc9e76db6de91c6b1d0fb6a6a0f3
+ *   checksum: sha256:22585559f87d3ac4f8736a5b83745fdc3a30bb24a2ecf4f4e9fd0dd640b0e1a6
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

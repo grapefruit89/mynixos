@@ -12,7 +12,7 @@
  *   status: audited
  * ---
  */
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 let
   myLib = import ../../lib/helpers.nix { inherit lib; };
   domain = config.my.configs.identity.domain;
@@ -21,47 +21,53 @@ let
     inherit config;
     name = "n8n";
     useSSO = false;
-    description = "Workflow Automation";
+    description = "Workflow Automation (Declarative Core)";
   };
 in
 lib.mkMerge [
   serviceBase
   {
+    # 🚀 N8N EXHAUSTION
     services.n8n = {
       enable = true;
       
-      # 🚀 DEKLARATIVE COMMUNITY NODES
-      # Ermöglicht reproduzierbare Erweiterungen ohne UI-Installation.
-      # customNodes = [ pkgs.n8n-nodes-custom-example ]; 
+      # DEKLARATIVE COMMUNITY NODES
+      # Nutzt withPackages Pattern um Nodes als Nix-Artefakte zu binden
+      package = pkgs.n8n.withPackages (ps: [
+        # Hier können Community Nodes hinzugefügt werden sobald verpackt
+      ]);
 
       environment = {
         N8N_PORT = toString config.my.ports.n8n;
         N8N_HOST = "127.0.0.1";
         N8N_EDITOR_BASE_URL = "https://n8n.${domain}";
         
-        # SRE: Optimiertes Pruning & Performance
+        # SRE PERFORMANCE & DATA HYGIENE
         EXECUTIONS_DATA_PRUNE = "true";
-        EXECUTIONS_DATA_MAX_AGE = "336"; # 14 Tage
+        EXECUTIONS_DATA_MAX_AGE = "336"; # 14 Tage (Voll-Deklarativ)
+        N8N_LOG_LEVEL = "info";
         
-        # 🛡️ SICHERES SECRET HANDLING
-        # Nutzt SOPS-Secrets direkt über Dateipfade (systemd-credentials kompatibel)
+        # 🛡️ SECURE SECRET HANDLING
+        # Verweist direkt auf sops-entschlüsselte Dateien (Kein Env-Leak)
         # N8N_ENCRYPTION_KEY_FILE = config.sops.secrets.n8n_enc_key.path;
       };
     };
 
+    # systemd Hardening
     systemd.services.n8n.serviceConfig = {
       ProtectSystem = lib.mkForce "strict";
       ReadWritePaths = [ "/data/state/n8n" ];
+      # Ermöglicht Zugriff auf Secrets falls _FILE genutzt wird
+      # ReadOnlyPaths = [ config.sops.secrets.n8n_enc_key.path ];
     };
   }
 ]
 
 
-
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:ad9fddcaea447564eb6216c2d5e1e3f124727d1b480a055fd3baacf50c20778e
+ *   checksum: sha256:e1e12eaa30d435098bc60f18cdc9bb858935fa46320c9af37c59b90fa54bd008
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

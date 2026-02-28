@@ -24,10 +24,13 @@ args@{ lib, config, pkgs, ... }:
 
 
 
+
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:136c5bcdf3a977d654bae9d5ee07ee3a9d5348ad70ba689c65e31b51fa057330
+ *   checksum: sha256:96323289b0faa70cba6cf8311a678875882acd85b58487f770af2d5e33428322
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
