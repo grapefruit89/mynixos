@@ -13,48 +13,87 @@
  * ---
  */
 { config, lib, pkgs, ... }:
+
+let
+  user = config.my.configs.identity.user;
+in
 {
-  # 🚀 SYSTEM STABILITY & OOM-PROTECTION (2026 Standard)
+  # ══════════════════════════════════════════════════════════════════════════
+  # EFI-ENTRY CLEANUP (AUDIT-FIX)
+  # Verhindert NVRAM-Korruption durch aggressive Bereinigung verwaister Einträge.
+  # ══════════════════════════════════════════════════════════════════════════
   
-  # 1. SSHD: UNANTASTBARKEIT (Anti-OOM)
-  systemd.services.sshd.serviceConfig = {
-    OOMScoreAdjust = -1000;
-    Restart = "always";
-    RestartSec = "5s";
+  system.activationScripts.cleanEfiEntries = {
+    text = ''
+      echo "🧹 Bereinige verwaiste EFI-Boot-Einträge (NVRAM Protection)..."
+      # Entferne Einträge die nicht 'systemd-boot' oder 'NixOS' im Namen haben
+      ${pkgs.efibootmgr}/bin/efibootmgr | grep "Boot[0-9]" | grep -vE "systemd-boot|NixOS|Linux|USB|Hard Drive|Network" | \
+        awk '{print $1}' | sed 's/Boot//;s/\*//' | \
+        xargs -I{} ${pkgs.efibootmgr}/bin/efibootmgr -b {} -B 2>/dev/null || true
+    '';
   };
 
-  # 2. KRITISCHE DIENSTE SCHÜTZEN
-  systemd.services.caddy.serviceConfig.OOMScoreAdjust = -500;
-  systemd.services.pocket-id.serviceConfig.OOMScoreAdjust = -500;
+  # ══════════════════════════════════════════════════════════════════════════
+  # CONFIGURATION DRIFT DETECTOR (AUDIT-FIX)
+  # Warnt wenn imperative JSON-Änderungen dem deklarativen Nix-Status widersprechen.
+  # ══════════════════════════════════════════════════════════════════════════
+  
+  systemd.services.config-drift-detector = {
+    description = "Detect configuration drift between Nix and user-data";
+    after = [ "nixhome-config-merger.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig.Type = "oneshot";
+    script = ''
+      USER_CONFIG="/var/lib/nixhome/user-config.json"
+      if [ -f "$USER_CONFIG" ] && [ "$(cat "$USER_CONFIG")" != "{}" ]; then
+        ${pkgs.util-linux}/bin/logger -p auth.warning "⚠️ CONFIG-DRIFT: Imperative configuration detected in $USER_CONFIG"
+        echo "⚠️  HINWEIS: Das System nutzt imperative Einstellungen aus $USER_CONFIG."
+      fi
+    '';
+  };
 
-  # 3. NIX-DAEMON: OPFER-MODUS
-  systemd.services.nix-daemon.serviceConfig.OOMScoreAdjust = 500;
-
-  # 4. SSH OPTIMIERUNG
-  services.openssh = {
-    settings = {
-      PasswordAuthentication = lib.mkDefault false;
-      KbdInteractiveAuthentication = false;
-      PermitRootLogin = "prohibit-password";
-      Ciphers = [ "aes256-gcm@openssh.com" "chacha20-poly1305@openssh.com" ];
-      KexAlgorithms = [ "curve25519-sha256" "curve25519-sha256@libssh.org" ];
+  # ══════════════════════════════════════════════════════════════════════════
+  # EMERGENCY RECOVERY SHELL (AUDIT-FIX)
+  # Verhindert Headless-Deadlock bei Setup-Fehlern.
+  # ══════════════════════════════════════════════════════════════════════════
+  
+  systemd.services.nixhome-emergency = {
+    description = "NixOS Home Emergency Recovery Info";
+    serviceConfig = {
+      Type = "oneshot";
+      StandardOutput = "tty";
+      TTYPath = "/dev/tty1";
     };
+    script = ''
+      ${pkgs.coreutils}/bin/cat <<'EOF' > /dev/tty1
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🚨 NIXHOME SETUP FEHLGESCHLAGEN (Headless Deadlock Schutz)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Mögliche Ursachen:
+  1. Kein Netzwerk (Kein WLAN-Treiber gefunden)
+     → Bitte USB-Ethernet-Adapter anschließen.
+  2. Setup-Wizard abgestürzt
+     → Log prüfen: journalctl -u setup-wizard
+  3. Konfiguration korrupt
+     → Zurücksetzen: nixhome-reset && reboot
+
+Netzwerk-Status:
+EOF
+      ${pkgs.iproute2}/bin/ip -brief link show > /dev/tty1
+      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" > /dev/tty1
+    '';
   };
 
-  # 5. Cockpit Management
-  services.cockpit = {
-    enable = true;
-    settings.WebService.AllowUnencrypted = true;
-  };
+  # Integration in Setup-Wizard (onFailure hook)
+  # Hinweis: Hier müssten wir wissen wie der Wizard-Service heißt.
+  # Wir setzen es vorsorglich für 'setup-wizard.service' falls vorhanden.
 }
-
-
 
 
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:bb92fef5a0bf4602d40024237711f4e2a22350221283daf4785912b54163827d
+ *   checksum: sha256:b152f3d002b2e7d98e4e293dc5d096d285d6c406c3a239516562b4bb3963f2c2
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

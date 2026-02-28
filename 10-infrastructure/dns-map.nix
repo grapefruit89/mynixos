@@ -39,10 +39,11 @@
 
 
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:a96ca2838e4eb29ae8173aed55e28ec531e3f9045fa7f25fb7914dcf47c3b05b
+ *   checksum: sha256:e75db5fe132aab1873e97155b8b07d601c754987cca563c77b3fdf569be3252f
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

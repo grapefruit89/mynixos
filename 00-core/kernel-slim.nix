@@ -22,50 +22,58 @@
   boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_latest;
   
   # ══════════════════════════════════════════════════════════════════════════
-  # AGGRESSIVE MODULE BLACKLIST (Kein Legacy-Dreck, keine Exoten)
+  # HARDWARE-KOMPATIBILITÄT (AUDIT-FIX)
+  # ══════════════════════════════════════════════════════════════════════════
+  
+  boot.initrd.availableKernelModules = [
+    # Moderne Storage-Treiber
+    "nvme" "ahci" "xhci_pci" "usbhid" "usb_storage" "sd_mod"
+    # USB-Ethernet Fallback (Verhindert Headless-Deadlock bei fehlendem WLAN)
+    "r8152" "cdc_ether" "asix" "ax88179_178a"
+    # Virtuelle Maschinen (VMware, VirtualBox, KVM)
+    "virtio_pci" "virtio_scsi" "virtio_blk" "virtio_net" "vmw_balloon"
+  ];
+
+  boot.kernelModules = [
+    # Grafik & Display Fallbacks
+    "vmwgfx" "vboxvideo" "virtio_gpu"
+    # Netzwerk
+    "usbnet"
+  ];
+
+  # Broadcom WLAN Support (Proprietär, aber oft notwendig für Laptops)
+  boot.extraModulePackages = lib.optional config.my.configs.hardware.broadcomWlan 
+    config.boot.kernelPackages.broadcom_sta;
+
+  hardware.enableAllFirmware = true;
+  hardware.enableRedistributableFirmware = true;
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # AGGRESSIVE MODULE BLACKLIST (Kein Legacy-Dreck)
   # ══════════════════════════════════════════════════════════════════════════
   
   boot.blacklistedKernelModules = [
-    # 💾 Uralte Dateisysteme (Über no-legacy.nix hinaus)
     "minix" "qnx4" "qnx6" "squashfs" "befs" "bfs" "efs" "erofs" "hpfs" "sysv" "ufs" "adfs" "affs"
-    
-    # 📻 Amateur-Radio & Exoten (Sicherheitsrisiko & Bloat)
     "ax25" "rose" "netrom" "6pack" "bpqether" "scc" "yam" "baycom_ser_fdx" "baycom_ser_hdx"
-    
-    # 🏭 Industrie-Busse & Exoten
     "can" "vcan" "slcan" "gw" "can-raw" "can-gw" "appletalk" "psnap" "p8022" "p8023" "ipx"
-    
-    # 📟 Parallele & Uralte Schnittstellen
     "parport" "parport_pc" "ppdev" "lp" "floppy"
-    
-    # 📠 ISDN & Analoge Modems
     "isdn" "mishid" "hisax" "avmfritz"
-    
-    # 🕹️ Uralte Eingabegeräte & PC-Speaker
     "gameport" "lightning" "analog" "joydump" "pcspkr"
-    
-    # Unbenutzte Grafiktreiber (Intel-only System)
-    "nouveau" "radeon" "amdgpu" "mgag200" "ast"
-    
-    # Sonstiges
+    "mgag200" "ast"
     "iTCO_wdt" "iTCO_vendor_support" "thunderbolt"
   ];
   
   # ══════════════════════════════════════════════════════════════════════════
-  # KERNEL HARDENING & 32-BIT DEAKTIVIERUNG
+  # KERNEL HARDENING & ENTROPIE
   # ══════════════════════════════════════════════════════════════════════════
   
   boot.kernelParams = [
-    # Deaktivierung von 32-Bit Emulation (ia32_emulation=0)
-    # Verhindert 32-bit Malware auf 64-bit Systemen.
-    "ia32_emulation=0"
-    
-    "quiet"
-    "loglevel=3"
-    "systemd.show_status=auto"
-    "rd.udev.log_level=3"
-    "logo.nologo"
+    "ia32_emulation=0" # Deaktivierung 32-Bit
+    "random.trust_cpu=on" # Vertraue Hardware-RNG (Verhindert Boot-Hänger bei Entropy-Mangel)
+    "quiet" "loglevel=3" "systemd.show_status=auto" "rd.udev.log_level=3" "logo.nologo"
   ];
+
+  services.rngd.enable = true; # Hardware Entropy Daemon
 
   boot.kernel.sysctl = {
     "net.ipv4.conf.all.rp_filter" = lib.mkForce 1;
@@ -75,48 +83,14 @@
     "kernel.dmesg_restrict" = lib.mkForce 1;
     "vm.swappiness" = lib.mkDefault 10;
     "vm.vfs_cache_pressure" = lib.mkDefault 50;
-    "net.ipv4.tcp_fastopen" = lib.mkDefault 3;
   };
-  
-  # ══════════════════════════════════════════════════════════════════════════
-  # INITRD-OPTIMIERUNG (Der "Clean Room" Effekt)
-  # ══════════════════════════════════════════════════════════════════════════
-  
-  # Nur das absolut Notwendige in die initrd packen
-  boot.initrd.includeDefaultModules = lib.mkForce false;
-  
-  boot.initrd.availableKernelModules = [
-    # Moderne Storage-Treiber
-    "nvme" "ahci" "xhci_pci" "usbhid" "usb_storage" "sd_mod"
-    # Dateisysteme für den Boot
-    "ext4" "vfat"
-  ];
-
-  boot.initrd.compressor = "zstd";
-  
-  # ══════════════════════════════════════════════════════════════════════════
-  # HARDWARE SUPPORT (WiFi & Firmware)
-  # ══════════════════════════════════════════════════════════════════════════
-  
-  hardware.enableAllFirmware = true;
-  networking.wireless.enable = lib.mkDefault false;
-  
-  # ══════════════════════════════════════════════════════════════════════════
-  # TOOLING
-  # ══════════════════════════════════════════════════════════════════════════
-  
-  environment.systemPackages = with pkgs; [
-    pciutils usbutils iw wirelesstools
-  ];
 }
-
-
 
 
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:9a833a4e43b7b8dacce27fd1938dc2b6b43c3ed1b88bb6030da33c30fd0e37cb
+ *   checksum: sha256:e41b2ab369484091ba55b45ed16753ea99cf2bcd5ea993ae2bd6b6720b7e87ad
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

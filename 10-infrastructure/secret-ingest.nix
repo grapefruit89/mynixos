@@ -73,10 +73,11 @@ for f_name in glob.glob("*.conf"):
 
 
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:50c3fe34f9af13ce2112ae221182a83bf38162117d5441bb27a1869ad85c86d8
+ *   checksum: sha256:3a3419be903a8b8e116a1aa83e4fe4cda24f7522415618550c90d33d3118c19f
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

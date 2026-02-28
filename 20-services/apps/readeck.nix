@@ -38,10 +38,11 @@ lib.mkMerge [
 
 
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:754647aa4d44457d3c186a842fdbd942f56fc437615f850ddd66d79a9776e0a5
+ *   checksum: sha256:e3be9036c7ac7f5b7024e9ea33fa90bbd48465fa6255af3a91dd95e0ff9169c3
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
