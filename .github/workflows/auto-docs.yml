@@ -1,13 +1,13 @@
-name: "Auto-Generate Architecture Diagram"
+name: "System Integrity & Documentation"
 on:
   push:
     branches: [ main ]
     paths:
       - '**.nix'
-      - 'scripts/generate-mermaid.py'
+      - 'scripts/**'
 
 jobs:
-  update-diagram:
+  update-docs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -24,12 +24,17 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          python3 scripts/generate-mermaid.py > ARCHITECTURE.md
+          python3 scripts/generate-mermaid.py > ARCHITECTURE.md || echo "Mermaid generation failed"
+
+      - name: Generate Health Report
+        run: |
+          bash scripts/generate-health-report.sh
 
       - name: Commit and Push
         run: |
           git config --global user.name "SRE-Bot"
           git config --global user.email "sre-bot@m7c5.de"
-          git add ARCHITECTURE.md
-          git commit -m "docs: auto-update architecture diagram [skip ci]" || echo "No changes to commit"
+          git add ARCHITECTURE.md HEALTH_REPORT.md
+          git commit -m "docs: auto-update system integrity reports [skip ci]" || echo "No changes to commit"
           git push
+
