@@ -5,7 +5,7 @@ let
   serviceBase = myLib.mkService {
     inherit config;
     name = "scrutiny";
-    useSSO = false;
+    useSSO = true;
     description = "Hard Drive Monitoring";
   };
 in

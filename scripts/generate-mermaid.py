@@ -5,7 +5,10 @@ import json
 import urllib.request
 
 # Minimal Architect Script for NixOS Layer Visualization
-# Usage: ./generate-mermaid.py <API_KEY>
+# Usage: ./generate-mermaid.py <API_KEY> <BASE_DIR>
+
+# Try to find the nixos root
+BASE_DIR = sys.argv[2] if len(sys.argv) > 2 else ("/etc/nixos" if os.path.exists("/etc/nixos/configuration.nix") else ".")
 
 API_KEY = sys.argv[1] if len(sys.argv) > 1 else os.environ.get("GEMINI_API_KEY")
 if not API_KEY:
@@ -15,7 +18,7 @@ if not API_KEY:
 def get_file_structure(startpath):
     structure = []
     for root, dirs, files in os.walk(startpath):
-        if ".git" in root: continue
+        if ".git" in root or ".gemini" in root: continue
         level = root.replace(startpath, '').count(os.sep)
         indent = ' ' * 4 * (level)
         structure.append(f"{indent}{os.path.basename(root)}/")
@@ -24,15 +27,16 @@ def get_file_structure(startpath):
                 structure.append(f"{indent}    {f}")
     return chr(10).join(structure)
 
-def get_main_imports():
+def get_main_imports(base):
     try:
-        with open("/etc/nixos/configuration.nix", "r") as f:
+        config_path = os.path.join(base, "configuration.nix")
+        with open(config_path, "r") as f:
             return f.read()
     except:
-        return "configuration.nix not found"
+        return f"configuration.nix not found in {base}"
 
-repo_structure = get_file_structure("/etc/nixos/")
-main_config = get_main_imports()
+repo_structure = get_file_structure(BASE_DIR)
+main_config = get_main_imports(BASE_DIR)
 
 prompt = f"""
 Analyze the dependencies between my NixOS layers based on the file structure and the main configuration imports.
@@ -66,11 +70,19 @@ try:
         text = result['candidates'][0]['content']['parts'][0]['text']
         # Extract mermaid block
         if "```mermaid" in text:
-            mermaid_code = text.split("```mermaid")[1].split("```")[0].strip()
+            # Take the last mermaid block if multiple exist, usually it's the most complete one
+            mermaid_code = text.split("```mermaid")[-1].split("```")[0].strip()
             print("# 🏗️ System Architecture (Auto-Generated)")
             print()
             print("```mermaid")
             print(mermaid_code)
+            print("```")
+        elif "graph " in text or "flowchart " in text:
+            # Fallback if the model forgot the code block markers
+            print("# 🏗️ System Architecture (Auto-Generated)")
+            print()
+            print("```mermaid")
+            print(text.strip())
             print("```")
         else:
             print(text)

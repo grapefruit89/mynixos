@@ -6,24 +6,44 @@ let
   sslipHost = "${lib.replaceStrings ["."] ["-"] lanIP}.sslip.io";
 in
 {
+  systemd.services.caddy = {
+    after = [ 
+      "adguardhome.service"
+      "network-online.target"
+      "sops-install-secrets.service"
+    ];
+    wants = [ "adguardhome.service" ];
+  };
+
   services.caddy = {
-    enable = true;
+    enable = config.my.profiles.networking.reverseProxy == "caddy";
     
     extraConfig = ''
       # Snippet für SSO Auth (Pocket-ID)
       (sso_auth) {
-        forward_auth localhost:${toString config.my.ports.pocketId} {
-          uri /api/auth/verify
-          header_up X-Forwarded-Proto {scheme}
-          header_up X-Forwarded-Host {host}
+        # BREAK-GLASS: Tailscale IPs (100.64.0.0/10) dürfen ohne SSO rein
+        @tailscale remote_ip 100.64.0.0/10
+        handle @tailscale {
+          header +X-Nix-Auth-Bypass "Tailscale-Rescue"
+        }
+
+        handle {
+          forward_auth localhost:${toString config.my.ports.pocketId} {
+            uri /api/auth/verify
+            header_up X-Forwarded-Proto {scheme}
+            header_up X-Forwarded-Host {host}
+            header_up X-Forwarded-Uri {uri}
+            header_up X-Forwarded-Method {method}
+          }
         }
       }
 
-      # --- LOKALER ZUGRIFF (mDNS + sslip.io Fallback) ---
-      # Erreichbar unter nixhome.local UND der IP-basierten sslip-Domain
-      nixhome.local, ${sslipHost} {
-        # Lokaler Zugriff braucht kein SSL (oder self-signed)
-        reverse_proxy localhost:8082
+      # --- LOKALER ZUGRIFF (mDNS + sslip.io Fallback + Notfall-IP + LAN-IP) ---
+      # Erreichbar unter nixhome.local UND der IP-basierten sslip-Domain UND der Notfall-IP UND der LAN-IP direkt
+      nixhome.local, ${sslipHost}, rescue.local, 10.254.0.1, ${lanIP} {
+        # Lokaler Zugriff zeigt die Landing-Zone UI als zentralen Einstieg
+        root * /var/www/landing-zone
+        file_server
       }
     '';
   };

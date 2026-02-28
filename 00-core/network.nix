@@ -21,6 +21,8 @@ in
         matchConfig.Name = "en*";
         networkConfig.DHCP = "yes";
         linkConfig.RequiredForOnline = "yes";
+        # Der Notfall-Anker (Immer erreichbar, auch ohne Router/DHCP)
+        address = [ "10.254.0.1/24" ];
       };
     };
 

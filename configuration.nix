@@ -5,6 +5,7 @@
     ./00-core/ssh-rescue.nix
     ./00-core/kernel-slim.nix
     ./00-core/shell-premium.nix
+    ./00-core/tty-info.nix
     <sops-nix/modules/sops>
     ./10-infrastructure/sso.nix
     ./hosts/q958/hardware-configuration.nix
@@ -28,12 +29,11 @@
     ./00-core/locale.nix
     ./00-core/ports.nix
     ./00-core/host.nix
-    ./00-core/secrets.nix
     ./00-core/users.nix
     ./00-core/ssh.nix
     ./00-core/firewall.nix
     ./00-core/system.nix
-    ./00-core/shell.nix
+    # ./00-core/shell.nix # Replaced by shell-premium.nix
     ./00-core/fail2ban.nix
     ./00-core/ai-tools.nix
     ./automation.nix
@@ -41,6 +41,7 @@
 
     # 10 — Infrastructure
     ./10-infrastructure/tailscale.nix
+    ./10-infrastructure/traefik.nix
     ./10-infrastructure/caddy.nix
     
     ./10-infrastructure/homepage.nix
@@ -63,6 +64,7 @@
     ./20-services/apps/scrutiny.nix
     ./20-services/apps/filebrowser.nix
     ./20-services/apps/ai-agents.nix
+    ./20-services/apps/home-assistant.nix
 
     # 90 — Policy
     ./90-policy/security-assertions.nix # <-- Aktiviert
@@ -75,6 +77,4 @@
   swapDevices = [
     { device = "/var/lib/swapfile"; size = 4096; }
   ];
-  # 🔐 Landing Zone UI
-  my.profiles.infrastructure.landingZoneUI.enable = true;
 }

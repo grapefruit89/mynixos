@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 let
   cfg = config.my.profiles.services.pocket-id;
   domain = config.my.configs.identity.domain;
@@ -12,6 +12,15 @@ in
       settings = {
         issuer = "https://auth.${domain}";
         title = "m7c5 Login";
+      };
+    };
+
+    systemd.services.pocket-id = {
+      serviceConfig = {
+        Restart = "always";
+        RestartSec = "5s";
+        # Health-Endpoint für Caddy
+        ExecStartPost = "${pkgs.coreutils}/bin/sleep 2";
       };
     };
 

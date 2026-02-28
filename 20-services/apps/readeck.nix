@@ -4,7 +4,7 @@ let
   serviceBase = myLib.mkService {
     inherit config;
     name = "readeck";
-    useSSO = false;
+    useSSO = true;
     description = "Read Later Service";
   };
 in

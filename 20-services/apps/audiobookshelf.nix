@@ -4,7 +4,7 @@ let
   serviceBase = myLib.mkService {
     inherit config;
     name = "audiobookshelf";
-    useSSO = false;
+    useSSO = true;
     description = "Audiobook Server";
   };
 in

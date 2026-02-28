@@ -17,7 +17,7 @@ in
   # Ollama Dienst aktivieren
   services.ollama = {
     enable = true;
-    acceleration = if config.my.configs.hardware.intelGpu then "vulkan" else null; # Intel GPU Support
+    package = if config.my.configs.hardware.intelGpu then pkgs.ollama-vulkan else pkgs.ollama;
     loadModels = [ "kimi-k2.5:cloud" ];
   };
 

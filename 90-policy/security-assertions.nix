@@ -30,6 +30,11 @@ in
       (must (sshSettings.LoginGraceTime <= 20) "[SEC-SSH-004] LoginGraceTime muss <= 20s sein.")
       (must (builtins.elem sharedSecretEnv traefikEnv) "[SEC-TRFK-001] Traefik muss das zentrale Secret-Environment laden.")
       (must (config.hardware.cpu.intel.updateMicrocode == true) "[SEC-SYS-001] CPU-Microcode Updates müssen aktiv sein.")
+    ] ++ [
+      {
+        assertion = !(config.services.caddy.enable && config.services.traefik.enable);
+        message = "[INFRA-001] Caddy UND Traefik gleichzeitig aktiv. Nur ein Proxy darf Port 443 binden. Wähle in registry.nix: my.profiles.networking.reverseProxy";
+      }
     ];
   };
 }

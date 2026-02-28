@@ -14,3 +14,8 @@ secrets/
 .local-secrets.nix
 .secrets-local.nix
 wireguard-privado.conf
+
+# Insecure/Plaintext Secret Files
+secret-ingest-agent-key.txt
+secret-landing-zone/
+*.txt

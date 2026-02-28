@@ -1,103 +1,73 @@
-{ config, lib, pkgs, ... }:
+# meta:
+#   owner: core
+#   status: active
+#   summary: Landing Zone UI - Der intuitive Rettungsweg
+#   priority: P2
+
+{ config, pkgs, lib, ... }:
+
 let
-  cfg = config.my.profiles.infrastructure.landingZoneUI;
-  port = 10023;
-  ingestDir = "/etc/nixos/secret-landing-zone";
-  pythonPkg = pkgs.python311;
+  domain = config.my.configs.identity.domain;
+  lanIP = config.my.configs.server.lanIP;
+  
+  # Das Rettungs-HTML
+  rescueHtml = pkgs.writeTextDir "index.html" ''
+    <!DOCTYPE html>
+    <html lang="de">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>nixhome | Rettungsweg</title>
+        <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #0f172a; color: #f1f5f9; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+            .card { background: #1e293b; padding: 2.5rem; border-radius: 1rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); max-width: 600px; width: 90%; border: 1px solid #334155; }
+            h1 { color: #38bdf8; margin-top: 0; display: flex; align-items: center; gap: 0.5rem; }
+            p { line-height: 1.6; color: #94a3b8; }
+            .status { background: #064e3b; color: #4ade80; padding: 0.75rem 1rem; border-radius: 0.5rem; font-weight: bold; margin: 1.5rem 0; border-left: 4px solid #22c55e; }
+            .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem; }
+            .btn { background: #334155; color: white; text-decoration: none; padding: 1rem; border-radius: 0.5rem; text-align: center; font-weight: 500; transition: all 0.2s; border: 1px solid #475569; }
+            .btn:hover { background: #475569; transform: translateY(-2px); border-color: #38bdf8; }
+            .btn-primary { background: #0284c7; border-color: #0ea5e9; }
+            .btn-primary:hover { background: #0ea5e9; }
+            .badge { background: #38bdf820; color: #38bdf8; padding: 0.2rem 0.5rem; border-radius: 0.25rem; font-size: 0.8rem; font-family: monospace; }
+            .footer { margin-top: 2rem; font-size: 0.8rem; color: #475569; text-align: center; border-top: 1px solid #334155; pt: 1rem; }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <h1>🛡️ nixhome Rettungsweg</h1>
+            <p>Du bist über <strong>Tailscale</strong> oder das <strong>lokale Netz</strong> verbunden. Der normale SSO-Login (Pocket-ID) wurde automatisch übersprungen.</p>
+            
+            <div class="status">
+                ✅ Verbindung gesichert & autorisiert.
+            </div>
 
-  landingZoneScript = pkgs.writeScriptBin "landing-zone-ui-server" ''
-#!${pythonPkg}/bin/python
-import http.server, socketserver, os, cgi, html, sys, socket
+            <div class="action-grid">
+                <a href="https://${domain}" class="btn btn-primary">🏠 Zum Dashboard</a>
+                <a href="https://auth.${domain}" class="btn">🔑 Pocket-ID (SSO)</a>
+                <a href="https://traefik.${domain}" class="btn">🚦 Traefik Admin</a>
+                <a href="https://netdata.${domain}" class="btn">📊 System Monitor</a>
+            </div>
 
-PORT = ${toString port}
-DIRECTORY = "${ingestDir}"
+            <p style="margin-top: 2rem; font-size: 0.9rem;">
+                <strong>Diagnose-Info:</strong><br>
+                Host: <span class="badge">nixhome</span><br>
+                Lokale IP: <span class="badge">${lanIP}</span><br>
+                Zertifikat: <span class="badge">sslip.io (Auto-Fallback)</span>
+            </p>
 
-def get_ip():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    try:
-        s.connect(('10.255.255.255', 1))
-        IP = s.getsockname()[0]
-    except Exception:
-        IP = '127.0.0.1'
-    finally:
-        s.close()
-    return IP
-
-SERVER_IP = get_ip()
-
-HTML = """<!DOCTYPE html>
-<html lang="de" data-bs-theme="dark">
-<head>
-    <meta charset="UTF-8"><title>Secret Landing Zone</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background:#0b0e14; color:#c9d1d9; font-family: sans-serif; }
-        .card { background:#161b22; border:1px solid #30363d; border-radius: 12px; margin-top: 50px; }
-        .drop-zone { border:2px dashed #30363d; padding:40px; text-align:center; cursor:pointer; border-radius: 8px; }
-    </style>
-</head>
-<body class="d-flex justify-content-center">
-    <div class="container" style="max-width:500px">
-        <div class="card p-4 shadow-lg">
-            <h3 class="text-center mb-2">🔐 Secret Landing Zone</h3>
-            <p class="text-center text-muted small mb-4">IP: <span class="badge bg-secondary">{ip}</span></p>
-            <form action="/" method="POST" enctype="multipart/form-data">
-                <label class="drop-zone w-100" id="dz">
-                    <span id="fn">Datei (.conf) auswählen</span>
-                    <input type="file" name="file" id="file" class="d-none" required onchange="document.getElementById('fn').innerText=this.files[0].name">
-                </label>
-                <button type="submit" class="btn btn-success w-100 mt-4 fw-bold">🚀 Hochladen</button>
-            </form>
-            <div class="mt-3">{msg}</div>
+            <div class="footer">
+                NixOS 25.11 | Fujitsu Q958 Homelab
+            </div>
         </div>
-    </div>
-</body>
-</html>"""
-
-class H(http.server.BaseHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(200); self.send_header("Content-type","text/html"); self.end_headers()
-        self.wfile.write(HTML.format(msg="", ip=SERVER_IP).encode('utf-8'))
-    def do_POST(self):
-        try:
-            f = cgi.FieldStorage(fp=self.rfile, headers=self.headers, environ={'REQUEST_METHOD':'POST','CONTENT_TYPE':self.headers['Content-Type']})
-            if "file" in f and f["file"].filename:
-                fname = os.path.basename(f["file"].filename)
-                with open(os.path.join(DIRECTORY, fname),"wb") as out: out.write(f["file"].file.read())
-                m = f'<div class="alert alert-success">✅ {html.escape(fname)} geladen!</div>'
-            else: m = '<div class="alert alert-warning">⚠️ Keine Datei.</div>'
-        except Exception as e: m = f'<div class="alert alert-danger">💥 {e}</div>'
-        self.send_response(200); self.send_header("Content-type","text/html"); self.end_headers()
-        self.wfile.write(HTML.format(msg=m, ip=SERVER_IP).encode('utf-8'))
-
-if __name__ == "__main__":
-    if not os.path.exists(DIRECTORY): os.makedirs(DIRECTORY, 0o700, True)
-    socketserver.TCPServer.allow_reuse_address = True
-    socketserver.TCPServer(("", int(PORT)), H).serve_forever()
+    </body>
+    </html>
   '';
-in {
-  options.my.profiles.infrastructure.landingZoneUI.enable = lib.mkEnableOption "Landing Zone UI";
-  config = lib.mkIf cfg.enable {
-    systemd.services.landing-zone-ui = {
-      description = "Landing Zone UI";
-      wantedBy = [ "multi-user.target" ];
-      serviceConfig = { ExecStart = "${landingZoneScript}/bin/landing-zone-ui-server"; User = "root"; Restart = "always"; };
-    };
-    
-    # Caddy-Routing für Setup
-    services.caddy.virtualHosts."nixhome.local" = {
-      extraConfig = ''
-        # Fallback auf IP (Henne-Ei)
-        @by_ip host ${config.my.configs.server.lanIP}
-        handle @by_ip {
-          reverse_proxy 127.0.0.1:10023
-        }
-        
-        # Standard .local
-        reverse_proxy 127.0.0.1:10023
-      '';
-    };
-    
-    networking.firewall.allowedTCPPorts = [ 10023 ];
-  };
+in
+{
+  # Systemd-Tmpfiles, um die UI-Dateien an den richtigen Ort zu legen
+  systemd.tmpfiles.rules = [
+    "d /var/www/landing-zone 0755 caddy caddy -"
+    "L+ /var/www/landing-zone/index.html - - - - ${rescueHtml}/index.html"
+  ];
 }

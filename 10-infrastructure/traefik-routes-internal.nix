@@ -1,11 +1,11 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 let
   # source-id: CFG.identity.domain
   domain = config.my.configs.identity.domain;
 in
 {
   # Simple local test endpoint, intentionally internal-only.
-  virtualisation.oci-containers.containers.whoami = {
+  virtualisation.oci-containers.containers.whoami = lib.mkIf (config.my.profiles.networking.reverseProxy == "traefik") {
     image = "traefik/whoami";
     extraOptions = [
       "--label=traefik.enable=true"

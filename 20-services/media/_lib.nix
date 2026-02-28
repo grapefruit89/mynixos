@@ -10,6 +10,7 @@
 }:
 { config, ... }:
 let
+  myLib = import ../../lib/helpers.nix { inherit lib; };
   cfg = config.my.media.${name};
   common = config.my.media.defaults;
   
@@ -25,54 +26,58 @@ let
 
   stateValue =
     if statePathSuffix == null
-    then cfg.stateDir
-    else "${cfg.stateDir}/${statePathSuffix}";
-  defaultHost =
-    if common.domain == null
-    then null
-    else "${common.hostPrefix}-${name}.${common.domain}";
+    then "/data/state/${name}"
+    else "/data/state/${name}/${statePathSuffix}";
+
+  serviceBase = myLib.mkService {
+    inherit config;
+    name = name;
+    port = nativePort;
+    useSSO = true;
+    description = "${name} Media Service";
+    netns = cfg.netns;
+  };
 in
 {
   options.my.media.${name} = {
     enable = lib.mkEnableOption "the ${name} service";
-    stateDir = lib.mkOption { type = lib.types.str; default = defaultStateDir; };
+    stateDir = lib.mkOption { type = lib.types.str; default = "/data/state/${name}"; };
     user = lib.mkOption { type = lib.types.str; default = defaultUser; };
     group = lib.mkOption { type = lib.types.str; default = defaultGroup; };
     netns = lib.mkOption { type = lib.types.nullOr lib.types.str; default = common.netns; };
     expose = {
       enable = lib.mkOption { type = lib.types.bool; default = true; };
-      host = lib.mkOption { type = lib.types.nullOr lib.types.str; default = defaultHost; };
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    services.${name} = {
-      enable = true;
-      openFirewall = lib.mkForce false;
-      ${stateOption} = stateValue;
-    } // lib.optionalAttrs supportsUserGroup {
-      user = cfg.user;
-      group = cfg.group;
-    };
-
-    systemd.services.${name}.serviceConfig = {
-      NetworkNamespacePath = lib.mkIf (cfg.netns != null) "/run/netns/${cfg.netns}";
-      ProtectSystem = lib.mkForce "full";
-      ReadWritePaths = [ cfg.stateDir "/data/media" "/data/downloads" ];
-    };
-
-    services.traefik.dynamicConfigOptions.http = lib.mkIf cfg.expose.enable {
-      routers.${name} = {
-        rule = "Host(`${cfg.expose.host}`)";
-        entryPoints = [ "websecure" ];
-        tls.certResolver = common.certResolver;
-        middlewares = [ common.secureMiddleware ];
-        service = name;
+  config = lib.mkIf cfg.enable (lib.mkMerge [
+    serviceBase
+    {
+      services.${name} = {
+        enable = true;
+        openFirewall = lib.mkForce false;
+        ${stateOption} = stateValue;
+      } // lib.optionalAttrs supportsUserGroup {
+        user = cfg.user;
+        group = cfg.group;
+      } // lib.optionalAttrs (name == "jellyfin") {
+        cacheDir = "/mnt/fast-pool/cache/jellyfin";
       };
-      # ROUTING: Try native port first, fall back to register port
-      services.${name}.loadBalancer.servers = [
-        { url = "http://${if cfg.netns != null then "10.200.1.2" else "127.0.0.1"}:${toString nativePort}"; }
+
+      systemd.services.${name}.serviceConfig = {
+        ProtectSystem = lib.mkForce "full";
+        ReadWritePaths = [ cfg.stateDir "/mnt/media" "/mnt/media/downloads" "/mnt/fast-pool/metadata" "/mnt/fast-pool/cache" ];
+        BindPaths = lib.mkIf (name == "sonarr" || name == "radarr" || name == "readarr" || name == "prowlarr") [
+          "/mnt/fast-pool/metadata/${name}:/var/lib/${name}/MediaCover"
+        ];
+      };
+
+      # Bind-Mounts für Topf-Trennung (A/B)
+      # Wir schieben die speicherintensiven Ordner in den Fast-Pool (SSD + NVMe Überlauf)
+      systemd.tmpfiles.rules = [
+        "d /mnt/fast-pool/metadata/${name} 0750 ${cfg.user} ${cfg.group} -"
+        "d /mnt/fast-pool/cache/${name} 0750 ${cfg.user} ${cfg.group} -"
       ];
-    };
-  };
+    }
+  ]);
 }

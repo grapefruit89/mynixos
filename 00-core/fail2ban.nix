@@ -36,5 +36,27 @@ in
       bantime = "1h";
       maxretry = 5;
     };
+
+    # Caddy / HTTP Brute Force Protection
+    jails.caddy-auth = {
+      settings = {
+        enabled = true;
+        port = "http,https";
+        filter = "caddy-auth";
+        logpath = "/var/log/caddy/access.log";
+        backend = "auto";
+        maxretry = 5;
+        findtime = "5m";
+        bantime = "24h";
+      };
+    };
   };
+
+  # Filter Definition für Caddy (JSON Logs)
+  environment.etc."fail2ban/filter.d/caddy-auth.conf".text = ''
+    [Definition]
+    failregex = ^.*"remote_ip":"<ADDR>".*"status":401.*$
+                ^.*"remote_ip":"<ADDR>".*"status":403.*$
+    journalmatch = _SYSTEMD_UNIT=caddy.service
+  '';
 }

@@ -12,6 +12,7 @@
   config = lib.mkIf config.my.media.jellyfin.enable {
     users.users.jellyfin.extraGroups = [ "video" "render" ];
     systemd.services.jellyfin.serviceConfig = {
+      PrivateDevices = lib.mkForce false;
       DeviceAllow = [ "/dev/dri rw" "/dev/dri/renderD128 rw" ];
       ReadWritePaths = [ "/var/cache/jellyfin" ];
     };

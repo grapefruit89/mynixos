@@ -18,6 +18,7 @@
     filebrowser = "filebrowser.nix.m7c5.de";
     sabnzbd = "nix-sabnzbd.m7c5.de";
     dashboard = "nixhome.m7c5.de";
+    homeassistant = "home.nix.m7c5.de";
   };
   baseDomain = "m7c5.de";
 }

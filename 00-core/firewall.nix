@@ -27,6 +27,9 @@ in
     # sink: globale Host-Firewall (im Bastelmodus AUS)
     networking.firewall.enable = !bastelmodus;
 
+    # Trust tailscale0 interface
+    networking.firewall.trustedInterfaces = [ "tailscale0" ];
+
     # source-id: CFG.firewall.backend
     # sink: aktiviert nftables als einziges Firewall-Backend
     networking.nftables.enable = true;

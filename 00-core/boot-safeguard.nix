@@ -56,4 +56,22 @@ in
   programs.bash.shellAliases = {
     boot-check = "${bootSpaceCheck}/bin/boot-space-check";
   };
+
+  # KRITISCHER FIX: Boot-Partition Preflight Check vor jedem Rebuild
+  systemd.services.pre-nixos-rebuild-check = {
+    description = "Boot-Partition Preflight Check";
+    # Da nixos-rebuild oft manuell gerufen wird, ist ein systemd-hook schwer für das CLI-Tool.
+    # Wir stellen aber sicher, dass der Check als System-Service verfügbar ist oder in Deployment-Skripten gerufen wird.
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = pkgs.writeShellScript "boot-check-logic" ''
+        USAGE=$(df /boot | tail -1 | awk '{print $5}' | tr -dc '0-9')
+        if [ "$USAGE" -ge 85 ]; then
+          echo "ABORT: /boot ist zu ''${USAGE}% voll. Rebuild gestoppt." >&2
+          echo "Führe aus: sudo nix-collect-garbage -d && sudo nixos-rebuild boot" >&2
+          exit 1
+        fi
+      '';
+    };
+  };
 }

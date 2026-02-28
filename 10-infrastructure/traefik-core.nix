@@ -38,7 +38,7 @@ let
 in
 {
   services.traefik = {
-    enable = true;
+    enable = config.my.profiles.networking.reverseProxy == "traefik";
     package = pkgs.traefik;
     group = "traefik";
     dataDir = "/var/lib/traefik";

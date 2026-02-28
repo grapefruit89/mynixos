@@ -55,10 +55,12 @@ status: active
 - [x] Monica (CRM)
 - [x] Readeck (Read-Later)
 - [x] Pocket-ID (SSO-Provider)
+- [x] Home Assistant (Core + MQTT)
 
 #### 💾 Speicher & Backup
 - [x] MergerFS (SSD/HDD Tiering)
 - [x] Smart Mover (Automatisches Downgrade alter Daten)
+- [x] Intelligent Mover (Opportunistisch via hdparm/iostat)
 - [x] Restic Backup (Täglich um 02:00)
 
 #### 📚 Dokumentation
@@ -69,41 +71,38 @@ status: active
 
 ---
 
-### 🟡 **Teilweise Implementiert (50-90%)**
+### 🟡 **Teilweise Implementiert (80-100%)**
 
 #### 🔐 Authentifizierung & SSO
-- [~] Pocket-ID aktiviert (90%)
+- [x] Pocket-ID aktiviert (100%)
   - ✅ Service läuft
-  - ✅ Traefik-Router vorhanden
-  - ❌ ForwardAuth-Middleware fehlt
-  - ❌ Redirect-URLs nicht konfiguriert
-  - **Fix:** Siehe `sso.nix` (Artefakt 8)
+  - ✅ Caddy-Router vorhanden
+  - ✅ ForwardAuth-Middleware aktiv
+  - ✅ Redirect-URLs konfiguriert
 
 #### 🏠 Home-Manager
-- [~] Basis-Integration aktiv (60%)
+- [~] Basis-Integration aktiv (80%)
   - ✅ Channel importiert
   - ✅ User-Profil `moritz/home.nix` existiert
-  - ⚠️ Minimalistisch (nur 30 Zeilen)
-  - ❌ Keine Dotfile-Verwaltung
-  - **Empfehlung:** Shell-Config dorthin auslagern
+  - ✅ Shell-Config & Aliase in `shell-premium.nix` konsolidiert
+  - ❌ Dotfile-Verwaltung (VSCodium, etc.) noch ausbaufähig
 
 #### 📊 Monitoring
-- [~] Netdata aktiviert (70%)
+- [x] Netdata aktiviert (100%)
   - ✅ Dienst läuft
-  - ❌ Nicht in Traefik integriert
-  - ❌ Keine Alerts konfiguriert
+  - ✅ In Caddy integriert (SSO geschützt)
+  - ✅ Im Homepage-Dashboard verlinkt
   
-- [~] Scrutiny (SMART-Monitoring) (80%)
+- [x] Scrutiny (SMART-Monitoring) (100%)
   - ✅ Dienst läuft
-  - ✅ Traefik-Route vorhanden
-  - ❌ Nicht im Homepage-Dashboard verlinkt
+  - ✅ Caddy-Route vorhanden
+  - ✅ Im Homepage-Dashboard verlinkt
 
 #### 🐚 Shell-Workflow
-- [~] Aliase definiert (85%)
-  - ✅ `nsw`, `ntest`, `ncfg` funktionieren
-  - ✅ MOTD via Fastfetch (neu!)
-  - ⚠️ Nicht in Home-Manager ausgelagert
-  - **Fix:** Siehe `shell-premium.nix` (Artefakt 3)
+- [x] Aliase definiert (100%)
+  - ✅ `nsw` (Safe-Switch), `ntest`, `ncfg` funktionieren
+  - ✅ MOTD via Fastfetch (integriert)
+  - ✅ Alle nützlichen Aliase konsolidiert
 
 ---
 
@@ -111,8 +110,8 @@ status: active
 
 #### 🔒 Advanced Security
 - [ ] FIDO2/U2F für SSH (0%)
-- [ ] sops-nix (Secret Encryption) (0%)
-  - **Priorität:** LOW (erst wenn Rotation nötig)
+- [x] sops-nix (Secret Encryption) (100%)
+  - ✅ Aktiv und konfiguriert
 - [ ] SELinux/AppArmor (0%)
   - **Entscheidung:** Nicht nötig (systemd-hardening reicht)
 
@@ -129,92 +128,45 @@ status: active
 
 ---
 
-## 🚨 KRITISCHE PROBLEME (Blocker)
+## 🚨 KRITISCHE PROBLEME (Behoben)
 
-### 🔴 P0: Boot-Partition Overflow-Risiko
+### ✅ P0: Boot-Partition Overflow-Risiko behoben
+- [x] `boot-safeguard.nix` aktiv
+- [x] Limit: 3 Generationen
+- [x] Tägliche GC aktiv
 
-**Problem:**
-```bash
-$ df -h /boot
-Filesystem      Size  Used Avail Use% Mounted on
-/dev/sda1        96M   89M    7M  93% /boot
-```
-
-**Auswirkung:** 
-- Nächster `nixos-rebuild` schlägt fehl
-- System kann nicht booten
-- Manuelle Recovery nötig
-
-**Lösung:**
-```nix
-# Implementieren: 00-core/boot-safeguard.nix (Artefakt 4)
-boot.loader.systemd-boot.configurationLimit = 5;
-nix.gc = {
-  automatic = true;
-  dates = "daily";  # Statt weekly
-  options = "--delete-older-than 7d";  # Statt 14d
-};
-```
-
-**Status:** 🟥 OFFEN  
-**ETA:** Heute (10min Arbeit)
+### ✅ P1: SSH Lockout-Risiko behoben
+- [x] `ssh-rescue.nix` aktiv
+- [x] 5-Minuten Recovery-Window mit TTY-Countdown
+- [x] Passwort-Login im Notfall möglich
 
 ---
 
-### 🔴 P1: SSH Lockout-Risiko
+## 📋 ROADMAP (Aktualisiert)
 
-**Problem:**
-```nix
-# Aktueller Code:
-let
-  hasAuthorizedKeys = (keys != []);
-  allowPasswordFallback = !hasAuthorizedKeys;
-in {
-  PasswordAuthentication = lib.mkForce allowPasswordFallback;
-}
-```
-
-**Worst-Case Szenario:**
-1. SSH-Key ist in Config hinterlegt
-2. User verliert Key (Festplatten-Crash)
-3. Passwort-Auth ist AUS (weil Key in Config steht)
-4. **Permanenter Lockout** ❌
-
-**Lösung:**
-```nix
-# Implementieren: 00-core/ssh-rescue.nix (Artefakt 6)
-# 5-Minuten Recovery-Window nach Boot
-```
-
-**Status:** 🟥 OFFEN  
-**ETA:** Heute (15min Arbeit)
-
----
-
-## 📋 ROADMAP (Priorisiert nach MoSCoW)
-
-### 🔴 **MUST (Diese Woche)**
+### 🔴 **MUST (Erledigt)**
 
 | Task | Effort | Impact | Status |
 |------|--------|--------|--------|
-| Boot-Safeguard implementieren | 10min | 🔥 Critical | 🟥 TODO |
-| SSH Recovery Window | 15min | 🔥 Critical | 🟥 TODO |
-| Service-Härtung vereinheitlichen | 2h | 🔒 High | 🟥 TODO |
-| SSO finalisieren (Pocket-ID) | 30min | 🛡️ High | 🟥 TODO |
+| Boot-Safeguard implementieren | 10min | 🔥 Critical | ✅ DONE |
+| SSH Recovery Window | 15min | 🔥 Critical | ✅ DONE |
+| Service-Härtung vereinheitlichen | 2h | 🔒 High | ✅ DONE |
+| SSO finalisieren (Pocket-ID) | 30min | 🛡️ High | ✅ DONE |
+| ABC-Storage Godmode | 1h | 💾 High | ✅ DONE |
+| Home Assistant Integration | 30min | 🏠 Medium | ✅ DONE |
 
-**Gesamtaufwand:** ~3 Stunden  
-**Ziel:** Ende dieser Woche (01.03.2026)
+**Gesamtaufwand:** ✅ Phase abgeschlossen!
 
 ---
 
-### 🟡 **SHOULD (Nächste 2 Wochen)**
+### 🟡 **SHOULD (Nächste Schritte)**
 
 | Task | Effort | Impact | Priority |
 |------|--------|--------|----------|
-| Kernel-Optimierung | 1h | ⚡ Medium | P3 |
-| Monitoring-Integration | 2h | 📊 Medium | P4 |
-| Home-Manager Ausbau | 3h | 🏠 Low | P5 |
-| Cloudflare Tunnel Setup | 1h | 🌐 Medium | P6 |
+| Maintainerr Setup | 1h | 🧹 Medium | P3 |
+| Token-Porter (p-token-qr) | 1h | 🔑 High | P4 |
+| Interactive Break-Glass | 2h | ⚓ High | P5 |
+| Restic Tier-A Cloud Sync | 1h | ☁️ High | P6 |
 
 **Gesamtaufwand:** ~7 Stunden
 

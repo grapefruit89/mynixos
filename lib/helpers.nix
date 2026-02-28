@@ -44,16 +44,18 @@ in
     # ── CADDY REVERSE PROXY ─────────────────────────────────────────────────
     services.caddy.virtualHosts."${host}" = {
       extraConfig = ''
-        # BREAK-GLASS (Tailscale Bypass)
-        @tailscale remote_ip 100.64.0.0/10
-        handle @tailscale {
+        # PRIORITÄT 1: LAN/Tailscale immer durchlassen (auth-unabhängig)
+        @trusted_network remote_ip 127.0.0.1 100.64.0.0/10 ${lib.concatStringsSep " " config.my.configs.network.lanCidrs}
+        handle @trusted_network {
           reverse_proxy ${target}
         }
 
-        # STANDARD AUTH (Pocket-ID)
-        ${lib.optionalString useSSO "import sso_auth"}
+        # PRIORITÄT 2: SSO für alle anderen (nur wenn useSSO)
+        ${lib.optionalString useSSO ''
+          import sso_auth
+        ''}
         
-        # FINAL PROXY
+        # FALLBACK
         reverse_proxy ${target}
       '';
     };

@@ -25,6 +25,12 @@
         default = true;
         description = "Nutzt Netzwerk-Namespaces für maximale VPN-Sicherheit.";
       };
+
+      reverseProxy = lib.mkOption {
+        type = lib.types.enum [ "caddy" "traefik" "none" ];
+        default = "caddy";
+        description = "Aktiver Reverse-Proxy. Nur EINER darf Port 443 binden.";
+      };
     };
 
     services = {

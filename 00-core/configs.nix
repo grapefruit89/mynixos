@@ -12,8 +12,11 @@
     # source-id: CFG.identity.bastelmodus
     bastelmodus = lib.mkOption {
       type = lib.types.bool;
-      default = true;
-      description = "Aktiviert den Bastelmodus: Firewall aus, passwortloses Sudo, keine Security-Assertions.";
+      default = false; # SICHERER DEFAULT: Firewall standardmäßig AN
+      description = ''
+        Aktiviert den Bastelmodus: Firewall aus, passwortloses Sudo, keine Security-Assertions.
+        WARNUNG: Nur für Debugging! Automatische Deaktivierung nach 24h empfohlen.
+      '';
     };
 
     identity = {
@@ -47,6 +50,27 @@
     };
 
     hardware = {
+      # source-id: CFG.hardware.cpuType
+      cpuType = lib.mkOption {
+        type = lib.types.enum [ "intel" "amd" "none" ];
+        default = "intel";
+        description = "CPU-Hersteller für Optimierungen.";
+      };
+
+      # source-id: CFG.hardware.gpuType
+      gpuType = lib.mkOption {
+        type = lib.types.enum [ "intel" "nvidia" "amd" "none" ];
+        default = "intel";
+        description = "GPU-Hersteller für Hardware-Beschleunigung.";
+      };
+
+      # source-id: CFG.hardware.ramGB
+      ramGB = lib.mkOption {
+        type = lib.types.int;
+        default = 16;
+        description = "Installierter Arbeitsspeicher in GB.";
+      };
+
       # source-id: CFG.hardware.intelGpu
       intelGpu = lib.mkOption {
         type = lib.types.bool;
@@ -170,6 +194,24 @@
   config = {
     # source-id: CFG.identity.host
     # sink: system hostname
+
+    # Bastelmodus-Alarm (Warnt vor unsicheren Zuständen)
+    systemd.timers.bastelmodus-alarm = lib.mkIf config.my.configs.bastelmodus {
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnBootSec = "5min";
+        OnUnitActiveSec = "1h";
+      };
+    };
+
+    systemd.services.bastelmodus-alarm = lib.mkIf config.my.configs.bastelmodus {
+      description = "Bastelmodus-Alarm: System ist unsicher konfiguriert";
+      serviceConfig.Type = "oneshot";
+      script = ''
+        logger -p auth.warning "⚠️ BASTELMODUS AKTIV: Firewall AUS. Sudo PASSWORDLESS."
+        wall "⚠️ BASTELMODUS AKTIV: Firewall ist deaktiviert! sudo nixos-rebuild switch um zu sichern."
+      '';
+    };
 
     assertions = [
       {

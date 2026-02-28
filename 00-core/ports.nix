@@ -47,6 +47,9 @@
     sonarr         = 20989;
     prowlarr       = 20696;
     
+    # Automation
+    homeassistant  = 28123;
+    
     # Tools
     paperless      = 20981;
   };

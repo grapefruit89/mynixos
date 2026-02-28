@@ -5,7 +5,7 @@ let
   serviceBase = myLib.mkService {
     inherit config;
     name = "miniflux";
-    useSSO = false;
+    useSSO = true;
     description = "RSS Reader";
   };
 in

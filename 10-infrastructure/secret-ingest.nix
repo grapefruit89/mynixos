@@ -19,7 +19,6 @@ import os, re, subprocess, glob
 
 INGEST_DIR = "/etc/nixos/secret-landing-zone"
 LIVE_CONFIG = "/etc/nixos/10-infrastructure/vpn-live-config.nix"
-KEY_SINK = "/etc/nixos/secret-ingest-agent-key.txt"
 
 os.chdir(INGEST_DIR)
 for f_name in glob.glob("*.conf"):
@@ -32,9 +31,7 @@ for f_name in glob.glob("*.conf"):
         endp = re.search(r"Endpoint\s*=\s*(.*)", content)
 
         if priv:
-            with open(KEY_SINK, "w") as kf:
-                kf.write(priv.group(1).strip())
-            os.chmod(KEY_SINK, 0o600)
+            print(f"WARNUNG: Private Key in {f_name} gefunden. Bitte manuell in sops secrets.yaml eintragen!")
 
         if any([pub, addr, dns, endp]):
             dns_list = dns.group(1).strip().split(",") if dns else []

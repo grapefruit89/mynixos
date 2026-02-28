@@ -5,7 +5,7 @@ let
   serviceBase = myLib.mkService {
     inherit config;
     name = "monica";
-    useSSO = false;
+    useSSO = true;
     description = "Personal CRM";
   };
 in

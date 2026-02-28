@@ -13,7 +13,7 @@ let
   sshPort = config.my.ports.ssh;
   
   # Recovery Window Dauer (in Sekunden)
-  recoveryWindowSeconds = 300;  # 5 Minuten
+  recoveryWindowSeconds = 900;  # 15 Minuten (Breaking Glass)
   
   # Helper-Script für Status-Anzeige
   recoveryStatus = pkgs.writeShellScriptBin "ssh-recovery-status" ''
@@ -73,80 +73,81 @@ in
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
-      
-      # Keine Root-Rechte nötig (sshd reload macht systemd)
       User = "root";
       Group = "root";
     };
     
-    # Recovery-Logik
+    # Recovery-Logik: Separater SSHD auf Port 2222 (NixOS-Safe)
     script = ''
       set -euo pipefail
       
       echo "🔓 SSH Recovery Window startet (${toString recoveryWindowSeconds}s)"
       
-      # 1. Backup der aktuellen SSH-Config
-      ${pkgs.coreutils}/bin/cp /etc/ssh/sshd_config /tmp/sshd_config.backup
-      
-      # 2. Aktiviere Passwort-Login temporär
-      ${pkgs.gnused}/bin/sed -i 's/^PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
-      ${pkgs.gnused}/bin/sed -i 's/^KbdInteractiveAuthentication.*/KbdInteractiveAuthentication yes/' /etc/ssh/sshd_config
-      
-      # 3. SSHD neu laden (sanft, keine Disconnects)
-      ${pkgs.systemd}/bin/systemctl reload sshd
+      # Provisorische Config für den Rettungs-SSHD
+      TEMP_CONFIG=$(mktemp)
+      cat > "$TEMP_CONFIG" <<EOF
+Port 2222
+Protocol 2
+HostKey /etc/ssh/ssh_host_ed25519_key
+HostKey /etc/ssh/ssh_host_rsa_key
+PasswordAuthentication yes
+KbdInteractiveAuthentication yes
+PermitRootLogin no
+AllowUsers ${user}
+EOF
+
+      # Rettungs-SSHD starten
+      ${pkgs.openssh}/bin/sshd -f "$TEMP_CONFIG" -D &
+      RECOVERY_PID=$!
       
       # Log-Meldung
-      ${pkgs.util-linux}/bin/logger -t ssh-recovery "Password auth ENABLED for ${toString recoveryWindowSeconds}s"
+      ${pkgs.util-linux}/bin/logger -t ssh-recovery "Password auth ENABLED on Port 2222 (PID $RECOVERY_PID)"
       
-      # 4. Warte Recovery-Zeitfenster ab
+      # Countdown auf TTY1
+      (
+        for i in $(${pkgs.coreutils}/bin/seq ${toString recoveryWindowSeconds} -1 1); do
+          echo -ne "\r\033[K\033[1;33m⚠️  SSH Recovery: $i s verbleibend... (Port 2222 PASSWORT + Avahi)\033[0m " > /dev/tty1
+          ${pkgs.coreutils}/bin/sleep 1
+        done
+        echo -e "\n\033[1;32m🔒 SSH Recovery Fenster geschlossen.\033[0m" > /dev/tty1
+      ) &
+      
+      # Warten und dann aufräumen
       ${pkgs.coreutils}/bin/sleep ${toString recoveryWindowSeconds}
       
-      # 5. Restore Original-Config
-      ${pkgs.coreutils}/bin/mv /tmp/sshd_config.backup /etc/ssh/sshd_config
+      kill $RECOVERY_PID || true
+      rm -f "$TEMP_CONFIG"
       
-      # 6. SSHD erneut laden (deaktiviert Passwort wieder)
-      ${pkgs.systemd}/bin/systemctl reload sshd
-      
-      # Log-Meldung
       ${pkgs.util-linux}/bin/logger -t ssh-recovery "Password auth DISABLED after recovery window"
-      
       echo "🔒 SSH Recovery Window geschlossen"
     '';
   };
   
-  # ══════════════════════════════════════════════════════════════════════════
-  # NOTFALL-AKTIVIERUNG (Manuell nach Reboot)
-  # ══════════════════════════════════════════════════════════════════════════
-  
-  # Service: Manuell triggerbar (ohne Boot)
+  # Manuelle Notfall-Aktivierung (Port 2222)
   systemd.services.ssh-recovery-manual = {
     description = "SSH Recovery Window (Manual Trigger)";
     
     serviceConfig = {
       Type = "oneshot";
-      RemainAfterExit = false;
     };
     
     script = ''
-      echo "⚠️  NOTFALL-MODUS: SSH Recovery manuell aktiviert"
+      echo "⚠️  NOTFALL-MODUS: SSH Recovery manuell aktiviert auf Port 2222"
       
-      # Aktiviere Passwort für 10 Minuten (länger als normal)
-      ${pkgs.gnused}/bin/sed -i 's/^PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
-      ${pkgs.systemd}/bin/systemctl reload sshd
+      TEMP_CONFIG=$(mktemp)
+      cat > "$TEMP_CONFIG" <<EOF
+Port 2222
+PasswordAuthentication yes
+KbdInteractiveAuthentication yes
+AllowUsers ${user}
+EOF
+      ${pkgs.openssh}/bin/sshd -f "$TEMP_CONFIG" -D &
+      RECOVERY_PID=$!
       
-      ${pkgs.util-linux}/bin/logger -t ssh-recovery "MANUAL password auth enabled (10min)"
-      
-      echo "✅ Passwort-Login aktiv für 10 Minuten"
-      echo "   Danach manuell deaktivieren:"
-      echo "   sudo systemctl stop ssh-recovery-manual"
-      
-      sleep 600  # 10 Minuten
-      
-      # Auto-Deaktivierung
-      ${pkgs.gnused}/bin/sed -i 's/^PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
-      ${pkgs.systemd}/bin/systemctl reload sshd
-      
-      ${pkgs.util-linux}/bin/logger -t ssh-recovery "MANUAL password auth disabled"
+      echo "✅ Passwort-Login aktiv auf Port 2222 für 15 Minuten"
+      sleep 900
+      kill $RECOVERY_PID || true
+      rm -f "$TEMP_CONFIG"
     '';
   };
   
@@ -226,7 +227,13 @@ in
       Persistent = true;
     };
   };
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # NETZWERK & FIREWALL (Notfall-Zugang)
+  # ══════════════════════════════════════════════════════════════════════════
   
+  networking.firewall.allowedTCPPorts = [ 2222 ];
+
   # ══════════════════════════════════════════════════════════════════════════
   # SICHERHEITS-ASSERTIONS
   # ══════════════════════════════════════════════════════════════════════════
@@ -266,13 +273,14 @@ in
       
       ${pkgs.coreutils}/bin/cat <<'EOF'
       ╔════════════════════════════════════════════════════════════════╗
-      ║  SSH RECOVERY WINDOW AKTIV                                     ║
+      ║  SSH RECOVERY WINDOW AKTIV (Port 2222 + Avahi)                 ║
       ║  ─────────────────────────────────────────────────────────────  ║
-      ║  Zeitfenster: ${toString recoveryWindowSeconds} Sekunden nach Boot                       ║
-      ║  Passwort-Login: Temporär erlaubt                             ║
+      ║  Zeitfenster: 15 Minuten nach Boot                             ║
+      ║  Passwort-Login: Temporär erlaubt auf Port 2222               ║
       ║                                                                 ║
       ║  NOTFALL-ZUGANG (bei Key-Verlust):                             ║
-      ║  1. Innerhalb 5min nach Reboot einloggen (mit Passwort)       ║
+      ║  1. Innerhalb 15min nach Reboot einloggen                     ║
+      ║     ssh -p 2222 moritz@nixhome.local                           ║
       ║  2. Neuen SSH-Key generieren: ssh-keygen -t ed25519           ║
       ║  3. Public Key in /etc/nixos/00-core/users.nix eintragen      ║
       ║  4. sudo nixos-rebuild switch                                  ║
