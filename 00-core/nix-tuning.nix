@@ -13,76 +13,77 @@
  * ---
  */
 { config, lib, pkgs, ... }:
-
 let
-  # FIX: Präzise Erkennung von wenig RAM (via Kernel-Param oder Config)
-  isLowRam = (lib.any (p: lib.hasPrefix "mem=" p) config.boot.kernelParams) 
-             || (config.my.configs.hardware.ramGB or 16 <= 4);
+  ramGB = config.my.configs.hardware.ramGB;
+  isLowRam = ramGB <= 4;
+  isMidRam = ramGB > 4 && ramGB <= 8;
 in
 {
-  # 📦 BINARY CACHE (Verhindert lokales Kompilieren)
+  # ── BINARY CACHES ─────────────────────────────────────────────────────────
   nix.settings.substituters = [
     "https://cache.nixos.org"
     "https://nix-community.cachix.org"
-    "https://nixhome.cachix.org"
   ];
-
   nix.settings.trusted-public-keys = [
     "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
     "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-    # "nixhome.cachix.org-1:DEIN_PUBLIC_KEY_HIER_INSERT" # Platzhalter deaktiviert
   ];
 
-  # 🚀 PERFORMANCE & RELIABILITY
+  # ── STORE OPTIMIERUNG ────────────────────────────────────────────────────
   nix.settings.auto-optimise-store = true;
   nix.settings.builders-use-substitutes = true;
   nix.settings.fallback = true;
 
-  # Ressourcen-Management (Intelligente Drosselung)
-  nix.settings.max-jobs = if isLowRam then lib.mkForce 1 else lib.mkDefault 4;
-  nix.settings.cores = if isLowRam then lib.mkForce 2 else lib.mkDefault 0; # 0 = alle Kerne
-  
+  # GC-Roots für schnelleres Rebuilding erhalten
+  nix.settings.keep-outputs = true;
+  nix.settings.keep-derivations = true;
+
+  # Negativ-Cache verkürzen (schnellere Fallback-Erkennung)
+  nix.settings.narinfo-cache-negative-ttl = 0;
+
+  # ── RESSOURCEN-MANAGEMENT ────────────────────────────────────────────────
+  nix.settings.max-jobs = if isLowRam then lib.mkForce 1
+                          else if isMidRam then lib.mkForce 2
+                          else lib.mkDefault 4;
+  nix.settings.cores = if isLowRam then lib.mkForce 1
+                       else if isMidRam then lib.mkForce 2
+                       else lib.mkDefault 0;
+
+  # Build-Timeout verhindert hängende Builds
+  nix.settings.timeout = 3600;  # 1h Max pro Build
+  nix.settings.max-silent-time = 600;   # 10min Stille = Fehler
+
   nix.settings.experimental-features = [ "nix-command" "flakes" "auto-allocate-uids" "cgroups" ];
   nix.settings.sandbox = true;
-  nix.settings.trusted-users = [ "root" "moritz" ];
+  nix.settings.trusted-users = [ "root" config.my.configs.identity.user ];
 
-  # 💨 CPU & IO PRIORITÄT
+  # ── CPU & IO PRIORITÄT ───────────────────────────────────────────────────
   nix.daemonCPUSchedPolicy = "idle";
   nix.daemonIOSchedClass = "idle";
+  nix.daemonIOSchedPriority = 7;
 
-  # 🧹 AUTOMATISCHE REINIGUNG
+  # ── GC ───────────────────────────────────────────────────────────────────
   nix.gc.automatic = true;
   nix.gc.dates = "weekly";
   nix.gc.options = "--delete-older-than 7d";
+  nix.gc.persistent = true;
 
-  # Assertion gegen Platzhalter-Keys
-  assertions = [
-    {
-      assertion = !(lib.any (k: lib.hasInfix "DEIN_PUBLIC_KEY_HIER_INSERT" k) config.nix.settings.trusted-public-keys);
-      message = "nix-tuning: Bitte trage einen echten Cachix-Key ein oder entferne den Platzhalter!";
-    }
-  ];
-
-  # Tooling für Phase 3
+  # ── TOOLING ──────────────────────────────────────────────────────────────
   environment.systemPackages = with pkgs; [
-    cachix
-    nix-tree
+    cachix nix-tree nix-diff nix-output-monitor nix-du
   ];
+
+  assertions = [{
+    assertion = !(lib.any (k: lib.hasInfix "DEIN_PUBLIC_KEY_HIER_INSERT" k) config.nix.settings.trusted-public-keys);
+    message = "nix-tuning: Platzhalter-Key aktiv. Bitte echten Key eintragen!";
+  }];
 }
-
-
-
-
-
-
-
-
 
 
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:8f125692ae9eac183b51f2b8693900d25b6d512dcb37fe37878b6c54225a0489
+ *   checksum: sha256:3177fcffcf0d03cecbe3ef976de4f6b762265af95be35bc79acc69e0106d24cf
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

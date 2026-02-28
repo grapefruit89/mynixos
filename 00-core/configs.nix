@@ -88,6 +88,12 @@
     description = "Aktiviert Intel GPU-Optimierungen (GuC/HuC, Treiber).";
   };
 
+  options.my.configs.hardware.broadcomWlan = lib.mkOption {
+    type = lib.types.bool;
+    default = false;
+    description = "Aktiviert proprietären Broadcom WLAN Support (wl).";
+  };
+
   options.my.configs.hardware.updateMicrocode = lib.mkOption {
     type = lib.types.bool;
     default = true;
@@ -196,10 +202,11 @@
 
 
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:2e3534daf912b8aa34be508de0749faca60df0a6a02e40b247a5e98f46b19058
+ *   checksum: sha256:d1d4916191e5a8104f5899b6d1984b0767c630ac2e079e4ec4b8fdeedc104841
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

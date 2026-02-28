@@ -13,89 +13,92 @@
  * ---
  */
 { config, lib, pkgs, ... }:
-
 {
-  # ══════════════════════════════════════════════════════════════════════════
-  # KERNEL-AUSWAHL
-  # ══════════════════════════════════════════════════════════════════════════
-  
   boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_latest;
-  
-  # ══════════════════════════════════════════════════════════════════════════
-  # HARDWARE-KOMPATIBILITÄT (AUDIT-FIX)
-  # ══════════════════════════════════════════════════════════════════════════
-  
+
+  # ── HARDWARE-SUPPORT ──────────────────────────────────────────────────────
   boot.initrd.availableKernelModules = [
-    # Moderne Storage-Treiber
     "nvme" "ahci" "xhci_pci" "usbhid" "usb_storage" "sd_mod"
-    # USB-Ethernet Fallback (Verhindert Headless-Deadlock bei fehlendem WLAN)
     "r8152" "cdc_ether" "asix" "ax88179_178a"
-    # Virtuelle Maschinen (VMware, VirtualBox, KVM)
-    "virtio_pci" "virtio_scsi" "virtio_blk" "virtio_net" "vmw_balloon"
+    "virtio_pci" "virtio_scsi" "virtio_blk" "virtio_net"
   ];
 
-  boot.kernelModules = [
-    # Grafik & Display Fallbacks
-    "vmwgfx" "vboxvideo" "virtio_gpu"
-    # Netzwerk
-    "usbnet"
-  ];
+  boot.kernelModules = [ "kvm-intel" "usbnet" "i915" ];
 
-  # Broadcom WLAN Support (Proprietär, aber oft notwendig für Laptops)
+  # Support für Broadcom WLAN (via configs.nix gesteuert)
   boot.extraModulePackages = lib.optional config.my.configs.hardware.broadcomWlan 
     config.boot.kernelPackages.broadcom_sta;
 
-  hardware.enableAllFirmware = true;
   hardware.enableRedistributableFirmware = true;
+  hardware.enableAllFirmware = true;
 
-  # ══════════════════════════════════════════════════════════════════════════
-  # AGGRESSIVE MODULE BLACKLIST (Kein Legacy-Dreck)
-  # ══════════════════════════════════════════════════════════════════════════
-  
-  boot.blacklistedKernelModules = [
-    "minix" "qnx4" "qnx6" "squashfs" "befs" "bfs" "efs" "erofs" "hpfs" "sysv" "ufs" "adfs" "affs"
-    "ax25" "rose" "netrom" "6pack" "bpqether" "scc" "yam" "baycom_ser_fdx" "baycom_ser_hdx"
-    "can" "vcan" "slcan" "gw" "can-raw" "can-gw" "appletalk" "psnap" "p8022" "p8023" "ipx"
-    "parport" "parport_pc" "ppdev" "lp" "floppy"
-    "isdn" "mishid" "hisax" "avmfritz"
-    "gameport" "lightning" "analog" "joydump" "pcspkr"
-    "mgag200" "ast"
-    "iTCO_wdt" "iTCO_vendor_support" "thunderbolt"
-  ];
-  
-  # ══════════════════════════════════════════════════════════════════════════
-  # KERNEL HARDENING & ENTROPIE
-  # ══════════════════════════════════════════════════════════════════════════
-  
+  # ── INTEL UHD 630 (i3-9100) — VOLLSTÄNDIGE EXHAUSTION ────────────────────
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = false; # Headless Homelab: Kein Wine/Steam notwendig
+    extraPackages = with pkgs; [
+      intel-media-driver          # iHD: Gen 9+ (i3-9100 = Gen 9.5)
+      intel-vaapi-driver          # i965: Legacy Fallback
+      intel-compute-runtime       # OpenCL für KI (Ollama)
+      vpl-gpu-rt                  # Intel VPL: AV1 HW-Encode (24.11+)
+      libvdpau-va-gl              # VDPAU Bridge
+      ocl-icd                     # OpenCL Loader
+    ];
+  };
+
+  # GuC/HuC Firmware & CPU Tuning
   boot.kernelParams = [
-    "ia32_emulation=0" # Deaktivierung 32-Bit
-    "random.trust_cpu=on" # Vertraue Hardware-RNG (Verhindert Boot-Hänger bei Entropy-Mangel)
-    "quiet" "loglevel=3" "systemd.show_status=auto" "rd.udev.log_level=3" "logo.nologo"
+    "i915.enable_guc=3"          # GuC + HuC submission aktiv
+    "i915.enable_fbc=1"          # Frame Buffer Compression
+    "i915.fastboot=1"            # Verhindert Boot-Flicker
+    "intel_pstate=active"        # Maximale CPU-Kontrolle
+    "ia32_emulation=0"           # Deaktivierung 32-Bit
+    "random.trust_cpu=on"        # Vertraue Hardware-RNG
+    "quiet" "loglevel=3" "systemd.show_status=auto"
+    "rd.udev.log_level=3" "logo.nologo"
   ];
 
-  services.haveged.enable = true; # Modern Entropy Daemon (Alternative zu rngd)
+  # ── KERNEL HARDENING ──────────────────────────────────────────────────────
+  boot.blacklistedKernelModules = [
+    "minix" "qnx4" "qnx6" "befs" "bfs" "efs" "erofs" "hpfs" "sysv" "ufs"
+    "adfs" "affs" "hfs" "hfsplus" "ext2" "ext3" "jfs" "reiserfs"
+    "ax25" "rose" "netrom" "6pack" "bpqether" "scc" "yam"
+    "can" "vcan" "slcan" "appletalk" "psnap" "p8022" "ipx"
+    "parport" "parport_pc" "ppdev" "lp" "floppy" "gameport" "pcspkr"
+    "mgag200" "ast" "radeon" "nouveau" "thunderbolt"
+    "iTCO_wdt" "iTCO_vendor_support"
+  ];
 
+  # ── SYSCTL HARDENING ─────────────────────────────────────────────────────
   boot.kernel.sysctl = {
     "net.ipv4.conf.all.rp_filter" = lib.mkForce 1;
     "net.ipv4.conf.default.rp_filter" = lib.mkForce 1;
     "net.ipv4.tcp_syncookies" = lib.mkForce 1;
     "kernel.kptr_restrict" = lib.mkForce 2;
     "kernel.dmesg_restrict" = lib.mkForce 1;
+    "kernel.unprivileged_bpf_disabled" = lib.mkForce 1;
+    "kernel.perf_event_paranoid" = lib.mkForce 3;
     "vm.swappiness" = lib.mkDefault 10;
     "vm.vfs_cache_pressure" = lib.mkDefault 50;
+    "vm.dirty_ratio" = lib.mkDefault 15;
+    "vm.dirty_background_ratio" = lib.mkDefault 5;
   };
+
+  services.haveged.enable = true;
+
+  # ── VAINFO TOOLING ────────────────────────────────────────────────────────
+  environment.systemPackages = with pkgs; [
+    libva-utils     # vainfo
+    intel-gpu-tools  # intel_gpu_top
+    clinfo          # OpenCL Info
+  ];
 }
-
-
-
-
-
 
 
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:2ae6085109d0738d811af010a80e2d65dafc2c17e01d8417b6affb758887aac5
+ *   checksum: sha256:d202edcb7b8733c1b8f63afac0077ee0bc6ff8e1cf4af1f21dc3acaa07a233f3
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
