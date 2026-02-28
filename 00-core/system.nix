@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-00-SYS-CORE-029
+ *   id: id:
  *   title: "System"
  *   layer: 00
  * architecture:
  *   req_refs: [REQ-CORE]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -67,12 +69,14 @@
   };
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:0db80540824590a45587efb9cbe26b69baff27a201017ac79f0355765661be12
+ *   checksum: sha256:abb42f9e07e760adc07df86a4a76379f09b99353dcab1dc4fa74ffe0a6e92c6e
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

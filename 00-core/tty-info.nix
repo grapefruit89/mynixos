@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-00-SYS-CORE-031
+ *   id: id:
  *   title: "Tty Info"
  *   layer: 00
  * architecture:
  *   req_refs: [REQ-CORE]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -50,12 +52,14 @@
   };
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:3df47b9df44296576712748af15a6f0e2d7133406d55c703112f776f530b412b
+ *   checksum: sha256:4d34efbeebd60da8b82da4ab1d74243f32eb08e3bdcec2a0d1af9f074ce3eddb
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

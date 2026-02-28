@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-90-SEC-POL-002
+ *   id: id:
  *   title: "Security Assertions"
  *   layer: 90
  * architecture:
  *   req_refs: [REQ-POL]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -33,12 +35,14 @@ in
   };
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:c48bbad9c1486c73a636d575b6c013e23f590c4d7880feb99856c12d52151273
+ *   checksum: sha256:3e0d34758b0db7e46c02f8408a254d266015ca46f6d831dfc724817af039248b
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

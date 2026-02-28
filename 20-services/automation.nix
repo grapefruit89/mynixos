@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-20-APP-SRV-018
+ *   id: id:
  *   title: "Automation"
  *   layer: 20
  * architecture:
  *   req_refs: [REQ-SRV]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -38,12 +40,14 @@ in
   ];
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:89c83de3f36900ddaf2fbc6d2b0974590dd69f0c132cb9d86b0f00edbaccf615
+ *   checksum: sha256:16c7fb951ff79112dac4ab8f508cd91057618a6ceb70553b241849d16cd9c31b
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

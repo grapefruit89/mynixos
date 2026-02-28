@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-00-SYS-CORE-022
+ *   id: id:
  *   title: "Secrets"
  *   layer: 00
  * architecture:
  *   req_refs: [REQ-CORE]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -90,12 +92,14 @@
   };
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:51fe119846ea8503726bce6325ada8a4aa98d26ff47774e46620a86640f62a4b
+ *   checksum: sha256:925b4b3aa90d9d1850a9c21e61f5a08857048aba257721e35d1147083713f1f1
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

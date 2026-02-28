@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-00-SYS-CORE-028
+ *   id: id:
  *   title: "Symbiosis"
  *   layer: 00
  * architecture:
  *   req_refs: [REQ-CORE]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -90,12 +92,14 @@ in
   };
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:414381e422c7beda3034a0330df3fa530c13850016edde4e3e6aa922c7529b97
+ *   checksum: sha256:a0eb1649b3bfac4982084fcdf01fc6b64a6db6f61810570c948faf87f43c6c04
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

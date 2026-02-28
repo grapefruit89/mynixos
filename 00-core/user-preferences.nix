@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-00-SYS-CORE-032
+ *   id: id:
  *   title: "User Preferences"
  *   layer: 00
  * architecture:
  *   req_refs: [REQ-CORE]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -16,12 +18,14 @@
   # Platz für persönliche Anpassungen.
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:9a33b93e825e9e5323151b0045caf2d7bb0539a343840fa6ede4a636f60eaac3
+ *   checksum: sha256:b0ef154dab3415644245f26d641aeeac53bef531217fdf64ad6f3bfc393fccaf
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

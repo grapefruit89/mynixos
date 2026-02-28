@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-00-SYS-CORE-015
+ *   id: id:
  *   title: "Motd"
  *   layer: 00
  * architecture:
  *   req_refs: [REQ-CORE]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -40,12 +42,14 @@ in
   '';
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:d42541a74471de6a8d688f483f86169a7dba8fb4f4d6e6dac79c1608be3d48b5
+ *   checksum: sha256:215be8df5b8b1e0d7ba1e5e8d92c0cb7a6c1ef3536cb51c7e22ad86181bf1d0b
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

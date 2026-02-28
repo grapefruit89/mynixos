@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-10-NET-INFRA-004
+ *   id: id:
  *   title: "Cloudflared Tunnel"
  *   layer: 10
  * architecture:
  *   req_refs: [REQ-INF]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -76,12 +78,14 @@ in
   };
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:437a410b6a5e0ed12485ac4b4564c11e492df97f4ecd33b046a61b1f27f556cf
+ *   checksum: sha256:13a5c3e5a236fb588915ad10486423768fa0a0f5f8bb0bb2eff1f9fb59760948
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

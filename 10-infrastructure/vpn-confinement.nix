@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-10-NET-INFRA-018
+ *   id: id:
  *   title: "Vpn Confinement"
  *   layer: 10
  * architecture:
  *   req_refs: [REQ-INF]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -98,12 +100,14 @@ in
   };
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:a2d309c3d9e88ab3da60fedcd0c0ef7a1bf1455776fd7922138510b5dec205bb
+ *   checksum: sha256:9863e77ed9232d9580384e4392ed0ad54c42883ad475d811b86fef017ba6ddac
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

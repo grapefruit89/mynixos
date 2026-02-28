@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-00-SYS-CORE-012
+ *   id: id:
  *   title: "Kernel Slim"
  *   layer: 00
  * architecture:
  *   req_refs: [REQ-CORE]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -108,12 +110,14 @@
   ];
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:abec570aa588cd2397bfa8f6961397cccca27d16006e0cc5e0d1fccef7f3443c
+ *   checksum: sha256:b2f246ca4dd57dd18e2c64fa3b74deb6543c9141bddae5729c75e3c74b4aab5f
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-90-SEC-POL-001
+ *   id: id:
  *   title: "No Legacy"
  *   layer: 90
  * architecture:
  *   req_refs: [REQ-POL]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -56,12 +58,14 @@ in
   };
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:120237107f6e720be86248207441971142c73e6bdb3f0b540da3fdc1b06816fd
+ *   checksum: sha256:f5f2de3ed8e40b29d5988fc28b8294e0a79b09a36f952f5f3177eb4edde9108a
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

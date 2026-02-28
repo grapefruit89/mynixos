@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-10-NET-INFRA-010
+ *   id: id:
  *   title: "Landing Zone Ui"
  *   layer: 10
  * architecture:
  *   req_refs: [REQ-INF]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -75,12 +77,14 @@ in
   ];
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:617b9502f54e8da01e6e2f4dfdba5e9d74c19c3ea8b13b6e77d618fb9154a2c6
+ *   checksum: sha256:0e4e6d4550f00b155ce13caceef0a0acf898f0f47982d3ec8ed9eaa6c34cab60
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

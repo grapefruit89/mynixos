@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-20-APP-SRV-002
+ *   id: id:
  *   title: "Audiobookshelf"
  *   layer: 20
  * architecture:
  *   req_refs: [REQ-SRV]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -31,12 +33,14 @@ lib.mkMerge [
   }
 ]
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:efda9629efc544d869b0036c1d7d5b1ad622b1dbe6f1f5dc28583243ef423235
+ *   checksum: sha256:d85c026f695ad6983ebbb62257baeff990fad27f7580f208ac471f3f4938a7ee
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

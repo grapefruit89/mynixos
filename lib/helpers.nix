@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
  *   id: NIXH-00-SYS-LIB-001
  *   title: "Global Service Helpers"
  *   layer: 00
  * architecture:
  *   req_refs: [REQ-LIB-01]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -73,12 +75,14 @@ in
   };
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:3734a395d259c4672482f04863816b65ed429dfaaa90db20066c418935b8f763
+ *   checksum: sha256:f37f5568bdfb2553568002a5658ad59cfa6f1b3ee35584e68294d5957dc4ab1e
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

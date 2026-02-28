@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-00-SYS-CORE-007
+ *   id: id:
  *   title: "Fail2ban"
  *   layer: 00
  * architecture:
  *   req_refs: [REQ-CORE]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -62,12 +64,14 @@ in
   '';
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:e6e808adc639793d72a67e068e0339dd8f594e5f29ee3ff6a0c8472263169c51
+ *   checksum: sha256:93f774492fc09a7f407f995116a346d5f117d7fdf5babc965fa5af8c410702f2
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

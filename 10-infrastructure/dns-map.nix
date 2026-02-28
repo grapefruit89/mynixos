@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-10-NET-INFRA-008
+ *   id: id:
  *   title: "Dns Map"
  *   layer: 10
  * architecture:
  *   req_refs: [REQ-INF]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -34,12 +36,14 @@
   baseDomain = "m7c5.de";
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:b2cf46c0c4ee4ae6ba974747b1a95f0013bedd834149c416536dc201ca09507e
+ *   checksum: sha256:d772a9a7688680293e09ac311c7c03a1a3a649ef5c133a0eea602f1cda37b86e
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

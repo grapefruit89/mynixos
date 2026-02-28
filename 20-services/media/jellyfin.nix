@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-20-APP-SRV-021
+ *   id: id:
  *   title: "Jellyfin"
  *   layer: 20
  * architecture:
  *   req_refs: [REQ-SRV]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -31,12 +33,14 @@
   };
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:f6d2a66fed0dd1333f7c1d58eb1f998f1d07314b5f7f181708ba509148561b80
+ *   checksum: sha256:c2b8e2e9c2475ab380d8eca3b9816557fb30a6969282a290d8fb4cb5f6f0ad15
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

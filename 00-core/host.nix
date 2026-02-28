@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-00-SYS-CORE-011
+ *   id: id:
  *   title: "Host"
  *   layer: 00
  * architecture:
  *   req_refs: [REQ-CORE]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -16,12 +18,14 @@
   networking.hostName = lib.mkForce config.my.configs.identity.host;
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:2581f497b390916729b62047d736ac09e9cd2520c34cbbaceea7f9c34513adc8
+ *   checksum: sha256:8aa1c59b11f7745e9bdf3cc7865eb3e6f5a61493bc1d064b98569665d6238e87
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

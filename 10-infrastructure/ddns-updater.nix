@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-10-NET-INFRA-006
+ *   id: id:
  *   title: "Ddns Updater"
  *   layer: 10
  * architecture:
  *   req_refs: [REQ-INF]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -32,12 +34,14 @@ in
   };
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:d26aa0ccaa1035989cb2599cc5a3cfbe5fbc76b7e50fdf69a549370f05c6635a
+ *   checksum: sha256:3e6e1387efbac55bb187ad76cda1c316ceb3975b778557fa9e41467d0da2d023
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

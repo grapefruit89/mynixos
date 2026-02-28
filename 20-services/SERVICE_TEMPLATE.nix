@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-20-APP-SRV-034
+ *   id: id:
  *   title: "SERVICE_TEMPLATE"
  *   layer: 20
  * architecture:
  *   req_refs: [REQ-SRV]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -38,12 +40,14 @@ in
   };
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:1227034f1d2e8a80dce2a7326d613309d47d07fe96fbf946a9370923a202eb53
+ *   checksum: sha256:28cd437d828432d1e3d65aac3ac92845519a16055f891cefd952a7a83390141e
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

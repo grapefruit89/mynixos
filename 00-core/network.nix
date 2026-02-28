@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-00-SYS-CORE-016
+ *   id: id:
  *   title: "Network"
  *   layer: 00
  * architecture:
  *   req_refs: [REQ-CORE]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -46,12 +48,14 @@ in
   boot.kernel.sysctl."net.core.netdev_max_backlog" = lib.mkIf cfg.enable 5000;
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:054fdb6487e1204223c91f8cd59171d9d5865ceb88c908e53601d0a9bc9d12e5
+ *   checksum: sha256:bd4feff3881893c45f6c710eef2ee768401b7d3cdd210c73521b29ced5c97acc
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

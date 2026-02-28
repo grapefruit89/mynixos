@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-00-SYS-CORE-023
+ *   id: id:
  *   title: "Shell"
  *   layer: 00
  * architecture:
  *   req_refs: [REQ-CORE]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -72,12 +74,14 @@ in
   ];
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:4708322da63610fb8dfff8ccd8050f21b776d4ed21f6d2eb6cfd15dabe718613
+ *   checksum: sha256:4638a73ecd7c31f6d8c294a4ad705b87d1a12b3d6c26c4cbb789181a77991343
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

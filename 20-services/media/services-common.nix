@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-20-APP-SRV-031
+ *   id: id:
  *   title: "Services Common"
  *   layer: 20
  * architecture:
  *   req_refs: [REQ-SRV]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -53,12 +55,14 @@
   ];
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:5b270bac1e6a6a7695c0a064fa75501e052f1da1e6a2cd32a7258f71e0567dd9
+ *   checksum: sha256:affde25c9c8cd71f09d07c4e806bad0315df0b912ad8da18e935fdf19186d1bf
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

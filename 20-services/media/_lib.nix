@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-20-APP-SRV-023
+ *   id: id:
  *   title: "_lib"
  *   layer: 20
  * architecture:
  *   req_refs: [REQ-SRV]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -91,12 +93,14 @@ in
   ]);
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:857bdcb83d17cdd7e638581246108287a57eaddee2f4af79cb50aa94c63252d0
+ *   checksum: sha256:257551a6887da5940f6fdc657b76f9b3fe9eef3ed1b71bc9aef51cf3afff901f
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

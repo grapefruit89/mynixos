@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-00-SYS-CORE-014
+ *   id: id:
  *   title: "Logging"
  *   layer: 00
  * architecture:
  *   req_refs: [REQ-CORE]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -24,12 +26,14 @@
   ];
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:730286e98aed8171816620420a2aa10830289461ca874b281a802c85de85b75b
+ *   checksum: sha256:4e1e3d8081200e11bcaa064b3e97eafb2a8eaaf94f9b1928a5d21f9f64fbf11a
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

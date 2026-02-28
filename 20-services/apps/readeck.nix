@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-20-APP-SRV-013
+ *   id: id:
  *   title: "Readeck"
  *   layer: 20
  * architecture:
  *   req_refs: [REQ-SRV]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -33,12 +35,14 @@ lib.mkMerge [
   }
 ]
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:86bf24b3fa4516e637a5b1251c909832355201369c4430d52fd906de6110ba21
+ *   checksum: sha256:d0a3d88d51eaace594fed06d4eff3ed83af2e76246bc861ddeba81c4eac3ae4a
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

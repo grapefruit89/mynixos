@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-20-APP-SRV-014
+ *   id: id:
  *   title: "Scrutiny"
  *   layer: 20
  * architecture:
  *   req_refs: [REQ-SRV]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -38,12 +40,14 @@ lib.mkIf cfg.enable (lib.mkMerge [
   }
 ])
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:59b3adb335c5546b7514bf2a86923b6a518c5283b4cdc0cef8380ca45b181efe
+ *   checksum: sha256:0355b12e32d580e5b99a841beb1f3b3a2249483686bca2978838d79574620442
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

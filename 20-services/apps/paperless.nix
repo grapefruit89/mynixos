@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-20-APP-SRV-012
+ *   id: id:
  *   title: "Paperless"
  *   layer: 20
  * architecture:
  *   req_refs: [REQ-SRV]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -31,12 +33,14 @@ lib.mkMerge [
   }
 ]
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:54a4ac54cad4c9befa1f3207b00c5df9869338c5864fa537b21df6f5e26cbb5f
+ *   checksum: sha256:41e2fe30ace50675cb329d1b3c1ab1a7593ed6cac9fd0dfc85961ef6cae2b76a
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

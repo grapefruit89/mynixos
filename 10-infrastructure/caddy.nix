@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-10-NET-INFRA-002
+ *   id: id:
  *   title: "Caddy"
  *   layer: 10
  * architecture:
  *   req_refs: [REQ-INF]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -51,12 +53,14 @@ in
   '';
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:1aac5a7afa293d3133c44c40c073593ffe50383dcb2fc36c9e04bf29049b335e
+ *   checksum: sha256:8aa113409cc6ad2e4601d9ceb0f6bcc1394ee408592c439948875c82a5d56aa5
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-20-APP-SRV-024
+ *   id: id:
  *   title: "Lidarr"
  *   layer: 20
  * architecture:
  *   req_refs: [REQ-SRV]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -15,12 +17,14 @@
   # Platzhalter – noch nicht implementiert
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:d807f38f6b9d0649d32b202971c430791501d00ce1736b572be5ffe874c607dc
+ *   checksum: sha256:ea53f55bad94e4d06a5c5617abf0eeac51134b9e2e47f6ea36dc3eaf2388b31e
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

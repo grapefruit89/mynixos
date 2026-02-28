@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-00-SYS-CORE-009
+ *   id: id:
  *   title: "Hardware Configuration"
  *   layer: 00
  * architecture:
  *   req_refs: [REQ-CORE]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -42,12 +44,14 @@
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:96daf283b50042ab656c7fe6498d738a790872feb90a1143aa6fcd18c81dba85
+ *   checksum: sha256:3898700c44fb5e638e67d4383f0ab86de1ee1616db2cbd25651704213ddd133d
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

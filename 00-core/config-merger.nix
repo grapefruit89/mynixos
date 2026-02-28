@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-00-SYS-CORE-005
+ *   id: id:
  *   title: "Config Merger"
  *   layer: 00
  * architecture:
  *   req_refs: [REQ-CORE]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -72,12 +74,14 @@ in
   systemd.tmpfiles.rules = [ "d /var/lib/nixhome 0755 root root -" ];
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:138cb17a0d14e130d008a8cd0e59aa428538644b436cfb8c6541b4216108e3c9
+ *   checksum: sha256:76c0ee6456bc800e0872723238a261a4540a858b40d0318b0e2ce6103ad68565
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

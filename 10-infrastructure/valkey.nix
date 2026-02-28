@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-10-NET-INFRA-017
+ *   id: id:
  *   title: "Valkey"
  *   layer: 10
  * architecture:
  *   req_refs: [REQ-INF]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -24,12 +26,14 @@
   };
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:541a6a6cb1e485d88f9e0367e1f55c6cb08a6bafa03827fe3b736bb4b45b3c77
+ *   checksum: sha256:a3d18d67b2e3bdfecbd2801448115f6e0bd862a8a63548b74862f5a8002fc5f9
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

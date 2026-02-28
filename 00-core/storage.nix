@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-00-SYS-CORE-027
+ *   id: id:
  *   title: "Storage"
  *   layer: 00
  * architecture:
  *   req_refs: [REQ-CORE]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -142,12 +144,14 @@ in
   };
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:dcd6adc51b4efb4c4f5f77495c52913568f55a68b85209c9b8c69db1e4467cf4
+ *   checksum: sha256:b7563eadfe5d78b751bbfdbd4d6676797c12cccbd6f77dca5b25efdaf0ed5f4f
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

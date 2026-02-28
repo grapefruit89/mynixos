@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-20-APP-SRV-017
+ *   id: id:
  *   title: "Vaultwarden"
  *   layer: 20
  * architecture:
  *   req_refs: [REQ-SRV]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -40,12 +42,14 @@ lib.mkMerge [
   }
 ]
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:9a82c6795d35abaf01b9ba9a7ed95950df95c13225a498f1f1423869a4c5429e
+ *   checksum: sha256:dd8038db6a7934e522ebfba4d5beaefdbba45e08c3f8f1056c49e0eeb31c4e45
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

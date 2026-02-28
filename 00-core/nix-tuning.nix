@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-00-SYS-CORE-017
+ *   id: id:
  *   title: "Nix Tuning"
  *   layer: 00
  * architecture:
  *   req_refs: [REQ-CORE]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -68,12 +70,14 @@ in
   ];
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:fdf6362cb990849f5d7926d6585d29e21d929fe9080e4df9506cfa858666d5e2
+ *   checksum: sha256:03145ed015f4585287689d8b2ffb818838876bc5497d4e34714988c2caab126b
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

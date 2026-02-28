@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-00-SYS-CORE-025
+ *   id: id:
  *   title: "Ssh"
  *   layer: 00
  * architecture:
  *   req_refs: [REQ-CORE]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -68,12 +70,14 @@ in
   systemd.services.sshd.serviceConfig.OOMScoreAdjust = lib.mkForce (-1000);
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:ae57f9886478dbf8e0424953246a53055d890de38703d712ac390d62b2c92c12
+ *   checksum: sha256:c5c397c517ff568b61f65178358bfaa9bb4aa0ff6087b7bdb84f359536f23cbc
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

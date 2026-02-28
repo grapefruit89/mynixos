@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-00-SYS-CORE-030
+ *   id: id:
  *   title: "System Stability"
  *   layer: 00
  * architecture:
  *   req_refs: [REQ-CORE]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -46,12 +48,14 @@
   };
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:7813eee5182318ff1d5bed268a5359213f35dbe55fe2cc18f797d31e1d3d2a8b
+ *   checksum: sha256:ed8f799cf8dc50934abb1c3519de1af6d639e324e36c0a0d19f735ab1351899d
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

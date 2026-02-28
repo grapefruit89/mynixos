@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-00-SYS-CORE-008
+ *   id: id:
  *   title: "Firewall"
  *   layer: 00
  * architecture:
  *   req_refs: [REQ-CORE]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -55,12 +57,14 @@ in
   '';
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:5f254b4c22d6722678ab57f43eeb18861aba3ef457cd044a66c1794484e82c94
+ *   checksum: sha256:16ebd31c546fc5ed4989b1aa757ef6891588998d54a3371e7d7dce3d19d66631
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
  *   id: NIXH-00-SYS-ROOT-001
  *   title: "System Entrypoint"
  *   layer: 00
  * architecture:
  *   req_refs: [REQ-SYS-01]
+ *   upstream: []
+ *   downstream: [NIXH-00-SYS-CORE-ALL]
  *   status: audited
  * ---
  */
@@ -90,12 +92,14 @@
   ];
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:222520ebeec3cc43fb038818909d32d604b13ade611387751c019c2b92919b56
+ *   checksum: sha256:2843d0f8ed40ec13bed25e364668f4292bb323f3d605c667a147633b43300173
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

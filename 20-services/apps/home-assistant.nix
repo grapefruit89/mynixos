@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-20-APP-SRV-005
+ *   id: id:
  *   title: "Home Assistant"
  *   layer: 20
  * architecture:
  *   req_refs: [REQ-SRV]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -60,12 +62,14 @@ lib.mkMerge [
   }
 ]
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:8656a7a863a2b55aa25c69f8d9c00b367037b6937cdc31c625e773f983781943
+ *   checksum: sha256:1504d6089a1607f161ad589a5963c081e3035aa506f2d07bf819f9f5f83add4b
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-00-SYS-CORE-002
+ *   id: id:
  *   title: "Backup"
  *   layer: 00
  * architecture:
  *   req_refs: [REQ-CORE]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -78,12 +80,14 @@ in
   environment.systemPackages = with pkgs; [ restic rclone ];
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:33f25ed8d1cc8c695a065265546e2ba191c6ce7a5baedc5a349db3c4b09cb276
+ *   checksum: sha256:c8c3e28811f86dced8b53b7196a479baf949065d592f8117bd258787784b3886
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-20-APP-SRV-022
+ *   id: id:
  *   title: "Jellyseerr"
  *   layer: 20
  * architecture:
  *   req_refs: [REQ-SRV]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -44,12 +46,14 @@
   ];
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:e701ca3b3352a44bbaf8085f04a2adb38ef3695083ca19f19cc48b1d1e55ee43
+ *   checksum: sha256:70cd50da6448e32a355f42830b294f2f3ddfec6d4132640bd9945ed8319c98f7
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

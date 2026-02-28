@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-20-APP-SRV-027
+ *   id: id:
  *   title: "Radarr"
  *   layer: 20
  * architecture:
  *   req_refs: [REQ-SRV]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -18,12 +20,14 @@ args@{ lib, config, pkgs, ... }:
   defaultStateDir = "/var/lib/radarr";
 }) args
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:87712ef124a2c55a833bea1d25aba9669de44ea2c04a2391c7c1cdaea6d127ce
+ *   checksum: sha256:d99bc6dcf20713af6e186f060d081193cf46b544665b9bcfbc1b00a73ea6ea74
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

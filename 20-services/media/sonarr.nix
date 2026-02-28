@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-20-APP-SRV-032
+ *   id: id:
  *   title: "Sonarr"
  *   layer: 20
  * architecture:
  *   req_refs: [REQ-SRV]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -18,12 +20,14 @@ args@{ lib, config, pkgs, ... }:
   defaultStateDir = "/var/lib/sonarr";
 }) args
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:a3304bf8ffa1f0fcd79a731c6abb5b8a2c7e3f2dace88a701945754f922df720
+ *   checksum: sha256:5042dc0f975abb028c8e3294468bf26602e89a45b51eeea9bc66acceff44bd26
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

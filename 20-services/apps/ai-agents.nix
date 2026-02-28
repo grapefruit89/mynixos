@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-20-APP-SRV-001
+ *   id: id:
  *   title: "Ai Agents"
  *   layer: 20
  * architecture:
  *   req_refs: [REQ-SRV]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -35,12 +37,14 @@ in
   programs.bash.shellAliases.kimi = "kimi-claude";
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:40870c2ac81b2b3dd9b286a859315c60874d19acb5f8915653dc925f2bbc42ff
+ *   checksum: sha256:0201b85b50509af68647379f9ad74328a7cd96eb14c87171f9279739777026c8
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

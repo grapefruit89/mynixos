@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-10-NET-INFRA-001
+ *   id: id:
  *   title: "Adguardhome"
  *   layer: 10
  * architecture:
  *   req_refs: [REQ-INF]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -38,12 +40,14 @@ in
   };
 }
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:b8b434f5aed34f5e6a8b3ff3f5c1ab98c1b13c9e453957366e1bf99db619e016
+ *   checksum: sha256:afd35b65e0f73422e31c9de510d2ce3c615074390bd54a1349cd04498a6270e4
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */

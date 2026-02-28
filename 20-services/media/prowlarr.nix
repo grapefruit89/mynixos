@@ -1,12 +1,14 @@
 /**
  * ---
- * nms_version: 2.2
+ * nms_version: 2.3
  * identity:
- *   id: NIXH-20-APP-SRV-026
+ *   id: id:
  *   title: "Prowlarr"
  *   layer: 20
  * architecture:
  *   req_refs: [REQ-SRV]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
  *   status: audited
  * ---
  */
@@ -19,12 +21,14 @@ args@{ lib, config, pkgs, ... }:
   supportsUserGroup = false;
 }) args
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:8fe3b95dbf3b9bd6923689410fc682796844f4c7065243bbac41d343a634c466
+ *   checksum: sha256:37dce63abcee60c8a30f2530abda85f234adf086a767dd8bace94720c93f6334
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
+ *   complexity_score: 2
  * ---
  */
