@@ -1,20 +1,9 @@
-# meta:
-#   owner: infrastructure
-#   status: active
-#   scope: shared
-#   summary: SSO via Pocket-ID + Traefik ForwardAuth (OIDC-basiert)
-#   priority: P2 (High)
-#   benefit: Single Sign-On für alle internen Services
-
 { config, lib, pkgs, ... }:
-
 let
   cfg = config.my.profiles.services.pocket-id;
   domain = config.my.configs.identity.domain;
   pocketIdPort = config.my.ports.pocketId;
   dnsMap = import ./dns-map.nix;
-  
-  # Ensure all URLs are strings and have the correct scheme
   allUrls = (map (h: "https://${h}") (lib.attrValues dnsMap.dnsMapping)) ++ [
     "https://auth.${domain}/callback"
     "https://*.nix.${domain}/*"
@@ -22,43 +11,21 @@ let
 in
 {
   config = lib.mkIf cfg.enable {
-    
     services.pocket-id.settings = {
       issuer = "https://auth.${domain}";
       title = "m7c5 Login";
-      
-      # SSO: Dynamic Redirect URLs (Flattened to String)
       allowed_redirect_urls = lib.concatStringsSep "," allUrls;
-      
       session_ttl_seconds = 86400;
       refresh_token_ttl_seconds = 2592000;
       require_verified_email = false;
     };
     
-    services.traefik.dynamicConfigOptions.http.middlewares = {
-      sso-auth = {
-        forwardAuth = {
-          address = "http://127.0.0.1:${toString pocketIdPort}/api/auth/verify";
-          authResponseHeaders = [ "X-Auth-User" "X-Auth-Email" "X-Auth-Name" ];
-          trustForwardHeader = true;
-          authRequestHeaders = [ "Cookie" "X-Forwarded-Proto" "X-Forwarded-Host" ];
-        };
-      };
-      
-      sso-chain = {
-        chain.middlewares = [ "sso-auth@file" "secure-headers@file" ];
-      };
-      
-      sso-internal = {
-        chain.middlewares = [ "local-ip-whitelist@file" "sso-auth@file" "secure-headers@file" ];
-      };
-    };
-    
-    # Global Netdata LoadBalancer (Infrastructure)
-    services.traefik.dynamicConfigOptions.http.services = {
-      netdata.loadBalancer.servers = [{
-        url = "http://127.0.0.1:${toString config.my.ports.netdata}";
-      }];
+    # Netdata Caddy Route (Replacement for Traefik Service)
+    services.caddy.virtualHosts."netdata.${domain}" = {
+      extraConfig = ''
+        import sso_auth
+        reverse_proxy 127.0.0.1:${toString config.my.ports.netdata}
+      '';
     };
     
     systemd.services.pocket-id-bootstrap = {
@@ -79,25 +46,5 @@ in
         ${pkgs.coreutils}/bin/touch /var/lib/pocket-id/.bootstrapped
       '';
     };
-    
-    environment.systemPackages = [
-      (pkgs.writeShellScriptBin "sso-test" ''
-        #!/usr/bin/env bash
-        echo "SSO Status Check (Pocket-ID + Traefik)"
-        systemctl status pocket-id --no-pager
-      '')
-    ];
-    
-    programs.bash.shellAliases = {
-      sso-status = "sso-test";
-      sso-logs = "journalctl -u pocket-id -f";
-    };
-
-    assertions = [
-      {
-        assertion = config.services.pocket-id.enable == true;
-        message = "sso: Pocket-ID muss aktiviert sein!";
-      }
-    ];
   };
 }

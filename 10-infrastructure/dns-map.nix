@@ -16,6 +16,7 @@
     n8n = "n8n.nix.m7c5.de";
     scrutiny = "scrutiny.nix.m7c5.de";
     filebrowser = "filebrowser.nix.m7c5.de";
+    sabnzbd = "nix-sabnzbd.m7c5.de";
     dashboard = "nixhome.m7c5.de";
   };
   baseDomain = "m7c5.de";

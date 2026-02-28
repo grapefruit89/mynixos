@@ -13,6 +13,10 @@
     # 00 — Core
     ./00-core/registry.nix
     ./00-core/configs.nix
+    ./00-core/config-merger.nix
+    ./00-core/nix-tuning.nix
+    ./00-core/symbiosis.nix
+    ./00-core/system-stability.nix
     ./00-core/secrets.nix
     ./00-core/network.nix
     ./00-core/storage.nix
@@ -37,13 +41,14 @@
 
     # 10 — Infrastructure
     ./10-infrastructure/tailscale.nix
-    ./10-infrastructure/traefik-core.nix
-    ./10-infrastructure/traefik-routes-internal.nix
+    ./10-infrastructure/caddy.nix
+    
     ./10-infrastructure/homepage.nix
     ./10-infrastructure/cockpit.nix
     # ./10-infrastructure/wireguard-vpn.nix # Replaced by netns confinement
     ./10-infrastructure/vpn-confinement.nix
     ./10-infrastructure/secret-ingest.nix
+    ./10-infrastructure/landing-zone-ui.nix
     ./10-infrastructure/pocket-id.nix
     ./10-infrastructure/dns-automation.nix
 
@@ -57,14 +62,19 @@
     ./20-services/apps/n8n.nix
     ./20-services/apps/scrutiny.nix
     ./20-services/apps/filebrowser.nix
+    ./20-services/apps/ai-agents.nix
 
     # 90 — Policy
     ./90-policy/security-assertions.nix # <-- Aktiviert
+    ./90-policy/no-legacy.nix
   ];
 
   system.stateVersion = "25.11";
+  networking.hostName = "nixhome";
 
   swapDevices = [
     { device = "/var/lib/swapfile"; size = 4096; }
   ];
+  # 🔐 Landing Zone UI
+  my.profiles.infrastructure.landingZoneUI.enable = true;
 }

@@ -1,122 +1,60 @@
-# meta:
-#   owner: infrastructure
-#   status: active
-#   scope: shared
-#   summary: Secret Ingest Landing Zone (Level 99 SRE-Work)
-#   description: Automatische Verarbeitung von VPN-Configs via Kernel inotify.
-
 { config, lib, pkgs, ... }:
-
 let
-  ingestDir = "/etc/nixos/secret-landing-zone";
-  sopsFile = "/etc/nixos/secrets.yaml";
-  liveConfig = "/etc/nixos/10-infrastructure/vpn-live-config.nix";
+  python = pkgs.python311;
+in {
+  systemd.paths.secret-ingest = {
+    description = "Wächter für Secret Landing Zone";
+    wantedBy = [ "multi-user.target" ];
+    pathConfig = { DirectoryNotEmpty = "/etc/nixos/secret-landing-zone"; MakeDirectory = true; };
+  };
 
-  # Das Herz des Ingest: Ein robustes Python-Skript
-  ingestScript = pkgs.writers.writePython3Bin "secret-ingest-agent" {
-    libraries = [ ];
-  } ''
-import os
-import re
-import subprocess
-import glob
+  systemd.services.secret-ingest = {
+    description = "Secret Ingest Agent";
+    path = with pkgs; [ sops coreutils ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = pkgs.writeScript "ingest-run" ''
+#!${python}/bin/python
+import os, re, subprocess, glob
 
+INGEST_DIR = "/etc/nixos/secret-landing-zone"
+LIVE_CONFIG = "/etc/nixos/10-infrastructure/vpn-live-config.nix"
+KEY_SINK = "/etc/nixos/secret-ingest-agent-key.txt"
 
-print("--- SECRET INGEST AGENT ACTIVATED ---")
+os.chdir(INGEST_DIR)
+for f_name in glob.glob("*.conf"):
+    try:
+        with open(f_name, 'r') as f: content = f.read()
+        priv = re.search(r"PrivateKey\s*=\s*(.*)", content)
+        pub = re.search(r"PublicKey\s*=\s*(.*)", content)
+        addr = re.search(r"Address\s*=\s*(.*)", content)
+        dns = re.search(r"DNS\s*=\s*(.*)", content)
+        endp = re.search(r"Endpoint\s*=\s*(.*)", content)
 
-INGEST_DIR = "${ingestDir}"
-SOPS_FILE = "${sopsFile}"
-LIVE_CONFIG = "${liveConfig}"
+        if priv:
+            with open(KEY_SINK, "w") as kf:
+                kf.write(priv.group(1).strip())
+            os.chmod(KEY_SINK, 0o600)
 
-
-def process_file(file_path):
-    if not os.path.isfile(file_path):
-        return
-
-    print(f"Scanning {file_path} for WireGuard patterns...")
-    with open(file_path, "r") as f:
-        content = f.read()
-
-    # Regex patterns for WireGuard config
-    priv_key = re.search(r"PrivateKey\s*=\s*(.*)", content)
-    pub_key = re.search(r"PublicKey\s*=\s*(.*)", content)
-    address = re.search(r"Address\s*=\s*(.*)", content)
-    dns = re.search(r"DNS\s*=\s*(.*)", content)
-    endpoint = re.search(r"Endpoint\s*=\s*(.*)", content)
-
-    if priv_key:
-        key = priv_key.group(1).strip()
-        print("🔑 PrivateKey gefunden. Update SOPS Safe...")
-        # sops path is injected via PATH
-        cmd = [
-            "sops",
-            "set",
-            SOPS_FILE,
-            '["wg_privado_private_key"]',
-            f'"{key}"'
-        ]
-        subprocess.run(cmd, check=True)
-
-    if any([pub_key, address, dns, endpoint]):
-        print("🛠️ Öffentliche Daten gefunden. Update vpn-live-config.nix...")
-        dns_list = dns.group(1).strip().split(",") if dns else []
-        dns_nix = "[" + " ".join(f'"{d.strip()}"' for d in dns_list) + "]"
-
-        nix_content = f"""{{ lib, ... }}:
+        if any([pub, addr, dns, endp]):
+            dns_list = dns.group(1).strip().split(",") if dns else []
+            dns_nix = "[" + " ".join(f'"{d.strip()}"' for d in dns_list) + "]"
+            nix_content = f"""{{ lib, ... }}:
 {{
   my.configs.vpn.privado = {{
-    publicKey = lib.mkForce "{pub_key.group(1).strip() if pub_key else ""}";
-    endpoint = lib.mkForce "{endpoint.group(1).strip() if endpoint else ""}";
-    address = lib.mkForce "{address.group(1).strip() if address else ""}";
+    publicKey = lib.mkForce "{pub.group(1).strip() if pub else ""}";
+    endpoint = lib.mkForce "{endp.group(1).strip() if endp else ""}";
+    address = lib.mkForce "{addr.group(1).strip() if addr else ""}";
     dns = lib.mkForce {dns_nix};
   }};
 }}
 """
-        with open(LIVE_CONFIG, "w") as f:
-            f.write(nix_content)
-
-    print(f"🗑️ Sicheres Löschen von {file_path}...")
-    # shred path is injected via PATH
-    shred_cmd = ["shred", "-u", file_path]
-    subprocess.run(shred_cmd, check=True)
-    print("✅ Verarbeitung abgeschlossen.")
-
-
-if __name__ == "__main__":
-    files = glob.glob(os.path.join(INGEST_DIR, "*"))
-    for f in files:
-        process_file(f)
-  '';
-in
-{
-  # 1. PATH UNIT (Der inotify-Wächter)
-  systemd.paths.secret-ingest = {
-    description = "Wächter für Secret Landing Zone";
-    wantedBy = [ "multi-user.target" ];
-    pathConfig = {
-      DirectoryNotEmpty = ingestDir;
-      MakeDirectory = true;
-    };
-  };
-
-  # 2. SERVICE UNIT (Der Verarbeiter)
-  systemd.services.secret-ingest = {
-    description = "Secret Ingest Agent";
-    path = with pkgs; [ sops coreutils ]; # Inject tools into PATH
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${ingestScript}/bin/secret-ingest-agent";
+            with open(LIVE_CONFIG, "w") as out: out.write(nix_content)
+        
+        subprocess.run(["shred", "-u", f_name], check=True)
+    except Exception as e: print(f"Error: {e}")
+'';
       User = "root";
     };
-    environment = {
-      SOPS_AGE_KEY_FILE = "/var/lib/sops-nix/key.txt";
-    };
-  };
-
-  # 3. SHELL HELPER
-  environment.systemPackages = [ ingestScript ];
-
-  programs.bash.shellAliases = {
-    ingest-check = "sudo journalctl -u secret-ingest -f";
   };
 }

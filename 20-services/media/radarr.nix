@@ -1,5 +1,5 @@
-args@{ lib, config, ... }:
-((import ./_lib.nix { inherit lib; }) {
+args@{ lib, config, pkgs, ... }:
+((import ./_lib.nix { inherit lib pkgs; }) {
   name = "radarr";
   port = config.my.ports.radarr;
   stateOption = "dataDir";

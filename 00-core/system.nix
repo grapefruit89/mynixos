@@ -28,13 +28,10 @@
   };
 
   # -- SYSTEM BASIS ---------------------------------------------------------
-  networking.networkmanager.enable = true;
+  
   nixpkgs.config.allowUnfree = true;
 
   # -- NIX EINSTELLUNGEN ----------------------------------------------------
-  nix = {
-    optimise.automatic = true;
-  };
 
   # -- COMPATIBILITY --------------------------------------------------------
   programs.nix-ld.enable = true;

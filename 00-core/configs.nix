@@ -41,7 +41,7 @@
       # source-id: CFG.identity.host
       host = lib.mkOption {
         type = lib.types.str;
-        default = "q958";
+        default = "nixhome";
         description = "Hostname des Servers.";
       };
     };
@@ -170,7 +170,6 @@
   config = {
     # source-id: CFG.identity.host
     # sink: system hostname
-    networking.hostName = config.my.configs.identity.host;
 
     assertions = [
       {

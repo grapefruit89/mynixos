@@ -22,6 +22,7 @@
     uptimeKuma  = 10001;
     ddnsUpdater = 10002;
     pocketId    = 10010;
+    landingZoneUI = 10022;
     homepage    = 10082;
     netdata     = 10999;
     cockpit     = 10090;

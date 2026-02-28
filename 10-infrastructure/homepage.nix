@@ -1,98 +1,37 @@
 { config, pkgs, lib, ... }:
 let
   dnsMap = import ./dns-map.nix;
+  vaultIP = "10.200.1.2";
+  host = dnsMap.dnsMapping.dashboard or "nixhome.${dnsMap.baseDomain}";
 in
 {
   services.homepage-dashboard = {
     enable = true;
-    
-    # Path to secrets file outside the store
     environmentFile = config.my.secrets.files.sharedEnv;
-
-    # Sinnvolle Gruppenstruktur statt einfacher Liste
     services = [
-      {
-        "Download & Media" = [
-          {
-            "Sonarr" = {
-              icon = "sonarr.png";
-              href = "https://${dnsMap.dnsMapping.sonarr}";
-              description = "Serien-Management";
-              widget = {
-                type = "sonarr";
-                url = "http://127.0.0.1:8989";
-                key = "{{HOMEPAGE_VAR_SONARR_API_KEY}}";
-              };
-            };
-          }
-          {
-            "Radarr" = {
-              icon = "radarr.png";
-              href = "https://${dnsMap.dnsMapping.radarr}";
-              description = "Film-Bibliothek";
-              widget = {
-                type = "radarr";
-                url = "http://127.0.0.1:7878";
-                key = "{{HOMEPAGE_VAR_RADARR_API_KEY}}";
-              };
-            };
-          }
-        ];
-      }
-      {
-        "Infrastruktur" = [
-          {
-            "Traefik" = {
-              icon = "traefik.png";
-              href = "https://${dnsMap.dnsMapping.traefik}";
-              description = "Reverse Proxy & SSL";
-            };
-          }
-          {
-            "Cloudflare" = {
-              icon = "cloudflare.png";
-              href = "https://dash.cloudflare.com";
-              description = "DNS & Security";
-            };
-          }
-        ];
-      }
+      { "Media" = [ { "Sonarr" = { icon = "sonarr.png"; href = "https://${dnsMap.dnsMapping.sonarr}"; }; } ]; }
+      { "Infrastructure" = [ { "Traefik" = { icon = "traefik.png"; href = "https://${dnsMap.dnsMapping.traefik}"; }; } ]; }
     ];
-
-    # System-Widgets für das "Homelab-Feeling"
-    widgets = [
-      {
-        resources = {
-          cpu = true;
-          memory = true;
-          disk = "/";
-        };
-      }
-      {
-        search = {
-          provider = "google";
-          target = "_blank";
-        };
-      }
-    ];
-
-    settings = {
-      title = "NixOS Homelab Central";
-      background = "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop";
-      cardBlur = "md";
-      theme = "dark";
-    };
+    settings.title = "nixhome dashboard";
   };
 
-  # Traefik Router: Erreichbar unter nixhome.m7c5.de
-  services.traefik.dynamicConfigOptions.http.routers.homepage = {
-    rule = "Host(`nixhome.${dnsMap.baseDomain}`)";
-    service = "homepage-dashboard";
-    entryPoints = [ "websecure" ];
-    tls.certResolver = "letsencrypt"; # Changed to letsencrypt as per traefik-core config
+  services.caddy.virtualHosts."${host}" = {
+    extraConfig = ''
+      # Local Access (.local)
+      @local host nixhome.local
+      handle @local {
+        reverse_proxy 127.0.0.1:8082
+      }
+
+      # TAILSCALE BYPASS (Wichtig!)
+      @tailscale remote_ip 100.64.0.0/10
+      handle @tailscale {
+        reverse_proxy 127.0.0.1:8082
+      }
+
+      # PocketID-Auth für Public Access
+      import sso_auth
+      reverse_proxy 127.0.0.1:8082
+    '';
   };
-  
-  services.traefik.dynamicConfigOptions.http.services.homepage-dashboard.loadBalancer.servers = [{
-    url = "http://127.0.0.1:8082";
-  }];
 }

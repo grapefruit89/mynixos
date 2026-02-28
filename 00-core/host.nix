@@ -4,9 +4,9 @@
 #   scope: shared
 #   summary: host Modul (delegiert an zentrale configs)
 
-{ config, ... }:
+{ config, lib, ... }:
 {
   # source-id: CFG.identity.host
   # sink: system hostname
-  networking.hostName = config.my.configs.identity.host;
+  networking.hostName = lib.mkForce config.my.configs.identity.host;
 }

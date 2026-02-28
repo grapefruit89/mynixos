@@ -1,11 +1,7 @@
 { config, lib, ... }:
 let
   cfg = config.my.profiles.services.pocket-id;
-  
-  # source-id: CFG.identity.domain
   domain = config.my.configs.identity.domain;
-
-  # source-id: CFG.ports.pocketId
   port = config.my.ports.pocketId;
 in
 {
@@ -19,19 +15,10 @@ in
       };
     };
 
-    services.traefik.dynamicConfigOptions.http = {
-      routers.pocket-id = {
-        rule = "Host(`auth.${domain}`)";
-        entryPoints = [ "websecure" ];
-        "tls.certResolver" = "letsencrypt";
-        middlewares = [ "secure-headers@file" ];
-        service = "pocket-id";
-      };
-      services."pocket-id" = {
-        loadBalancer.servers = [{
-          url = "http://127.0.0.1:${toString port}";
-        }];
-      };
+    services.caddy.virtualHosts."auth.${domain}" = {
+      extraConfig = ''
+        reverse_proxy 127.0.0.1:${toString port}
+      '';
     };
   };
 }

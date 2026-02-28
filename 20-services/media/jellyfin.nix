@@ -1,7 +1,7 @@
 { lib, pkgs, config, ... }:
 {
   imports = [
-    ((import ./_lib.nix { inherit lib; }) {
+    ((import ./_lib.nix { inherit lib pkgs; }) {
       name = "jellyfin";
       port = config.my.ports.jellyfin;
       stateOption = "dataDir";
@@ -10,36 +10,10 @@
   ];
 
   config = lib.mkIf config.my.media.jellyfin.enable {
-    # Hardware-Beschleunigung wird zentral in 00-core/hardware.nix konfiguriert
-    # Hier nur die dienstspezifischen Berechtigungen:
     users.users.jellyfin.extraGroups = [ "video" "render" ];
-
-    # [SEC-JELLYFIN-SVC-001] systemd Härtung für Jellyfin
     systemd.services.jellyfin.serviceConfig = {
-      NoNewPrivileges = lib.mkForce true;
-      PrivateTmp = lib.mkForce true;
-
-      # Jellyfin braucht /dev/dri/* für Hardware-Transcoding
-      DeviceAllow = [
-        "/dev/dri rw"
-        "/dev/dri/renderD128 rw"
-      ];
-
-      ProtectSystem = lib.mkForce "strict";
-      ReadWritePaths = [
-        "/var/lib/jellyfin"
-        "/var/cache/jellyfin"
-        "/data/media"
-      ];
-      ProtectHome = lib.mkForce true;
-
-      ProtectKernelTunables = lib.mkForce true;
-      ProtectKernelModules = lib.mkForce true;
-      ProtectControlGroups = lib.mkForce true;
-      RestrictRealtime = lib.mkForce true;
-      RestrictSUIDSGID = lib.mkForce true;
-
-      RestrictAddressFamilies = [ "AF_INET" "AF_INET6" "AF_UNIX" ];
+      DeviceAllow = [ "/dev/dri rw" "/dev/dri/renderD128 rw" ];
+      ReadWritePaths = [ "/var/cache/jellyfin" ];
     };
   };
 }

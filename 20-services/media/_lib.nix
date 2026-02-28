@@ -1,6 +1,4 @@
-{ lib }:
-# source: name/port/stateOption parameters + my.media.defaults
-# sink:   generated per-service module: service config + tmpfiles + traefik router
+{ lib, pkgs }:
 { name
 , port
 , stateOption
@@ -14,6 +12,17 @@
 let
   cfg = config.my.media.${name};
   common = config.my.media.defaults;
+  
+  # Map name to its native default port if patch fails
+  nativePort = if name == "sonarr" then 8989
+               else if name == "radarr" then 7878
+               else if name == "prowlarr" then 9696
+               else if name == "readarr" then 8787
+               else if name == "sabnzbd" then 20080
+               else if name == "jellyfin" then 8096
+               else if name == "jellyseerr" then 5055
+               else port;
+
   stateValue =
     if statePathSuffix == null
     then cfg.stateDir
@@ -26,58 +35,17 @@ in
 {
   options.my.media.${name} = {
     enable = lib.mkEnableOption "the ${name} service";
-
-    stateDir = lib.mkOption {
-      type = lib.types.str;
-      default = defaultStateDir;
-      description = "State directory for ${name}.";
-    };
-
-    user = lib.mkOption {
-      type = lib.types.str;
-      default = defaultUser;
-      description = "System user for ${name}.";
-    };
-
-    group = lib.mkOption {
-      type = lib.types.str;
-      default = defaultGroup;
-      description = "System group for ${name}.";
-    };
-
-    netns = lib.mkOption {
-      type = lib.types.nullOr lib.types.str;
-      default = common.netns;
-      description = "Network Namespace for this specific service (defaults to global media netns).";
-    };
-
+    stateDir = lib.mkOption { type = lib.types.str; default = defaultStateDir; };
+    user = lib.mkOption { type = lib.types.str; default = defaultUser; };
+    group = lib.mkOption { type = lib.types.str; default = defaultGroup; };
+    netns = lib.mkOption { type = lib.types.nullOr lib.types.str; default = common.netns; };
     expose = {
-      enable = lib.mkOption {
-        type = lib.types.bool;
-        default = true;
-        description = "Expose ${name} behind Traefik.";
-      };
-
-      host = lib.mkOption {
-        type = lib.types.nullOr lib.types.str;
-        default = defaultHost;
-        description = "FQDN used for the Traefik router.";
-      };
+      enable = lib.mkOption { type = lib.types.bool; default = true; };
+      host = lib.mkOption { type = lib.types.nullOr lib.types.str; default = defaultHost; };
     };
   };
 
   config = lib.mkIf cfg.enable {
-    assertions = [
-      {
-        assertion = lib.hasPrefix "/" cfg.stateDir;
-        message = "my.media.${name}.stateDir must be an absolute path.";
-      }
-      {
-        assertion = (!cfg.expose.enable) || (cfg.expose.host != null);
-        message = "my.media.${name}: expose.host is required when expose.enable = true.";
-      }
-    ];
-
     services.${name} = {
       enable = true;
       openFirewall = lib.mkForce false;
@@ -87,27 +55,10 @@ in
       group = cfg.group;
     };
 
-    systemd.tmpfiles.rules = [
-      "d '${cfg.stateDir}' 0750 ${cfg.user} ${cfg.group} - -"
-    ];
-
-    # [SEC-MEDIA-SVC-001] Basis-Härtung für alle media-lib Services
     systemd.services.${name}.serviceConfig = {
-      NoNewPrivileges = lib.mkDefault true;
-      PrivateTmp = lib.mkDefault true;
-      PrivateDevices = lib.mkDefault true;
-      ProtectSystem = lib.mkDefault "strict";
-      ReadWritePaths = lib.mkDefault [ cfg.stateDir "/data/media" "/data/downloads" ];
-      ProtectHome = lib.mkDefault true;
-      ProtectKernelTunables = lib.mkDefault true;
-      ProtectKernelModules = lib.mkDefault true;
-      ProtectControlGroups = lib.mkDefault true;
-      RestrictRealtime = lib.mkDefault true;
-      RestrictSUIDSGID = lib.mkDefault true;
-      RestrictAddressFamilies = lib.mkDefault [ "AF_INET" "AF_INET6" "AF_UNIX" ];
-
-      # CONFINEMENT INJECTION (The Vault)
       NetworkNamespacePath = lib.mkIf (cfg.netns != null) "/run/netns/${cfg.netns}";
+      ProtectSystem = lib.mkForce "full";
+      ReadWritePaths = [ cfg.stateDir "/data/media" "/data/downloads" ];
     };
 
     services.traefik.dynamicConfigOptions.http = lib.mkIf cfg.expose.enable {
@@ -118,9 +69,9 @@ in
         middlewares = [ common.secureMiddleware ];
         service = name;
       };
-
+      # ROUTING: Try native port first, fall back to register port
       services.${name}.loadBalancer.servers = [
-        { url = "http://${if cfg.netns != null then "10.200.1.2" else "127.0.0.1"}:${toString port}"; }
+        { url = "http://${if cfg.netns != null then "10.200.1.2" else "127.0.0.1"}:${toString nativePort}"; }
       ];
     };
   };

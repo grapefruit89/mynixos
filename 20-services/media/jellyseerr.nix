@@ -1,7 +1,7 @@
-{ lib, config, ... }:
+{ lib, pkgs, config, ... }:
 {
   imports = [
-    ((import ./_lib.nix { inherit lib; }) {
+    ((import ./_lib.nix { inherit lib pkgs; }) {
       name = "jellyseerr";
       port = config.my.ports.jellyseerr;
       stateOption = "configDir";

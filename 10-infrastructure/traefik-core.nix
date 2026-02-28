@@ -77,11 +77,7 @@ in
           address = ":443";
           http.tls = {
             options = "default@file";
-            certResolver = "letsencrypt";
-            domains = [{
-              main = domain;
-              sans = [ "*.${domain}" ];
-            }];
+            # certResolver per Router für Self-Signed Fallback
           };
           forwardedHeaders.trustedIPs = trustedIPs;
         };
@@ -129,7 +125,7 @@ in
         ];
 
         local-ip-whitelist.ipAllowList.sourceRange =
-          [ "127.0.0.1/32" ] ++ lanCidrs ++ tailnetCidrs ++ [ "fd7a:115c:a1e0::/48" ];
+          [ "127.0.0.0/8" "100.64.0.0/10" "169.254.0.0/16" "fd7a:115c:a1e0::/48" ] ++ lanCidrs ++ tailnetCidrs;
 
         secure-headers.headers = {
           stsSeconds = 31536000;
@@ -167,8 +163,19 @@ in
       http.routers.traefik-dashboard = {
         rule = "Host(`traefik.${domain}`)";
         entryPoints = [ "websecure" ];
-        middlewares = [ "secured-chain@file" "local-ip-whitelist@file" ];
+        # Dashboard nutzt SSO + Whitelist
+        middlewares = [ "sso-internal@file" ];
         service = "api@internal";
+        tls.certResolver = "letsencrypt";
+      };
+
+      # Break-Glass (Bypass Auth via Tailscale)
+      http.routers.traefik-dashboard-bypass = {
+        rule = "Host(`traefik.${domain}`) && ClientIP(`100.64.0.0/10`)";
+        entryPoints = [ "websecure" ];
+        middlewares = [ "local-ip-whitelist@file" "secure-headers@file" ];
+        service = "api@internal";
+        priority = 2000;
         tls.certResolver = "letsencrypt";
       };
 

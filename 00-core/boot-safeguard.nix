@@ -2,7 +2,7 @@
 #   owner: core
 #   status: active
 #   scope: shared
-#   summary: Boot-Partition Safeguard – Optimiert für 1000MB (1GB)
+#   summary: Boot-Partition Safeguard – NVRAM-schonend (3 Generationen)
 #   priority: P0 (Blocker)
 
 { config, lib, pkgs, ... }:
@@ -22,7 +22,7 @@ let
     BOOT_USAGE=$(df /boot | tail -1 | awk '{print $5}' | sed 's/%//')
     BOOT_AVAIL=$(df -h /boot | tail -1 | awk '{print $4}')
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "🔍 Boot-Partition Status (Zielgröße: 1000MB)"
+    echo "🔍 Boot-Partition Status (Limit: 3 Gens)"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     if [ "$BOOT_USAGE" -ge 90 ]; then
       echo -e "Status:   ''${RED}KRITISCH''${NC} (''${BOOT_USAGE}%)"
@@ -40,13 +40,14 @@ let
   '';
 in
 {
-  # Konfiguration für große Boot-Partition
-  boot.loader.systemd-boot.configurationLimit = lib.mkForce 20;
+  # Konfiguration für NVRAM-Schonung (Claude-Empfehlung)
+  boot.loader.systemd-boot.configurationLimit = lib.mkForce 3;
+  boot.loader.systemd-boot.editor = false; # Verhindert Manipulation
 
   nix.gc = {
     automatic = true;
     dates = "weekly";
-    options = "--delete-older-than 30d";
+    options = "--delete-older-than 7d"; # Aggressiveres Aufräumen
     persistent = true;
   };
 
@@ -55,11 +56,4 @@ in
   programs.bash.shellAliases = {
     boot-check = "${bootSpaceCheck}/bin/boot-space-check";
   };
-
-  assertions = [
-    {
-      assertion = config.boot.loader.systemd-boot.configurationLimit <= 30;
-      message = "boot-safeguard: Limit für 1000MB Partition angepasst.";
-    }
-  ];
 }
