@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-001
  *   title: "Ai Agents"
  *   layer: 20
  * architecture:
@@ -38,10 +38,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:0201b85b50509af68647379f9ad74328a7cd96eb14c87171f9279739777026c8
+ *   checksum: sha256:84ab21089f4cc46b3b558165d9cfa82db875d12a059713e42f6c9c7f4ed89ef0
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

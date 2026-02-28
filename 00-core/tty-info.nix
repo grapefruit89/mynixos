@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-031
  *   title: "Tty Info"
  *   layer: 00
  * architecture:
@@ -53,10 +53,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:4d34efbeebd60da8b82da4ab1d74243f32eb08e3bdcec2a0d1af9f074ce3eddb
+ *   checksum: sha256:0f2f8619c76b17476c2eecf4fd8c69c60f03d2b020350b1bc741b4e160685679
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

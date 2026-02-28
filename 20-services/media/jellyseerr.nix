@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-022
  *   title: "Jellyseerr"
  *   layer: 20
  * architecture:
@@ -47,10 +47,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:70cd50da6448e32a355f42830b294f2f3ddfec6d4132640bd9945ed8319c98f7
+ *   checksum: sha256:0b1ee3d820ac263c7d9d9c126a8700122f5a679b69032d65f67007c938497d9d
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

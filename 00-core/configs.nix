@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-006
  *   title: "Configs"
  *   layer: 00
  * architecture:
@@ -188,10 +188,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:2a88a2ccc903a8c5cc03b80aa400c1547a0bda4397a7baa700b06333fcb34aee
+ *   checksum: sha256:337b7da2228a8d6428e48c5846afc4f7873dbdfe7649641dd5cfb3af1f02b096
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

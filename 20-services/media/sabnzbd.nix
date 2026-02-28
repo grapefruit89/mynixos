@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-030
  *   title: "Sabnzbd"
  *   layer: 20
  * architecture:
@@ -34,10 +34,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:d2f9b0063983831d6047ba3ddea0ffa1ff5e515886fdce56e50841a294e06523
+ *   checksum: sha256:dbcba4458ea6bab0fa5fde54a8cc9a2c24cd8e10de3ae9840a7a71ccac4dcab0
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

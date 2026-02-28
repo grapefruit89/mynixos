@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-002
  *   title: "Audiobookshelf"
  *   layer: 20
  * architecture:
@@ -34,10 +34,12 @@ lib.mkMerge [
 ]
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:d85c026f695ad6983ebbb62257baeff990fad27f7580f208ac471f3f4938a7ee
+ *   checksum: sha256:b57bdb86f74523b7a391f8987360fb9c9362af7d29a2b7191be4718b885c08dc
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

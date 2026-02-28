@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-014
  *   title: "Logging"
  *   layer: 00
  * architecture:
@@ -27,10 +27,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:4e1e3d8081200e11bcaa064b3e97eafb2a8eaaf94f9b1928a5d21f9f64fbf11a
+ *   checksum: sha256:beae88a30a5eb50dce2be7217be9aed571df6cfe252b76e60b9a7223f170a5f9
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

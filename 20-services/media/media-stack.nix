@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-025
  *   title: "Media Stack"
  *   layer: 20
  * architecture:
@@ -29,10 +29,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:fab791fbda032a19b7af313f2b7b8ff2b79e50bb2ed93719163f0fbd7c069ccc
+ *   checksum: sha256:d77b395657c4e0d771a8964666d7c776480973bdb5b4b6071894628e4530900e
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

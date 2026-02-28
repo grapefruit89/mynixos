@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-011
  *   title: "Host"
  *   layer: 00
  * architecture:
@@ -19,10 +19,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:8aa1c59b11f7745e9bdf3cc7865eb3e6f5a61493bc1d064b98569665d6238e87
+ *   checksum: sha256:deafd80f13cb6f4afd17cb39045fcc2491cfcaeed62f8b88dd9718a3c16beeda
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

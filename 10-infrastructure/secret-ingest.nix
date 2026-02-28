@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-10-INF-013
  *   title: "Secret Ingest"
  *   layer: 10
  * architecture:
@@ -71,10 +71,12 @@ for f_name in glob.glob("*.conf"):
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:3e36ef628953f8c1930dc9b6bc6742f4accdb57f62f005012e38455cd787f56e
+ *   checksum: sha256:50c3fe34f9af13ce2112ae221182a83bf38162117d5441bb27a1869ad85c86d8
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

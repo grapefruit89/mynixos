@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-10-INF-006
  *   title: "Ddns Updater"
  *   layer: 10
  * architecture:
@@ -35,10 +35,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:3e6e1387efbac55bb187ad76cda1c316ceb3975b778557fa9e41467d0da2d023
+ *   checksum: sha256:bc1d00f0521a3506229ea2ca8ba285b1643366190e1ccbad1fa1462f4be86e0b
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

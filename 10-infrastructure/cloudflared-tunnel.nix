@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-10-INF-004
  *   title: "Cloudflared Tunnel"
  *   layer: 10
  * architecture:
@@ -79,10 +79,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:13a5c3e5a236fb588915ad10486423768fa0a0f5f8bb0bb2eff1f9fb59760948
+ *   checksum: sha256:b471b04485a72c1e444d86e119d5be46e0252eb24ec58d5a001adbf1b973e846
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

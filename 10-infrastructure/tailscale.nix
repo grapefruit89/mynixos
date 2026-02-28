@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-10-INF-015
  *   title: "Tailscale"
  *   layer: 10
  * architecture:
@@ -22,10 +22,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:8ae59890a25eb72617bf75a542b1265bdacba03fc39835ca278f1046dca55471
+ *   checksum: sha256:f0733351e3f2fdc09001086b5fc0ecf53eb9e93a3d878d883591550c6fa4d99e
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

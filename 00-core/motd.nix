@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-015
  *   title: "Motd"
  *   layer: 00
  * architecture:
@@ -43,10 +43,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:215be8df5b8b1e0d7ba1e5e8d92c0cb7a6c1ef3536cb51c7e22ad86181bf1d0b
+ *   checksum: sha256:0d3de82f8b9279c1c8b8ce3abc57af536ce3dd8afd02bd68ffbeb4ae51013efb
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

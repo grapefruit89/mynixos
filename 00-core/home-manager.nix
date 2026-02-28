@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-010
  *   title: "Home Manager"
  *   layer: 00
  * architecture:
@@ -41,10 +41,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:6999eba4f61d7b1410b434d13acda6484776ecdb7e940bde90c690e0762cfd35
+ *   checksum: sha256:43884291a168832d42331284ffcc1e6e8b8a777baf803bcb19cb86743f67554f
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

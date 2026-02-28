@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-018
  *   title: "Automation"
  *   layer: 20
  * architecture:
@@ -41,10 +41,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:16c7fb951ff79112dac4ab8f508cd91057618a6ceb70553b241849d16cd9c31b
+ *   checksum: sha256:0d1e1c73ea8ccaf9a91996b144fd35caa51c37434e0b288c53f5aae2c9afea0f
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

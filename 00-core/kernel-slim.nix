@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-012
  *   title: "Kernel Slim"
  *   layer: 00
  * architecture:
@@ -111,10 +111,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:b2f246ca4dd57dd18e2c64fa3b74deb6543c9141bddae5729c75e3c74b4aab5f
+ *   checksum: sha256:9a833a4e43b7b8dacce27fd1938dc2b6b43c3ed1b88bb6030da33c30fd0e37cb
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

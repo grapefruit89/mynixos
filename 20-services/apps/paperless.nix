@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-012
  *   title: "Paperless"
  *   layer: 20
  * architecture:
@@ -34,10 +34,12 @@ lib.mkMerge [
 ]
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:41e2fe30ace50675cb329d1b3c1ab1a7593ed6cac9fd0dfc85961ef6cae2b76a
+ *   checksum: sha256:3d722babd0fef5d1efbae13b0c8a2e5719c50a53d63cbcc8a1f19b605ef6c37c
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-10-INF-012
  *   title: "Pocket Id"
  *   layer: 10
  * architecture:
@@ -47,10 +47,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:4107587f963fdb23abee0ebbb26eea3528f6091a80a9be42b69a943c896e9e41
+ *   checksum: sha256:f2dbb49c1b399cf18cc42cbb69299711f1e4b1b03781c10ddd15175a1191a440
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

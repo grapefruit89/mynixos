@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-10-INF-019
  *   title: "Vpn Live Config"
  *   layer: 10
  * architecture:
@@ -23,10 +23,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:393ecc543218610afc8f67019d6e6b22b8ba56e10fc8a8320228895b30030c71
+ *   checksum: sha256:a3af66209e73574c76bf4e0794f797ca25bf1464036ab49bb7b8176cb7d9bf66
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-007
  *   title: "Miniflux"
  *   layer: 20
  * architecture:
@@ -36,10 +36,12 @@ lib.mkMerge [
 ]
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:2f16aa083eee6be4de36db0f35dbf9330c70ba9b7d1cb26bf9d47c4c49b7ccc6
+ *   checksum: sha256:c998e42336dfb0cd9a51ef0069cdea05f5c25e984259821b7e55d7930b13db5c
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

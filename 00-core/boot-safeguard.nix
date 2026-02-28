@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-003
  *   title: "Boot Safeguard"
  *   layer: 00
  * architecture:
@@ -84,10 +84,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:5329c986e49bd22945a585ab3c15796e4cafd1c2ddb30f6757f7927eea441f92
+ *   checksum: sha256:7561205d79960bfde9a135c893cd472b21194da5bcdcebb2ff3592dc6a4028f1
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-001
  *   title: "Ai Tools"
  *   layer: 00
  * architecture:
@@ -32,10 +32,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:80497f08784e30e4d6aa593c7a055c2418f52942c51aa1df1fa670167f8b7224
+ *   checksum: sha256:f8eb0df693a92f9115db3039cc0cf2aecd6d5ff80868f94a6f1a603193e4cc5f
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

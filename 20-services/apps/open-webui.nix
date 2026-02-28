@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-011
  *   title: "Open Webui"
  *   layer: 20
  * architecture:
@@ -15,10 +15,12 @@
 { ... }: { }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:d640ae0df122966224be79272387a3c6dc687ff8bb54d3578884120456139ba4
+ *   checksum: sha256:39e73d8b5092dd4757e666505e1c3fef29dba327f35b17c469b9fc7b702267d9
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

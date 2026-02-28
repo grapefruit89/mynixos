@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-017
  *   title: "Nix Tuning"
  *   layer: 00
  * architecture:
@@ -71,10 +71,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:03145ed015f4585287689d8b2ffb818838876bc5497d4e34714988c2caab126b
+ *   checksum: sha256:3485537d14f1197f4440a5c34a6c2ea60fd75ed6ca544be425ab95867bc4fa3c
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

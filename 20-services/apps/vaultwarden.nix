@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-017
  *   title: "Vaultwarden"
  *   layer: 20
  * architecture:
@@ -43,10 +43,12 @@ lib.mkMerge [
 ]
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:dd8038db6a7934e522ebfba4d5beaefdbba45e08c3f8f1056c49e0eeb31c4e45
+ *   checksum: sha256:96537a8b382f8a31ee54306c487242aa856023b5406ca827823f0cae7e7fd24c
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-005
  *   title: "Home Assistant"
  *   layer: 20
  * architecture:
@@ -20,8 +20,8 @@ let
   serviceBase = myLib.mkService {
     inherit config;
     name = "homeassistant";
-    useSSO = false;
-    description = "Home Automation (Vanilla Core)";
+    useSSO = false; # HA has its own robust auth
+    description = "Home Automation (Full Declarative Core)";
   };
 in
 lib.mkMerge [
@@ -33,6 +33,9 @@ lib.mkMerge [
         psycopg2
         pychromecast
       ];
+      
+      # 🚀 VOLL-DEKLARATIVE KONFIGURATION
+      # Verhindert UI-Konfig-Drift und macht das Setup 100% reproduzierbar.
       config = {
         homeassistant = {
           name = "NixHome";
@@ -47,6 +50,10 @@ lib.mkMerge [
           trusted_proxies = [ "127.0.0.1" "::1" ];
         };
 
+        # Deklarative Dashboards (Lovelace)
+        lovelace.mode = "yaml";
+
+        # Standard-Komponenten & Integrationen
         frontend = { };
         config = { };
         history = { };
@@ -57,6 +64,9 @@ lib.mkMerge [
         system_health = { };
         updater = { };
         zeroconf = { };
+        
+        # SRE: Observability
+        prometheus = { };
       };
     };
   }
@@ -66,7 +76,7 @@ lib.mkMerge [
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:1504d6089a1607f161ad589a5963c081e3035aa506f2d07bf819f9f5f83add4b
+ *   checksum: sha256:df07f429c470d76d040f2085e51f60f04b88325f268a00ee683326902e5f0a54
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

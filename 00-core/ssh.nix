@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-025
  *   title: "Ssh"
  *   layer: 00
  * architecture:
@@ -71,10 +71,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:c5c397c517ff568b61f65178358bfaa9bb4aa0ff6087b7bdb84f359536f23cbc
+ *   checksum: sha256:8e917c7f426e4be282b09cc244544311ec3f666eff9fd5fbf882f6ba822f8c1b
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

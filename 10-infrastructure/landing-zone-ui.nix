@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-10-INF-010
  *   title: "Landing Zone Ui"
  *   layer: 10
  * architecture:
@@ -78,10 +78,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:0e4e6d4550f00b155ce13caceef0a0acf898f0f47982d3ec8ed9eaa6c34cab60
+ *   checksum: sha256:d63dc4bf23ef3f5936513e61d208e9d47a404852dfb59b2a430c530493e459b3
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

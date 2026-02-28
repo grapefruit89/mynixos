@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-019
  *   title: "Arr Wire"
  *   layer: 20
  * architecture:
@@ -75,10 +75,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:f97b4641876ed313062165eb641250bbfc244c13d3e14a9eb6546e0869b4acce
+ *   checksum: sha256:f1eef9bf1ed6de982dd9be2bdb9200e430c91ff78936573ad278aca48f34c666
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

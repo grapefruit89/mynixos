@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-028
  *   title: "Readarr"
  *   layer: 20
  * architecture:
@@ -25,10 +25,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:8dbb8553edf0e30de5f71ff2ac7f451a07671b8e822ac30f17f690da42e98d64
+ *   checksum: sha256:15029dffeca10f8b29ea35fd48fa509c9e2559e9cd6ed51ecf3875a67999ce50
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

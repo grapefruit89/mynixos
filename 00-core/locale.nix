@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-013
  *   title: "Locale"
  *   layer: 00
  * architecture:
@@ -88,10 +88,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:9c29e50e6d882573b92827514fff5cdc033a442dfbe59a33f92827e20c260e89
+ *   checksum: sha256:3d77e071e12349a55e513709de6111c8d5bd8454e2e1913d683441111b7ca696
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-014
  *   title: "Scrutiny"
  *   layer: 20
  * architecture:
@@ -41,10 +41,12 @@ lib.mkIf cfg.enable (lib.mkMerge [
 ])
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:0355b12e32d580e5b99a841beb1f3b3a2249483686bca2978838d79574620442
+ *   checksum: sha256:b8fadba79a4cec0602ccd9ba88f5d00aaab1f84fd2c696ffa7d21daf7d9844e4
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

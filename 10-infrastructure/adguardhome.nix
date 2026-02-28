@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-10-INF-001
  *   title: "Adguardhome"
  *   layer: 10
  * architecture:
@@ -41,10 +41,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:afd35b65e0f73422e31c9de510d2ce3c615074390bd54a1349cd04498a6270e4
+ *   checksum: sha256:ffb39390d406e2e6412651c1c2d63f4314a951cba21abab215a1d54bc7718b13
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

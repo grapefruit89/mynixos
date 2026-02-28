@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-032
  *   title: "Sonarr"
  *   layer: 20
  * architecture:
@@ -21,10 +21,12 @@ args@{ lib, config, pkgs, ... }:
 }) args
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:5042dc0f975abb028c8e3294468bf26602e89a45b51eeea9bc66acceff44bd26
+ *   checksum: sha256:733595c10ea9c3d0eef69e7d36f4a41641532ccd30807f95a88d9296f1c0c86f
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-028
  *   title: "Symbiosis"
  *   layer: 00
  * architecture:
@@ -93,10 +93,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:a0eb1649b3bfac4982084fcdf01fc6b64a6db6f61810570c948faf87f43c6c04
+ *   checksum: sha256:e63c376366e91f035bcaa35811f710bb13d5e0475c016cfa4f55bf1f0de68c2c
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

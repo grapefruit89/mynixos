@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-020
  *   title: "Default"
  *   layer: 20
  * architecture:
@@ -28,10 +28,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:6dba96eb4ba9d2302889dde77fd148cc9e9063319dcb005e154a05719d085a94
+ *   checksum: sha256:41c23ed676f6efc968b230f35f1f44656c8e491f092fcf7dde8898ac852d1a4b
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-030
  *   title: "System Stability"
  *   layer: 00
  * architecture:
@@ -49,10 +49,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:ed8f799cf8dc50934abb1c3519de1af6d639e324e36c0a0d19f735ab1351899d
+ *   checksum: sha256:bb92fef5a0bf4602d40024237711f4e2a22350221283daf4785912b54163827d
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

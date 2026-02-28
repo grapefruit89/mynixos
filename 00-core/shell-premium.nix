@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-024
  *   title: "Shell Premium"
  *   layer: 00
  * architecture:
@@ -181,10 +181,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:3df275e503a1e826b601cbc9282c9d9ec997d3e71c1a746f0a8947917336b366
+ *   checksum: sha256:616a9b16913d7b147459c70e73c15c1a3602718366fa72e22c77100e0b1a537d
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

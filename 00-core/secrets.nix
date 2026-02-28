@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-022
  *   title: "Secrets"
  *   layer: 00
  * architecture:
@@ -93,10 +93,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:925b4b3aa90d9d1850a9c21e61f5a08857048aba257721e35d1147083713f1f1
+ *   checksum: sha256:23e4d8f2b80ed7c2398015437ba54e8d2eac0d7fbe3eb0a8d60a7298c2bed5fd
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

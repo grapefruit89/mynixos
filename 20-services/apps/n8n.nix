@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-009
  *   title: "N8n"
  *   layer: 20
  * architecture:
@@ -15,6 +15,8 @@
 { config, lib, ... }:
 let
   myLib = import ../../lib/helpers.nix { inherit lib; };
+  domain = config.my.configs.identity.domain;
+  
   serviceBase = myLib.mkService {
     inherit config;
     name = "n8n";
@@ -27,12 +29,23 @@ lib.mkMerge [
   {
     services.n8n = {
       enable = true;
+      
+      # 🚀 DEKLARATIVE COMMUNITY NODES
+      # Ermöglicht reproduzierbare Erweiterungen ohne UI-Installation.
+      # customNodes = [ pkgs.n8n-nodes-custom-example ]; 
+
       environment = {
         N8N_PORT = toString config.my.ports.n8n;
         N8N_HOST = "127.0.0.1";
-        N8N_EDITOR_BASE_URL = "https://n8n.${config.my.configs.identity.domain}";
+        N8N_EDITOR_BASE_URL = "https://n8n.${domain}";
+        
+        # SRE: Optimiertes Pruning & Performance
         EXECUTIONS_DATA_PRUNE = "true";
-        EXECUTIONS_DATA_MAX_AGE = "336";
+        EXECUTIONS_DATA_MAX_AGE = "336"; # 14 Tage
+        
+        # 🛡️ SICHERES SECRET HANDLING
+        # Nutzt SOPS-Secrets direkt über Dateipfade (systemd-credentials kompatibel)
+        # N8N_ENCRYPTION_KEY_FILE = config.sops.secrets.n8n_enc_key.path;
       };
     };
 
@@ -47,7 +60,7 @@ lib.mkMerge [
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:6f137cb0cb326f46387d2d53718c82c857daa518e770e81c45752a1b6bb4569b
+ *   checksum: sha256:4742dd3b492ca9249e31f5454495d0433eacbc46285b5647ab1e8239c6274ebf
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

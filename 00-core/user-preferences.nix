@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-032
  *   title: "User Preferences"
  *   layer: 00
  * architecture:
@@ -19,10 +19,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:b0ef154dab3415644245f26d641aeeac53bef531217fdf64ad6f3bfc393fccaf
+ *   checksum: sha256:b8913685cd96bd095dce5ca7268482f50ae1bdb8121b85a6bbc1379b43d99372
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

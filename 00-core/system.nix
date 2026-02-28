@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-029
  *   title: "System"
  *   layer: 00
  * architecture:
@@ -70,10 +70,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:abb42f9e07e760adc07df86a4a76379f09b99353dcab1dc4fa74ffe0a6e92c6e
+ *   checksum: sha256:1043f6b26f508104d27c5e28aae2135cb594bd5c57eaad75b63d570f25467b23
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-005
  *   title: "Config Merger"
  *   layer: 00
  * architecture:
@@ -75,10 +75,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:76c0ee6456bc800e0872723238a261a4540a858b40d0318b0e2ce6103ad68565
+ *   checksum: sha256:1f4682e45543f59a8677f6d1e3c0a49dbd3116bb31845b224d38e45d974772f8
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

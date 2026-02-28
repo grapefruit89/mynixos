@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-10-INF-018
  *   title: "Vpn Confinement"
  *   layer: 10
  * architecture:
@@ -101,10 +101,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:9863e77ed9232d9580384e4392ed0ad54c42883ad475d811b86fef017ba6ddac
+ *   checksum: sha256:fe2c60a25f1c529e47fd55841dbe3ec3f14747925aba9d05c949f94401544f58
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

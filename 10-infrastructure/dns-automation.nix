@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-10-INF-007
  *   title: "Dns Automation"
  *   layer: 10
  * architecture:
@@ -64,10 +64,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:dbcc815204cd07ea694f39958d452c90d5157b13a53a1c01bada3e243b44d09d
+ *   checksum: sha256:06d5e023f6d2da0027aa0965eaa5caad518e38a9bac6b30b5e77e0396d505bf6
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

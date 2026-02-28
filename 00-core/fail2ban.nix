@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-007
  *   title: "Fail2ban"
  *   layer: 00
  * architecture:
@@ -65,10 +65,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:93f774492fc09a7f407f995116a346d5f117d7fdf5babc965fa5af8c410702f2
+ *   checksum: sha256:4950c48dbc5954858cfd6baad3924847dfe1e6f764bbeaa1fd70834f14a869bf
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

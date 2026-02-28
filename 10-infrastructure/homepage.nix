@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-10-INF-009
  *   title: "Homepage"
  *   layer: 10
  * architecture:
@@ -71,10 +71,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:b5d7bdb9e91df3117edd56f34f1fa4267050caa12f0c2474011770236a0f19ff
+ *   checksum: sha256:34a5937f7ab3fb932a4f35a24f07f77ff430372d6adfd15ad026b67e74944278
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

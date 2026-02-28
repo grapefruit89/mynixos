@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-10-INF-014
  *   title: "Sso"
  *   layer: 10
  * architecture:
@@ -63,10 +63,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:fbd3e2dcbaa628882bba4bc91bf8ced1f9fcb892069a9d4a7b86b0784793cc5a
+ *   checksum: sha256:cf27929af13470402d03ddc54948ea5f906dca1560b72f290107a6ee65c2637b
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

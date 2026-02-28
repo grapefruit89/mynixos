@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-033
  *   title: "Users"
  *   layer: 00
  * architecture:
@@ -27,10 +27,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:c25fa056d78bff2f807ff93f7081235c4cac94d6f4ef81562588b4ed7a722106
+ *   checksum: sha256:d69de20115842b5513045e36be9ab6b178599484b6c436362e753bb3f38954d0
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

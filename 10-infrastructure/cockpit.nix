@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-10-INF-005
  *   title: "Cockpit"
  *   layer: 10
  * architecture:
@@ -41,10 +41,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:a3e111304c16637010f32f2f43133030847da0c1aac1fb2d0d7fcbd3898dc381
+ *   checksum: sha256:7befbd51725d6675b3e93117afe8e4872a92eef2b63bf16e195a9e1a130e4db7
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

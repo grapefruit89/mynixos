@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-018
  *   title: "Ports"
  *   layer: 00
  * architecture:
@@ -59,10 +59,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:01a557f8d225c17003ca892147383976b85df626dd99905f50163994a25bc442
+ *   checksum: sha256:cbae5b026c547c351ba141df92d577e32e2dfb2f9c1e8371bc99f41a8ae542fa
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

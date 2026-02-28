@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-020
  *   title: "Registry"
  *   layer: 00
  * architecture:
@@ -82,10 +82,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:bd9ed5541779c38f26d607417d2dede351165dafbf7001aa49707c74b700e8ac
+ *   checksum: sha256:bda161d8dc0ed90c519b26111205ae75e5058e8e7f80b08c62179415c59201d8
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

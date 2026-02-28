@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-10-INF-002
  *   title: "Caddy"
  *   layer: 10
  * architecture:
@@ -54,10 +54,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:8aa113409cc6ad2e4601d9ceb0f6bcc1394ee408592c439948875c82a5d56aa5
+ *   checksum: sha256:749d7c3ec393d123dcfee33881bd7b56f8ecc1aaf319bf63b14f11edc8b13d58
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

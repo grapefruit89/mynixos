@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-021
  *   title: "Jellyfin"
  *   layer: 20
  * architecture:
@@ -34,10 +34,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:c2b8e2e9c2475ab380d8eca3b9816557fb30a6969282a290d8fb4cb5f6f0ad15
+ *   checksum: sha256:68059a91fab6f6834d09fc00cfa98cd7c46fa7b7a77a8412af975c0d269a4674
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

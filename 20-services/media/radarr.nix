@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-027
  *   title: "Radarr"
  *   layer: 20
  * architecture:
@@ -21,10 +21,12 @@ args@{ lib, config, pkgs, ... }:
 }) args
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:d99bc6dcf20713af6e186f060d081193cf46b544665b9bcfbc1b00a73ea6ea74
+ *   checksum: sha256:9ad894852b9bb9a0e283fddc58f06934f80282a0a8bd1ba6facc6ddf3b0ec7ca
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

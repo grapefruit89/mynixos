@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-016
  *   title: "Network"
  *   layer: 00
  * architecture:
@@ -49,10 +49,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:bd4feff3881893c45f6c710eef2ee768401b7d3cdd210c73521b29ced5c97acc
+ *   checksum: sha256:d53e7b140144a229c7f4150409a485c40b8eaabdd2d789e7de8fcb9fcd6c32db
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

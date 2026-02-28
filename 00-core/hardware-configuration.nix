@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-009
  *   title: "Hardware Configuration"
  *   layer: 00
  * architecture:
@@ -45,10 +45,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:3898700c44fb5e638e67d4383f0ab86de1ee1616db2cbd25651704213ddd133d
+ *   checksum: sha256:3258de1e6f843288c8924b704aa03846494d3e71716ca956d488a93ca7417f0b
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

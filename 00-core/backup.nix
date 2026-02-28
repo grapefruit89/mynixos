@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-002
  *   title: "Backup"
  *   layer: 00
  * architecture:
@@ -81,10 +81,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:c8c3e28811f86dced8b53b7196a479baf949065d592f8117bd258787784b3886
+ *   checksum: sha256:1786a24540f710c967e11823697a01f3e2696bc9b55f913cc7ea8a602c0b073e
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

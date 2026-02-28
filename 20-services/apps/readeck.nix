@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-013
  *   title: "Readeck"
  *   layer: 20
  * architecture:
@@ -36,10 +36,12 @@ lib.mkMerge [
 ]
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:d0a3d88d51eaace594fed06d4eff3ed83af2e76246bc861ddeba81c4eac3ae4a
+ *   checksum: sha256:754647aa4d44457d3c186a842fdbd942f56fc437615f850ddd66d79a9776e0a5
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

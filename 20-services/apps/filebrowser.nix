@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-004
  *   title: "Filebrowser"
  *   layer: 20
  * architecture:
@@ -46,10 +46,12 @@ lib.mkIf cfg.enable (lib.mkMerge [
 ])
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:31944af3bdc29b02b2fc01ab80c3f66129496825cfc8fc96581d39d118276f5e
+ *   checksum: sha256:b59d4d9175f69dcd677fd9d1d20f2c342c42e0fc1dfdbc7d29d00beb24b07609
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

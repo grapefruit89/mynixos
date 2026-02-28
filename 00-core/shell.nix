@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-023
  *   title: "Shell"
  *   layer: 00
  * architecture:
@@ -75,10 +75,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:4638a73ecd7c31f6d8c294a4ad705b87d1a12b3d6c26c4cbb789181a77991343
+ *   checksum: sha256:4bdcacdfc21458ba21db09f54dc924bc5ef00fa73c79f09ee8fcf4db4bcb2939
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

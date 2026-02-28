@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-008
  *   title: "Firewall"
  *   layer: 00
  * architecture:
@@ -58,10 +58,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:16ebd31c546fc5ed4989b1aa757ef6891588998d54a3371e7d7dce3d19d66631
+ *   checksum: sha256:a01d33b08a4d597a0a94ba12fe0e0cf630e771c27e1cef305bd990ff4d5abfb4
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

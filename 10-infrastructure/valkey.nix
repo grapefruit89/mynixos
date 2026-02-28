@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-10-INF-017
  *   title: "Valkey"
  *   layer: 10
  * architecture:
@@ -27,10 +27,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:a3d18d67b2e3bdfecbd2801448115f6e0bd862a8a63548b74862f5a8002fc5f9
+ *   checksum: sha256:1ce58cd96e10f76e25dfd5838b3bbbc76eb28808e69668b8018f784bebcfc2f9
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

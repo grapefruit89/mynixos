@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-034
  *   title: "SERVICE_TEMPLATE"
  *   layer: 20
  * architecture:
@@ -41,10 +41,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:28cd437d828432d1e3d65aac3ac92845519a16055f891cefd952a7a83390141e
+ *   checksum: sha256:97045820771dc30547e1c4fbd1873d237d2b2576c4a59bbb1da6b8af0b769b33
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-026
  *   title: "Ssh Rescue"
  *   layer: 00
  * architecture:
@@ -287,10 +287,12 @@ EOF
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:6dfc249466aec01870540648e67dab5fbc094ee4da69b17429b0737db3fdea60
+ *   checksum: sha256:df6d26ba19801d465b0050b1a0a9288e4de5334663e3a0227ac9a567dee07455
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-008
  *   title: "Monica"
  *   layer: 20
  * architecture:
@@ -54,10 +54,12 @@ lib.mkMerge [
 ]
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:cf60bef8db79b253afb540ecd031cd389b00fc56af3acedad90fb281c287ac20
+ *   checksum: sha256:d77b2594c47874b9fadfe776dfee5ce71d2789990972b7407f1ce1e44406f740
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

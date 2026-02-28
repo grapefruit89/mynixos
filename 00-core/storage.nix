@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-027
  *   title: "Storage"
  *   layer: 00
  * architecture:
@@ -145,10 +145,12 @@ in
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:b7563eadfe5d78b751bbfdbd4d6676797c12cccbd6f77dca5b25efdaf0ed5f4f
+ *   checksum: sha256:0580f080ac651f65f748a7d749c63bd676d986c7c8068f05bfdf2ff683c9d801
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

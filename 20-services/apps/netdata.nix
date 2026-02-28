@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-20-SRV-010
  *   title: "Netdata"
  *   layer: 20
  * architecture:
@@ -18,10 +18,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:bfe2b88f4d98d04bd951cbc1194f5d5e8c59109c0b3a646e59df424032dd608d
+ *   checksum: sha256:c06f1dfb3e53885c2e5b61cb31aeada6ac9255b86038e30b220ad84b0b2e4d1b
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

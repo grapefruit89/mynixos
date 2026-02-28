@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-10-INF-011
  *   title: "Netdata"
  *   layer: 10
  * architecture:
@@ -37,10 +37,12 @@ lib.mkMerge [
 ]
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:7b0867f71036798745fecef416e7587bd3c1a23766ee1a8f795cfd149995b2f3
+ *   checksum: sha256:2de4413f7c7c0e7d6c7935c5b58abb5e8768aa1ae3c0739b9d8d500750b7cc4e
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

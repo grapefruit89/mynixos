@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-10-INF-008
  *   title: "Dns Map"
  *   layer: 10
  * architecture:
@@ -37,10 +37,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:d772a9a7688680293e09ac311c7c03a1a3a649ef5c133a0eea602f1cda37b86e
+ *   checksum: sha256:a96ca2838e4eb29ae8173aed55e28ec531e3f9045fa7f25fb7914dcf47c3b05b
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

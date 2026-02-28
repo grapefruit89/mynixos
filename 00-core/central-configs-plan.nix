@@ -2,7 +2,7 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: id:
+ *   id: NIXH-00-CORE-004
  *   title: "Central Configs Plan"
  *   layer: 00
  * architecture:
@@ -18,10 +18,12 @@
 }
 
 
+
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:e0c9880fc80279b01302331d15a5dad1ef541ceff98262a9302ba11956b0e339
+ *   checksum: sha256:a24dc133a8b213b6339523a2a014961dea81d872d4ebc7750c61f6f1d4dc468a
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
