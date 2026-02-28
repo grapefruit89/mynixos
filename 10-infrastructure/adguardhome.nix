@@ -20,37 +20,46 @@ let
   dnsBootstrap = config.my.configs.network.dnsBootstrap;
 in
 {
+  # 🚀 ADGUARDHOME EXHAUSTION
   services.adguardhome = {
     enable = true;
     host = "0.0.0.0";
     port = config.my.ports.adguard;
     openFirewall = false;
 
+    # VOLL-DEKLARATIVE EINSTELLUNGEN
     settings = {
+      http.address = "0.0.0.0:${toString config.my.ports.adguard}";
       dns = {
-        bind_hosts = [
-          "127.0.0.1"
-          lanIP
-          tailscaleIP
-        ];
+        bind_hosts = [ "127.0.0.1" lanIP tailscaleIP ];
         upstream_dns = dnsDoH;
         bootstrap_dns = dnsBootstrap;
+        cache_size = 4194304; # 4MB Cache
+        cache_ttl_min = 600;
+        filtering_enabled = true;
+        filters_update_interval = 24;
+      };
+      filtering = {
+        protection_enabled = true;
+        safe_search = {
+          enabled = true;
+          google = true;
+          bing = true;
+        };
+      };
+      statistics = {
+        enabled = true;
+        interval = 1; # 1 Tag
       };
     };
   };
 }
 
 
-
-
-
-
-
-
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:48a95faf4673d2cf8f35163cae3f20ccfcdc2dbca74fa20216fc23c46bbdc5df
+ *   checksum: sha256:d0206fecb33f004644013fce24237a4a393858a742e350800f73700618e1769b
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

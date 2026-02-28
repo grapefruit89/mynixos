@@ -19,23 +19,36 @@ let
   tailnetCidrs = config.my.configs.network.tailnetCidrs;
 in
 {
-  # 🚀 FAIL2BAN EXHAUSTION
+  # 🚀 FAIL2BAN EXHAUSTION (v2.3 SRE Standard)
   services.fail2ban = {
     enable = true;
     
-    # Globale Einstellungen via Nix Options
+    # Moderne Firewall-Backend (nftables statt iptables)
+    banaction = "nftables-multiport";
+    banaction-allports = "nftables-allports";
+
+    # Globale Whitelist (SRE: Keine Selbst-Aussperrung)
     ignoreIP = [
       "127.0.0.1/8"
       "::1"
     ] ++ lanCidrs ++ tailnetCidrs;
 
+    # 📈 ESKALIERENDE BAN-ZEITEN (NixOS Native Options)
     bantime = "1h";
-    bantime.increment = true; # SRE: Eskalierende Ban-Dauer
+    bantime-increment = {
+      enable = true;
+      multipliers = "1 2 4 8 16 32 64"; # Verdopplung bei jedem Vergehen
+      maxtime = "168h"; # Max 1 Woche
+      overalljails = true; # IP-Historie gilt über alle Jails hinweg
+    };
     
     maxretry = 5;
+
+    # 🗄️ DATABASE MANAGEMENT
     daemonConfig = ''
       [DEFAULT]
-      dbpurgeage = 1d
+      dbpurgeage = 14d
+      dbmaxmatches = 1000
     '';
 
     jails = {
@@ -46,11 +59,11 @@ in
           mode = "aggressive";
           findtime = "10m";
           bantime = "1h";
-          maxretry = 3; # Strengere SRE-Policy
+          maxretry = 3;
         };
       };
 
-      # Caddy / HTTP Brute Force Protection (Deklarativ integriert)
+      # Caddy / HTTP Brute Force Protection
       caddy-auth = {
         settings = {
           enabled = true;
@@ -66,8 +79,7 @@ in
     };
   };
 
-  # Filter Definition via Nix Option (falls verfügbar, sonst etc)
-  # NixOS hat leider keine direkt Option für Filter-Definitionen in services.fail2ban
+  # Filter Definition via etc-Filesystem (Da keine Nix-Option für Custom Filter existiert)
   environment.etc."fail2ban/filter.d/caddy-auth.conf".text = ''
     [Definition]
     failregex = ^.*"remote_ip":"<ADDR>".*"status":401.*$
@@ -75,17 +87,20 @@ in
     journalmatch = _SYSTEMD_UNIT=caddy.service
   '';
 
-  # Performance Tuning
-  systemd.services.fail2ban.serviceConfig.OOMScoreAdjust = 500;
+  # SRE: Performance & Reliability Hardening
+  systemd.services.fail2ban.serviceConfig = {
+    OOMScoreAdjust = 500; # Darf vor dem Kernel/SSH sterben
+    ProtectSystem = "strict";
+    ReadWritePaths = [ "/var/lib/fail2ban" "/var/run/fail2ban" ];
+    PrivateTmp = true;
+  };
 }
-
-
 
 
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:90a308f8ab0ebd2c5443bb1dc349fc52461a61047bdf5046ad3f63a4e0c6fb8b
+ *   checksum: sha256:2eda731623f9ca44c259243af78ce2125f1bea1d6430b68cc1ee397b45154efb
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

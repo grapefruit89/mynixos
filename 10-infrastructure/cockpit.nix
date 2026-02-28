@@ -20,13 +20,22 @@ let
 in
 {
   config = lib.mkIf cfg.enable {
+    # 🚀 COCKPIT EXHAUSTION
     services.cockpit = {
       enable = true;
       port = port;
+      package = pkgs.cockpit; # Standard-Paket
+      
+      # DEKLARATIVE EINSTELLUNGEN
       settings = {
         WebService = {
           AllowUnencrypted = true;
           ProtocolHeader = "X-Forwarded-Proto";
+          MaxStartups = 10;
+        };
+        Session = {
+          IdleTimeout = 15; # 15 Min Inaktivität
+          Banner = "/etc/motd";
         };
       };
     };
@@ -41,16 +50,10 @@ in
 }
 
 
-
-
-
-
-
-
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:d01d78a263ac00f278fef4eac5e55c99f4af467b88838e64e7e5a5e14cc94c37
+ *   checksum: sha256:edf9770ae7d7a334c4f44c2705fe248ae8134464ffa42f6791fba73a54ec7db3
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

@@ -20,37 +20,48 @@ let
     inherit config;
     name = "scrutiny";
     useSSO = true;
-    description = "Hard Drive Monitoring";
+    description = "Hard Drive Monitoring (Exhausted)";
   };
 in
 lib.mkIf cfg.enable (lib.mkMerge [
   serviceBase
   {
+    # 🚀 SCRUTINY EXHAUSTION
     services.scrutiny = {
       enable = true;
+      
+      # VOLL-DEKLARATIVE EINSTELLUNGEN
       settings = {
         web.listen.port = config.my.ports.scrutiny;
+        web.listen.host = "127.0.0.1";
+        
+        # SRE: Metrics & Monitoring
+        log.level = "info";
+        notify.urls = []; # Platzhalter für Gotify/Discord
+      };
+
+      # Collector aktivieren (Automatischer Scan)
+      collector = {
+        enable = true;
+        interval = "15m";
       };
     };
 
+    # systemd Hardening (SRE High-Trust)
     systemd.services.scrutiny.serviceConfig = {
-      DeviceAllow = [ "/dev/sda rw" "/dev/sdb rw" ];
-      CapabilityBoundingSet = [ "CAP_SYS_RAWIO" ];
+      DeviceAllow = [ "/dev/sda rw" "/dev/sdb rw" "/dev/nvme0n1 rw" ];
+      CapabilityBoundingSet = [ "CAP_SYS_RAWIO" "CAP_SYS_ADMIN" ];
+      ProtectSystem = lib.mkForce "strict";
+      ReadWritePaths = [ "/var/lib/scrutiny" ];
     };
   }
 ])
 
 
-
-
-
-
-
-
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:0e92968750f69d206845a46b07a9bc08515aba1c6999de70e06b5708efe04b6e
+ *   checksum: sha256:2d2f8fbd60bbe2660d88dd4f7cd3316aa49e08d82d25432fb6bdc4c3790e1777
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
