@@ -1,5 +1,5 @@
 # 🛰️ NIXHOME SYSTEM HEALTH REPORT
-**Generated:** Sa 28. Feb 15:00:59 UTC 2026
+**Generated:** Sat Feb 28 17:42:45 UTC 2026
 
 ## 🛡️ Compliance Check (NMS-2026 Header)
 ✅ Alle .nix Dateien sind NMS-2026 konform.
@@ -7,14 +7,13 @@
 ## 📊 Traceability Matrix Summary
 | Trace-ID Prefix | Count |
 |:---|:---:|
-| NIXH-CORE | 32 |
+| NIXH-CORE | 31 |
 | NIXH-INF | 23 |
 | NIXH-POL | 2 |
 | NIXH-SRV | 33 |
 
 ## 🔍 Detailed Trace-ID Inventory
 ```
-* TRACE-ID
 * TRACE-ID
 * TRACE-ID
 * TRACE-ID
