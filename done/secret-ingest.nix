@@ -10,7 +10,7 @@
 let
   ingestDir = "/etc/nixos/secret-landing-zone";
   sopsFile = "/etc/nixos/secrets.yaml";
-  liveConfig = "/etc/nixos/20-infrastructure/vpn-live-config.nix";
+  liveConfig = "/etc/nixos/10-infrastructure/vpn-live-config.nix";
 
   # Das Herz des Ingest: Ein robustes Python-Skript
   ingestScript = pkgs.writers.writePython3Bin "secret-ingest-agent" {

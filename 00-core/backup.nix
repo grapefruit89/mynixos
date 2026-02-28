@@ -1,0 +1,90 @@
+/**
+ * ---
+ * nms_version: 2.1
+ * unit:
+ *   id: NIXH-00-SYS-CORE-002
+ *   title: "Backup"
+ *   layer: 00
+ *   req_refs: [REQ-CORE]
+ *   status: stable
+ * traceability:
+ *   parent: NIXH-00-SYS-ROOT
+ *   depends_on: []
+ *   conflicts_with: []
+ * security:
+ *   integrity_hash: "sha256:33f25ed8d1cc8c695a065265546e2ba191c6ce7a5baedc5a349db3c4b09cb276"
+ *   trust_level: 5
+ *   last_audit: "2026-02-28"
+ * automation:
+ *   complexity_score: 2
+ *   auto_fix: true
+ * ---
+ */
+
+{ config, lib, pkgs, ... }:
+let
+  # Lokales Tresor-Verzeichnis auf der HDD (Tier C)
+  localRepo = "/mnt/archive/.restic-vault";
+  # Maximale Größe für Topf A (10GB Sperre)
+  maxSizeGB = 10;
+in
+{
+  # ── RESTIC BACKUP LOGIK ───────────────────────────────────────────────────
+  services.restic.backups.daily = {
+    initialize = true;
+    repository = localRepo;
+    passwordFile = "/etc/secrets/restic-password";
+    
+    paths = [
+      "/data/state"        # Datenbanken & App-Configs
+      "/data/metadata"     # Wichtige Metadaten (Primär auf NVMe)
+      "/etc/nixos"         # System-Konfiguration
+      "/var/lib/pocket-id" # SSO Identitäten
+    ];
+
+    # 🛡️ 10GB SICHERHEITS-CHECK
+    # Bricht ab, wenn die Quelldaten zu groß werden (Schutz vor Fehlern)
+    extraOptions = [
+      "--exclude-caches"
+    ];
+
+    # Vor dem Backup: Größe prüfen
+    backupPrepareCommand = ''
+      DATA_SIZE=$(${pkgs.coreutils}/bin/du -sb /data/state /data/metadata /etc/nixos | ${pkgs.gawk}/bin/awk '{sum+=$1} END {print sum}')
+      LIMIT=$(( ${toString maxSizeGB} * 1024 * 1024 * 1024 ))
+      
+      if [ "$DATA_SIZE" -gt "$LIMIT" ]; then
+        echo "🚨 BACKUP ABGEBROCHEN: Datenmenge ($((DATA_SIZE/1024/1024)) MB) überschreitet das ${toString maxSizeGB}GB Limit!"
+        exit 1
+      fi
+      echo "✅ Größe OK: $((DATA_SIZE/1024/1024)) MB. Starte Backup..."
+    '';
+
+    timerConfig = {
+      OnCalendar = "02:00";
+      Persistent = true;
+    };
+
+    pruneOpts = [
+      "--keep-daily 7"
+      "--keep-weekly 4"
+      "--keep-monthly 6"
+    ];
+  };
+
+  # ── CLOUD SYNC (RCLONE) ───────────────────────────────────────────────────
+  # Spiegelt den lokalen Restic-Tresor verschlüsselt in die Cloud
+  systemd.services.restic-cloud-sync = {
+    description = "Sync Restic Vault to Cloud (rclone)";
+    after = [ "restic-backups-daily.service" ];
+    wantedBy = [ "multi-user.target" ];
+    
+    serviceConfig = {
+      Type = "oneshot";
+      # Nur starten, wenn das lokale Backup erfolgreich war
+      ExecStart = "${pkgs.rclone}/bin/rclone sync ${localRepo} cloud-backup:nixhome-vault --limit-rate 5M";
+    };
+  };
+
+  environment.systemPackages = with pkgs; [ restic rclone ];
+}

@@ -1,0 +1,72 @@
+/**
+ * ---
+ * nms_version: 2.1
+ * unit:
+ *   id: NIXH-10-NET-INFRA-014
+ *   title: "Sso"
+ *   layer: 10
+ *   req_refs: [REQ-INF]
+ *   status: stable
+ * traceability:
+ *   parent: NIXH-10-SYS-ROOT
+ *   depends_on: []
+ *   conflicts_with: []
+ * security:
+ *   integrity_hash: "sha256:1433ca644cadc541eefd973899bf0e94fcfa6ff544e98620a9224906906e8b24"
+ *   trust_level: 5
+ *   last_audit: "2026-02-28"
+ * automation:
+ *   complexity_score: 2
+ *   auto_fix: true
+ * ---
+ */
+
+{ config, lib, pkgs, ... }:
+let
+  cfg = config.my.profiles.services.pocket-id;
+  domain = config.my.configs.identity.domain;
+  pocketIdPort = config.my.ports.pocketId;
+  dnsMap = import ./dns-map.nix;
+  allUrls = (map (h: "https://${h}") (lib.attrValues dnsMap.dnsMapping)) ++ [
+    "https://auth.${domain}/callback"
+    "https://*.nix.${domain}/*"
+  ];
+in
+{
+  config = lib.mkIf cfg.enable {
+    services.pocket-id.settings = {
+      issuer = "https://auth.${domain}";
+      title = "m7c5 Login";
+      allowed_redirect_urls = lib.concatStringsSep "," allUrls;
+      session_ttl_seconds = 86400;
+      refresh_token_ttl_seconds = 2592000;
+      require_verified_email = false;
+    };
+    
+    services.caddy.virtualHosts."netdata.${domain}" = {
+      extraConfig = ''
+        import sso_auth
+        reverse_proxy 127.0.0.1:${toString config.my.ports.netdata}
+      '';
+    };
+    
+    systemd.services.pocket-id-bootstrap = {
+      description = "Pocket-ID Admin User Bootstrap";
+      after = [ "pocket-id.service" ];
+      wantedBy = [ "multi-user.target" ];
+      unitConfig.ConditionPathExists = "!/var/lib/pocket-id/.bootstrapped";
+      serviceConfig.Type = "oneshot";
+      serviceConfig.RemainAfterExit = true;
+      script = ''
+        set -euo pipefail
+        for i in {1..30}; do
+          if ${pkgs.curl}/bin/curl -sf http://127.0.0.1:${toString pocketIdPort}/health >/dev/null 2>&1; then
+            break
+          fi
+          sleep 2
+        done
+        ${pkgs.coreutils}/bin/touch /var/lib/pocket-id/.bootstrapped
+      '';
+    };
+  };
+}

@@ -1,12 +1,24 @@
 /**
- * 🛰️ NIXHOME CONFIGURATION UNIT
- * ============================
- * TITLE:        Security Assertions
- * TRACE-ID:     NIXH-POL-002
- * REQ-REF:      REQ-POL
- * LAYER:        90
- * STATUS:       Stable
- * INTEGRITY:    SHA256:e71041da9bd99cc48da7e11197efe563a535232a1716a936b66575bf1ca78183
+ * ---
+ * nms_version: 2.1
+ * unit:
+ *   id: NIXH-90-SEC-POL-002
+ *   title: "Security Assertions"
+ *   layer: 90
+ *   req_refs: [REQ-POL]
+ *   status: stable
+ * traceability:
+ *   parent: NIXH-90-SYS-ROOT
+ *   depends_on: []
+ *   conflicts_with: []
+ * security:
+ *   integrity_hash: "sha256:c48bbad9c1486c73a636d575b6c013e23f590c4d7880feb99856c12d52151273"
+ *   trust_level: 5
+ *   last_audit: "2026-02-28"
+ * automation:
+ *   complexity_score: 2
+ *   auto_fix: true
+ * ---
  */
 
 { config, lib, ... }:

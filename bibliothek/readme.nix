@@ -8,7 +8,7 @@
 
     goals = [
       "Sicherheitsorientierte, nachvollziehbare Infrastruktur via NixOS"
-      "Isomorphe Modulstruktur (10-core, 20-infrastructure, 30-services, 90-policy)"
+      "Isomorphe Modulstruktur (00-core, 10-infrastructure, 20-services, 90-policy)"
       "Reproduzierbare Betriebsabläufe mit klaren Guardrails"
       "Einfacher Start ohne frühe Secret-Komplexität (sops später)"
     ];

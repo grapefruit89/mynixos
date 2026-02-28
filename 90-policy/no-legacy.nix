@@ -1,12 +1,24 @@
 /**
- * 🛰️ NIXHOME CONFIGURATION UNIT
- * ============================
- * TITLE:        No Legacy
- * TRACE-ID:     NIXH-POL-001
- * REQ-REF:      REQ-POL
- * LAYER:        90
- * STATUS:       Stable
- * INTEGRITY:    SHA256:1b702ddb8e9d06a043bf34cca4693abc58a9368e9ee52dc65fad2d97b5df10de
+ * ---
+ * nms_version: 2.1
+ * unit:
+ *   id: NIXH-90-SEC-POL-001
+ *   title: "No Legacy"
+ *   layer: 90
+ *   req_refs: [REQ-POL]
+ *   status: stable
+ * traceability:
+ *   parent: NIXH-90-SYS-ROOT
+ *   depends_on: []
+ *   conflicts_with: []
+ * security:
+ *   integrity_hash: "sha256:120237107f6e720be86248207441971142c73e6bdb3f0b540da3fdc1b06816fd"
+ *   trust_level: 5
+ *   last_audit: "2026-02-28"
+ * automation:
+ *   complexity_score: 2
+ *   auto_fix: true
+ * ---
  */
 
 { config, lib, pkgs, ... }:

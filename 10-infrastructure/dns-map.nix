@@ -1,0 +1,46 @@
+/**
+ * ---
+ * nms_version: 2.1
+ * unit:
+ *   id: NIXH-10-NET-INFRA-008
+ *   title: "Dns Map"
+ *   layer: 10
+ *   req_refs: [REQ-INF]
+ *   status: stable
+ * traceability:
+ *   parent: NIXH-10-SYS-ROOT
+ *   depends_on: []
+ *   conflicts_with: []
+ * security:
+ *   integrity_hash: "sha256:b2cf46c0c4ee4ae6ba974747b1a95f0013bedd834149c416536dc201ca09507e"
+ *   trust_level: 5
+ *   last_audit: "2026-02-28"
+ * automation:
+ *   complexity_score: 2
+ *   auto_fix: true
+ * ---
+ */
+
+{
+  useNixSubdomain = true;
+  dnsMapping = {
+    jellyfin = "jellyfin.nix.m7c5.de";
+    sonarr = "sonarr.nix.m7c5.de";
+    radarr = "radarr.nix.m7c5.de";
+    prowlarr = "prowlarr.nix.m7c5.de";
+    readarr = "readarr.nix.m7c5.de";
+    vault = "vault.nix.m7c5.de";
+    auth = "auth.nix.m7c5.de";
+    miniflux = "miniflux.nix.m7c5.de";
+    monica = "monica.nix.m7c5.de";
+    audiobookshelf = "audiobookshelf.nix.m7c5.de";
+    paperless = "paperless.nix.m7c5.de";
+    n8n = "n8n.nix.m7c5.de";
+    scrutiny = "scrutiny.nix.m7c5.de";
+    filebrowser = "filebrowser.nix.m7c5.de";
+    sabnzbd = "nix-sabnzbd.m7c5.de";
+    dashboard = "nixhome.m7c5.de";
+    homeassistant = "home.nix.m7c5.de";
+  };
+  baseDomain = "m7c5.de";
+}
