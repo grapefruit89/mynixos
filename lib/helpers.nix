@@ -1,9 +1,21 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Global Service Helpers
+ * TRACE-ID:     NIXH-CORE-033
+ * PURPOSE:      Zentrale Abstraktion für die Erstellung von Diensten (mkService).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [10-infrastructure/dns-map.nix, 00-core/configs.nix]
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
+
 { lib, ... }:
 let
   dnsMap = import ../10-infrastructure/dns-map.nix;
 in
 {
-  # mkService: v3.0 (Caddy Migration)
+  # mkService: v3.1 (Caddy Migration + Metadata)
   mkService = { 
     config,
     name, 
@@ -22,7 +34,6 @@ in
            then dnsMap.dnsMapping.${name} 
            else "${name}.nix.${dnsMap.baseDomain}";
     
-    # Internal Target
     target = "http://${if netns != null then "10.200.1.2" else "127.0.0.1"}:${toString finalPort}";
 
   in {

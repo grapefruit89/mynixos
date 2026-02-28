@@ -31,20 +31,9 @@ let
     
     # Prüfe ob Recovery-Window aktiv ist
     if systemctl is-active --quiet ssh-recovery-window; then
-      REMAINING=$(systemctl show ssh-recovery-window -p ActiveExitTimestampMonotonic --value)
-      BOOT_TIME=$(systemctl show ssh-recovery-window -p ActiveEnterTimestampMonotonic --value)
-      
-      if [ "$REMAINING" != "0" ]; then
-        ELAPSED=$(( ($(date +%s%N) - BOOT_TIME) / 1000000000 ))
-        REMAINING=$(( ${toString recoveryWindowSeconds} - ELAPSED ))
-        
-        if [ "$REMAINING" -gt 0 ]; then
-          echo -e "''${YELLOW}⏱  SSH Recovery Window: AKTIV''${NC}"
-          echo -e "   Verbleibend: ''${REMAINING}s"
-          echo -e "   Passwort-Login: ''${GREEN}MÖGLICH''${NC}"
-          exit 0
-        fi
-      fi
+      echo -e "''${YELLOW}⏱  SSH Recovery Window: AKTIV''${NC}"
+      echo -e "   Passwort-Login: ''${GREEN}MÖGLICH''${NC}"
+      exit 0
     fi
     
     echo -e "''${GREEN}🔒 SSH Recovery Window: INAKTIV''${NC}"
@@ -59,7 +48,7 @@ in
   # ══════════════════════════════════════════════════════════════════════════
   
   systemd.services.ssh-recovery-window = {
-    description = "SSH Password Recovery Window (5min after boot)";
+    description = "SSH & Avahi Recovery Window (15min after boot)";
     documentation = [ "https://github.com/grapefruit89/mynixos/blob/main/00-core/ssh-rescue.nix" ];
     
     # Lifecycle-Management
@@ -74,13 +63,17 @@ in
       Group = "root";
     };
     
-    # Recovery-Logik: Separater SSHD auf Port 2222 (NixOS-Safe)
+    # Recovery-Logik: Separater SSHD auf Port 2222 (NixOS-Safe) + Firewall Rules
     script = ''
       set -euo pipefail
       
-      echo "🔓 SSH Recovery Window startet (${toString recoveryWindowSeconds}s)"
+      echo "🔓 SSH & Avahi Recovery Window startet (${toString recoveryWindowSeconds}s)"
       
-      # Provisorische Config für den Rettungs-SSHD
+      # 1. Öffne Notfall-Ports via nftables
+      ${pkgs.nftables}/bin/nft add rule inet filter input tcp dport 2222 accept comment "Recovery SSH"
+      ${pkgs.nftables}/bin/nft add rule inet filter input udp dport 5353 accept comment "Recovery Avahi"
+
+      # 2. Provisorische Config für den Rettungs-SSHD
       TEMP_CONFIG=$(mktemp)
       cat > "$TEMP_CONFIG" <<EOF
 Port 2222
@@ -93,7 +86,7 @@ PermitRootLogin no
 AllowUsers ${user}
 EOF
 
-      # Rettungs-SSHD starten
+      # 3. Rettungs-SSHD starten
       ${pkgs.openssh}/bin/sshd -f "$TEMP_CONFIG" -D &
       RECOVERY_PID=$!
       
@@ -109,11 +102,15 @@ EOF
         echo -e "\n\033[1;32m🔒 SSH Recovery Fenster geschlossen.\033[0m" > /dev/tty1
       ) &
       
-      # Warten und dann aufräumen
+      # 4. Warten
       ${pkgs.coreutils}/bin/sleep ${toString recoveryWindowSeconds}
       
+      # 5. Aufräumen
       kill $RECOVERY_PID || true
       rm -f "$TEMP_CONFIG"
+      
+      # Lösche die temporären nftables Regeln
+      ${pkgs.nftables}/bin/nft delete rule inet filter input tcp dport 2222 || true
       
       ${pkgs.util-linux}/bin/logger -t ssh-recovery "Password auth DISABLED after recovery window"
       echo "🔒 SSH Recovery Window geschlossen"
@@ -131,6 +128,8 @@ EOF
     script = ''
       echo "⚠️  NOTFALL-MODUS: SSH Recovery manuell aktiviert auf Port 2222"
       
+      ${pkgs.nftables}/bin/nft add rule inet filter input tcp dport 2222 accept comment "Manual Recovery SSH"
+      
       TEMP_CONFIG=$(mktemp)
       cat > "$TEMP_CONFIG" <<EOF
 Port 2222
@@ -145,6 +144,7 @@ EOF
       sleep 900
       kill $RECOVERY_PID || true
       rm -f "$TEMP_CONFIG"
+      ${pkgs.nftables}/bin/nft delete rule inet filter input tcp dport 2222 || true
     '';
   };
   
@@ -224,12 +224,6 @@ EOF
       Persistent = true;
     };
   };
-
-  # ══════════════════════════════════════════════════════════════════════════
-  # NETZWERK & FIREWALL (Notfall-Zugang)
-  # ══════════════════════════════════════════════════════════════════════════
-  
-  networking.firewall.allowedTCPPorts = [ 2222 ];
 
   # ══════════════════════════════════════════════════════════════════════════
   # SICHERHEITS-ASSERTIONS
