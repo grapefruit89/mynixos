@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-00-SYS-CORE-001
  *   title: "Ai Tools"
  *   layer: 00
+ * architecture:
  *   req_refs: [REQ-CORE]
- *   status: stable
- * traceability:
- *   parent: NIXH-00-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:8aa05db1c0c0f5fe60c7d7acc2f862f6ddc22f135967acb3d52728c7cc2da6c0"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
@@ -39,3 +28,13 @@
     fi
   '';
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:8aa05db1c0c0f5fe60c7d7acc2f862f6ddc22f135967acb3d52728c7cc2da6c0
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

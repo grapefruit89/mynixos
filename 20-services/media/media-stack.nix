@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-20-APP-SRV-025
  *   title: "Media Stack"
  *   layer: 20
+ * architecture:
  *   req_refs: [REQ-SRV]
- *   status: stable
- * traceability:
- *   parent: NIXH-20-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:53373fbc9846eb902c87c9762e18c7f0887b408d86103cf6f3578c9929192f67"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { config, ... }:
 {
   my.media = {
@@ -36,3 +25,13 @@
     jellyseerr.enable = true;
   };
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:53373fbc9846eb902c87c9762e18c7f0887b408d86103cf6f3578c9929192f67
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

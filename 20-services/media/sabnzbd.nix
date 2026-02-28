@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-20-APP-SRV-030
  *   title: "Sabnzbd"
  *   layer: 20
+ * architecture:
  *   req_refs: [REQ-SRV]
- *   status: stable
- * traceability:
- *   parent: NIXH-20-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:65dd68254e51317fe67a4f27657bbe6ad215c18e2dea041da1034eeecb1746fc"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { lib, pkgs, config, ... }:
 {
   imports = [
@@ -41,3 +30,13 @@
     };
   };
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:65dd68254e51317fe67a4f27657bbe6ad215c18e2dea041da1034eeecb1746fc
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

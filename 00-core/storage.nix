@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-00-SYS-CORE-027
  *   title: "Storage"
  *   layer: 00
+ * architecture:
  *   req_refs: [REQ-CORE]
- *   status: stable
- * traceability:
- *   parent: NIXH-00-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:dcd6adc51b4efb4c4f5f77495c52913568f55a68b85209c9b8c69db1e4467cf4"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { config, lib, pkgs, ... }:
 let
   cfg = config.my.profiles.services.storage-pool;
@@ -152,3 +141,13 @@ in
     environment.systemPackages = with pkgs; [ mergerfs hdparm procps sysstat ];
   };
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:dcd6adc51b4efb4c4f5f77495c52913568f55a68b85209c9b8c69db1e4467cf4
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

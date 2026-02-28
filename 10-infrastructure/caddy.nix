@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-10-NET-INFRA-002
  *   title: "Caddy"
  *   layer: 10
+ * architecture:
  *   req_refs: [REQ-INF]
- *   status: stable
- * traceability:
- *   parent: NIXH-10-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:1aac5a7afa293d3133c44c40c073593ffe50383dcb2fc36c9e04bf29049b335e"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { config, lib, pkgs, ... }:
 let
   domain = config.my.configs.identity.domain;
@@ -61,3 +50,13 @@ in
     }
   '';
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:1aac5a7afa293d3133c44c40c073593ffe50383dcb2fc36c9e04bf29049b335e
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-00-SYS-CORE-018
  *   title: "Ports"
  *   layer: 00
+ * architecture:
  *   req_refs: [REQ-CORE]
- *   status: stable
- * traceability:
- *   parent: NIXH-00-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:69e6323532703c23ab0d67d8f16883756a1ae6b436ebc85694a2f135825bea57"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { lib, ... }:
 {
   options.my.ports = lib.mkOption {
@@ -66,3 +55,13 @@
     paperless      = 20981;
   };
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:69e6323532703c23ab0d67d8f16883756a1ae6b436ebc85694a2f135825bea57
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-20-APP-SRV-012
  *   title: "Paperless"
  *   layer: 20
+ * architecture:
  *   req_refs: [REQ-SRV]
- *   status: stable
- * traceability:
- *   parent: NIXH-20-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:54a4ac54cad4c9befa1f3207b00c5df9869338c5864fa537b21df6f5e26cbb5f"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { config, lib, ... }:
 let
   myLib = import ../../lib/helpers.nix { inherit lib; };
@@ -41,3 +30,13 @@ lib.mkMerge [
     };
   }
 ]
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:54a4ac54cad4c9befa1f3207b00c5df9869338c5864fa537b21df6f5e26cbb5f
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

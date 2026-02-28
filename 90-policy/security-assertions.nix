@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-90-SEC-POL-002
  *   title: "Security Assertions"
  *   layer: 90
+ * architecture:
  *   req_refs: [REQ-POL]
- *   status: stable
- * traceability:
- *   parent: NIXH-90-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:c48bbad9c1486c73a636d575b6c013e23f590c4d7880feb99856c12d52151273"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { config, lib, ... }:
 let
   bastelmodus = config.my.configs.bastelmodus;
@@ -43,3 +32,13 @@ in
     ];
   };
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:c48bbad9c1486c73a636d575b6c013e23f590c4d7880feb99856c12d52151273
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

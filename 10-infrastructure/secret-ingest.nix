@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-10-NET-INFRA-013
  *   title: "Secret Ingest"
  *   layer: 10
+ * architecture:
  *   req_refs: [REQ-INF]
- *   status: stable
- * traceability:
- *   parent: NIXH-10-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:24bf77dfd5e662969f59ecf4527a5f1e25cc12a55929a2f1ee660b31e56c69a9"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { config, lib, pkgs, ... }:
 let
   python = pkgs.python311;
@@ -78,3 +67,13 @@ for f_name in glob.glob("*.conf"):
     };
   };
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:24bf77dfd5e662969f59ecf4527a5f1e25cc12a55929a2f1ee660b31e56c69a9
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

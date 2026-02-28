@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-20-APP-SRV-001
  *   title: "Ai Agents"
  *   layer: 20
+ * architecture:
  *   req_refs: [REQ-SRV]
- *   status: stable
- * traceability:
- *   parent: NIXH-20-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:40870c2ac81b2b3dd9b286a859315c60874d19acb5f8915653dc925f2bbc42ff"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { config, lib, pkgs, ... }:
 let
   kimiClaudeScript = pkgs.writeShellScriptBin "kimi-claude" ''
@@ -45,3 +34,13 @@ in
 
   programs.bash.shellAliases.kimi = "kimi-claude";
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:40870c2ac81b2b3dd9b286a859315c60874d19acb5f8915653dc925f2bbc42ff
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

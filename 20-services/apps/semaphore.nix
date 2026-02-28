@@ -1,27 +1,26 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-20-APP-SRV-015
  *   title: "Semaphore"
  *   layer: 20
+ * architecture:
  *   req_refs: [REQ-SRV]
- *   status: stable
- * traceability:
- *   parent: NIXH-20-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:d807f38f6b9d0649d32b202971c430791501d00ce1736b572be5ffe874c607dc"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { ... }:
 {
   # Platzhalter – noch nicht implementiert
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:d807f38f6b9d0649d32b202971c430791501d00ce1736b572be5ffe874c607dc
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

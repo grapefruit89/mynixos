@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-10-NET-INFRA-007
  *   title: "Dns Automation"
  *   layer: 10
+ * architecture:
  *   req_refs: [REQ-INF]
- *   status: stable
- * traceability:
- *   parent: NIXH-10-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:5b9bd24e948594e59233706af5ec11ec15e7d497ba55d11c7858df11b88c7b1f"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { config, pkgs, lib, ... }:
 let
   runtimeDnsMap = "/var/lib/nixhome/dns-map-runtime.json";
@@ -71,3 +60,13 @@ in
     };
   };
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:5b9bd24e948594e59233706af5ec11ec15e7d497ba55d11c7858df11b88c7b1f
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-00-SYS-CORE-024
  *   title: "Shell Premium"
  *   layer: 00
+ * architecture:
  *   req_refs: [REQ-CORE]
- *   status: stable
- * traceability:
- *   parent: NIXH-00-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:72b30e73c89144e4d7f70eac7593d78834db2a28e4e89995afe3b5b791d6887e"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { config, lib, pkgs, ... }:
 
 let
@@ -188,3 +177,13 @@ in
     nixSafeSwitchScript
   ];
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:72b30e73c89144e4d7f70eac7593d78834db2a28e4e89995afe3b5b791d6887e
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

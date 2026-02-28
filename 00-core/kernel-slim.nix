@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-00-SYS-CORE-012
  *   title: "Kernel Slim"
  *   layer: 00
+ * architecture:
  *   req_refs: [REQ-CORE]
- *   status: stable
- * traceability:
- *   parent: NIXH-00-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:abec570aa588cd2397bfa8f6961397cccca27d16006e0cc5e0d1fccef7f3443c"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { config, lib, pkgs, ... }:
 
 {
@@ -118,3 +107,13 @@
     pciutils usbutils iw wirelesstools
   ];
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:abec570aa588cd2397bfa8f6961397cccca27d16006e0cc5e0d1fccef7f3443c
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

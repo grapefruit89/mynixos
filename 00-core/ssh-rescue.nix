@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-00-SYS-CORE-026
  *   title: "Ssh Rescue"
  *   layer: 00
+ * architecture:
  *   req_refs: [REQ-CORE]
- *   status: stable
- * traceability:
- *   parent: NIXH-00-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:a0e34c3fe91a02736378102353ade1106dab383365367742b98e7ef7c7450d05"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { config, lib, pkgs, ... }:
 
 let
@@ -294,3 +283,13 @@ EOF
     '';
   };
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:a0e34c3fe91a02736378102353ade1106dab383365367742b98e7ef7c7450d05
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

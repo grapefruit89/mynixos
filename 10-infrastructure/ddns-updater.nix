@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-10-NET-INFRA-006
  *   title: "Ddns Updater"
  *   layer: 10
+ * architecture:
  *   req_refs: [REQ-INF]
- *   status: stable
- * traceability:
- *   parent: NIXH-10-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:d26aa0ccaa1035989cb2599cc5a3cfbe5fbc76b7e50fdf69a549370f05c6635a"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { config, ... }:
 let
   domain = config.my.configs.identity.domain;
@@ -42,3 +31,13 @@ in
     '';
   };
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:d26aa0ccaa1035989cb2599cc5a3cfbe5fbc76b7e50fdf69a549370f05c6635a
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

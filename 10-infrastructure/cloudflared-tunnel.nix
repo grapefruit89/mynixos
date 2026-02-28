@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-10-NET-INFRA-004
  *   title: "Cloudflared Tunnel"
  *   layer: 10
+ * architecture:
  *   req_refs: [REQ-INF]
- *   status: stable
- * traceability:
- *   parent: NIXH-10-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:437a410b6a5e0ed12485ac4b4564c11e492df97f4ecd33b046a61b1f27f556cf"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { config, lib, ... }:
 let
   cfg = config.my.cloudflare.tunnel;
@@ -86,3 +75,13 @@ in
     };
   };
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:437a410b6a5e0ed12485ac4b4564c11e492df97f4ecd33b046a61b1f27f556cf
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

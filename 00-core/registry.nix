@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-00-SYS-CORE-020
  *   title: "Registry"
  *   layer: 00
+ * architecture:
  *   req_refs: [REQ-CORE]
- *   status: stable
- * traceability:
- *   parent: NIXH-00-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:6827ecf5149f767b5956dee6a42e804f010dd0f013d59b333d3e079b0def9542"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { lib, ... }:
 {
   options.my.profiles = {
@@ -89,3 +78,13 @@
     };
   };
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:6827ecf5149f767b5956dee6a42e804f010dd0f013d59b333d3e079b0def9542
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

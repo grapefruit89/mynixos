@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-20-APP-SRV-022
  *   title: "Jellyseerr"
  *   layer: 20
+ * architecture:
  *   req_refs: [REQ-SRV]
- *   status: stable
- * traceability:
- *   parent: NIXH-20-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:e701ca3b3352a44bbaf8085f04a2adb38ef3695083ca19f19cc48b1d1e55ee43"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { lib, pkgs, config, ... }:
 {
   imports = [
@@ -54,3 +43,13 @@
     "z /var/lib/jellyseerr/config/logs - jellyseerr jellyseerr - -"
   ];
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:e701ca3b3352a44bbaf8085f04a2adb38ef3695083ca19f19cc48b1d1e55ee43
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-20-APP-SRV-031
  *   title: "Services Common"
  *   layer: 20
+ * architecture:
  *   req_refs: [REQ-SRV]
- *   status: stable
- * traceability:
- *   parent: NIXH-20-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:5b270bac1e6a6a7695c0a064fa75501e052f1da1e6a2cd32a7258f71e0567dd9"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { lib, config, ... }:
 {
   options.my.media.defaults = {
@@ -63,3 +52,13 @@
     }
   ];
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:5b270bac1e6a6a7695c0a064fa75501e052f1da1e6a2cd32a7258f71e0567dd9
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

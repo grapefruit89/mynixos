@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-00-SYS-CORE-025
  *   title: "Ssh"
  *   layer: 00
+ * architecture:
  *   req_refs: [REQ-CORE]
- *   status: stable
- * traceability:
- *   parent: NIXH-00-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:ae57f9886478dbf8e0424953246a53055d890de38703d712ac390d62b2c92c12"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { lib, config, pkgs, ... }:
 let
   sshPort = config.my.ports.ssh;
@@ -78,3 +67,13 @@ in
   systemd.services.sshd.serviceConfig.RestartSec = "5s";
   systemd.services.sshd.serviceConfig.OOMScoreAdjust = lib.mkForce (-1000);
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:ae57f9886478dbf8e0424953246a53055d890de38703d712ac390d62b2c92c12
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

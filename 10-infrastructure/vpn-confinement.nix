@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-10-NET-INFRA-018
  *   title: "Vpn Confinement"
  *   layer: 10
+ * architecture:
  *   req_refs: [REQ-INF]
- *   status: stable
- * traceability:
- *   parent: NIXH-10-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:a2d309c3d9e88ab3da60fedcd0c0ef7a1bf1455776fd7922138510b5dec205bb"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { config, lib, pkgs, ... }:
 let
   nsName = "media-vault";
@@ -108,3 +97,13 @@ in
     '';
   };
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:a2d309c3d9e88ab3da60fedcd0c0ef7a1bf1455776fd7922138510b5dec205bb
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

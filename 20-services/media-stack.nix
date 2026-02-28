@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-20-APP-SRV-033
  *   title: "Media Stack"
  *   layer: 20
+ * architecture:
  *   req_refs: [REQ-SRV]
- *   status: stable
- * traceability:
- *   parent: NIXH-20-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:1f0eaab8aeecf652ef51b1ac17ca762c290d9b6e14a485f4bb5b2f85ae4b6e31"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { lib, ... }:
 {
   users.groups.media = {};
@@ -44,3 +33,13 @@
     "d /data/state/sabnzbd 0750 sabnzbd sabnzbd -"
   ];
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:1f0eaab8aeecf652ef51b1ac17ca762c290d9b6e14a485f4bb5b2f85ae4b6e31
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

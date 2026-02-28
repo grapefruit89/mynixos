@@ -1,15 +1,15 @@
 /**
- * 🛰️ NIXHOME CONFIGURATION UNIT
- * ============================
- * TITLE:        Global Service Helpers
- * TRACE-ID:     NIXH-CORE-033
- * PURPOSE:      Zentrale Abstraktion für die Erstellung von Diensten (mkService).
- * COMPLIANCE:   NMS-2026-STD
- * DEPENDS-ON:   [10-infrastructure/dns-map.nix, 00-core/configs.nix]
- * LAYER:        00-core
- * STATUS:       Stable
+ * ---
+ * nms_version: 2.2
+ * identity:
+ *   id: NIXH-00-SYS-LIB-001
+ *   title: "Global Service Helpers"
+ *   layer: 00
+ * architecture:
+ *   req_refs: [REQ-LIB-01]
+ *   status: audited
+ * ---
  */
-
 { lib, ... }:
 let
   dnsMap = import ../10-infrastructure/dns-map.nix;
@@ -72,3 +72,13 @@ in
     };
   };
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:3734a395d259c4672482f04863816b65ed429dfaaa90db20066c418935b8f763
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

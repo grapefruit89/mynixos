@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-00-SYS-CORE-015
  *   title: "Motd"
  *   layer: 00
+ * architecture:
  *   req_refs: [REQ-CORE]
- *   status: stable
- * traceability:
- *   parent: NIXH-00-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:d42541a74471de6a8d688f483f86169a7dba8fb4f4d6e6dac79c1608be3d48b5"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { config, pkgs, ... }:
 let
   firewallReminder = if config.networking.firewall.enable then
@@ -50,3 +39,13 @@ in
     fi
   '';
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:d42541a74471de6a8d688f483f86169a7dba8fb4f4d6e6dac79c1608be3d48b5
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

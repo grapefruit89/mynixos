@@ -1,24 +1,23 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-20-APP-SRV-011
  *   title: "Open Webui"
  *   layer: 20
+ * architecture:
  *   req_refs: [REQ-SRV]
- *   status: stable
- * traceability:
- *   parent: NIXH-20-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:67647aa5094fd6791808354e7d1a22bcb66304f0639e58ffb0f1ecd5a21ed0b4"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { ... }: { }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:67647aa5094fd6791808354e7d1a22bcb66304f0639e58ffb0f1ecd5a21ed0b4
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

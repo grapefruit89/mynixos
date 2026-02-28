@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-00-SYS-CORE-002
  *   title: "Backup"
  *   layer: 00
+ * architecture:
  *   req_refs: [REQ-CORE]
- *   status: stable
- * traceability:
- *   parent: NIXH-00-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:33f25ed8d1cc8c695a065265546e2ba191c6ce7a5baedc5a349db3c4b09cb276"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { config, lib, pkgs, ... }:
 let
   # Lokales Tresor-Verzeichnis auf der HDD (Tier C)
@@ -88,3 +77,13 @@ in
 
   environment.systemPackages = with pkgs; [ restic rclone ];
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:33f25ed8d1cc8c695a065265546e2ba191c6ce7a5baedc5a349db3c4b09cb276
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

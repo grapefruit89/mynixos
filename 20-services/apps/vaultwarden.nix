@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-20-APP-SRV-017
  *   title: "Vaultwarden"
  *   layer: 20
+ * architecture:
  *   req_refs: [REQ-SRV]
- *   status: stable
- * traceability:
- *   parent: NIXH-20-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:9a82c6795d35abaf01b9ba9a7ed95950df95c13225a498f1f1423869a4c5429e"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { config, lib, ... }:
 let
   myLib = import ../../lib/helpers.nix { inherit lib; };
@@ -50,3 +39,13 @@ lib.mkMerge [
     };
   }
 ]
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:9a82c6795d35abaf01b9ba9a7ed95950df95c13225a498f1f1423869a4c5429e
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-00-SYS-CORE-007
  *   title: "Fail2ban"
  *   layer: 00
+ * architecture:
  *   req_refs: [REQ-CORE]
- *   status: stable
- * traceability:
- *   parent: NIXH-00-SYS-ROOT
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:e6e808adc639793d72a67e068e0339dd8f594e5f29ee3ff6a0c8472263169c51"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 2
- *   auto_fix: true
+ *   status: audited
  * ---
  */
-
 { config, pkgs, ... }:
 let
   sshPort = toString config.my.ports.ssh;
@@ -72,3 +61,13 @@ in
     journalmatch = _SYSTEMD_UNIT=caddy.service
   '';
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:e6e808adc639793d72a67e068e0339dd8f594e5f29ee3ff6a0c8472263169c51
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */

@@ -1,26 +1,15 @@
 /**
  * ---
- * nms_version: 2.1
- * unit:
+ * nms_version: 2.2
+ * identity:
  *   id: NIXH-00-SYS-ROOT-001
  *   title: "System Entrypoint"
  *   layer: 00
+ * architecture:
  *   req_refs: [REQ-SYS-01]
- *   status: stable
- * traceability:
- *   parent: root
- *   depends_on: []
- *   conflicts_with: []
- * security:
- *   integrity_hash: "sha256:042c356e892af11d1015714f3f3adc9b66b7f6dceb3966490aac4f2204d74099"
- *   trust_level: 5
- *   last_audit: "2026-02-28"
- * automation:
- *   complexity_score: 5
- *   auto_fix: false
+ *   status: audited
  * ---
  */
-
 { lib, pkgs, config, ... }:
 {
   imports = [
@@ -100,3 +89,13 @@
     { device = "/var/lib/swapfile"; size = 4096; }
   ];
 }
+
+/**
+ * ---
+ * technical_integrity:
+ *   checksum: sha256:222520ebeec3cc43fb038818909d32d604b13ade611387751c019c2b92919b56
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-02-28
+ * ---
+ */
