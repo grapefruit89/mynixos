@@ -31,6 +31,7 @@
     ./00-core/config-merger.nix
     ./00-core/nix-tuning.nix
     ./00-core/symbiosis.nix
+    ./00-core/zram-swap.nix
     ./00-core/system-stability.nix
     ./00-core/secrets.nix
     ./00-core/network.nix
@@ -56,6 +57,10 @@
     # 10 — Infrastructure
     ./10-infrastructure/tailscale.nix
     ./10-infrastructure/caddy.nix
+    ./10-infrastructure/adguardhome.nix
+    ./10-infrastructure/netdata.nix
+    ./10-infrastructure/cloudflared-tunnel.nix
+    ./10-infrastructure/valkey.nix
     
     ./10-infrastructure/homepage.nix
     ./10-infrastructure/cockpit.nix
@@ -102,10 +107,11 @@
 
 
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:1e0103ed9b048b4921b2d58f8c4e45017ea76e35db4c983c97ae5dcee9d0a64b
+ *   checksum: sha256:ab22b089e803aad01f611d8cd3fbe5c8116ae046acd5c10d2253347b832ff531
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

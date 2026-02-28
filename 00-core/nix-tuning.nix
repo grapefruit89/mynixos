@@ -80,10 +80,11 @@ in
 }
 
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:3177fcffcf0d03cecbe3ef976de4f6b762265af95be35bc79acc69e0106d24cf
+ *   checksum: sha256:4bc1543e257fe2f7154c37ba48a27519c0dbd50365bd99d2074669aaeee20bfd
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

@@ -26,10 +26,6 @@ in
     hardware.cpu.intel.updateMicrocode = lib.mkIf (cpuType == "intel") true;
     hardware.cpu.amd.updateMicrocode = lib.mkIf (cpuType == "amd") true;
 
-    # RAM-Symbiose (ZRAM)
-    zramSwap.enable = isLowRam;
-    zramSwap.memoryPercent = 50;
-
     # VM/Hardware Warnung
     warnings = lib.optional (ramGB < 4) 
       "⚠️ [HARDWARE-WARNUNG] Weniger als 4GB RAM erkannt (${toString ramGB}GB). Das System läuft im Sparmodus.";
@@ -63,10 +59,11 @@ in
 }
 
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:4b80d9698d702a3dbc72fe33c9660a1c071fd12f6e32bd46cb7f07f9a1b3b220
+ *   checksum: sha256:d7028d0a6ced17d1a3427c054e6372be7cdeadd952054fc9b650447753ca3cd1
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

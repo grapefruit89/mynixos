@@ -96,10 +96,11 @@ EOF
 
 
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:f2f05384c08ece1cad720687a0fd8769c32561036c57cde24af497e9dde25a95
+ *   checksum: sha256:146511f27bb93d225321fcdd3e71850ec8742d02f5795cf1cb979b6a32cdaf2f
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
