@@ -50,7 +50,6 @@ let
             <div class="action-grid">
                 <a href="https://${domain}" class="btn btn-primary">🏠 Zum Dashboard</a>
                 <a href="https://auth.${domain}" class="btn">🔑 Pocket-ID (SSO)</a>
-                <a href="https://traefik.${domain}" class="btn">🚦 Traefik Admin</a>
                 <a href="https://netdata.${domain}" class="btn">📊 System Monitor</a>
             </div>
 

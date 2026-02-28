@@ -14,7 +14,6 @@
   useNixSubdomain = true;
   dnsMapping = {
     jellyfin = "jellyfin.nix.m7c5.de";
-    traefik = "traefik.nix.m7c5.de";
     sonarr = "sonarr.nix.m7c5.de";
     radarr = "radarr.nix.m7c5.de";
     prowlarr = "prowlarr.nix.m7c5.de";

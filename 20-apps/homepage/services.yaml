@@ -7,7 +7,3 @@
         icon: radarr.png
         href: https://radarr.nix.m7c5.de
         description: Filme Management
-- System:
-    - Traefik:
-        icon: traefik.png
-        href: https://traefik.nix.m7c5.de

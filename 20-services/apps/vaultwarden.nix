@@ -37,7 +37,5 @@ lib.mkMerge [
       MemoryDenyWriteExecute = true;
       RestrictAddressFamilies = [ "AF_INET" "AF_UNIX" ];
     };
-
-    services.traefik.dynamicConfigOptions.http.routers.vaultwarden.rule = lib.mkForce "Host(`vault.${config.my.configs.identity.domain}`) || Host(`vaultwarden.${config.my.configs.identity.domain}`)";
   }
 ]

@@ -16,7 +16,7 @@ let
   creds = config.my.secrets.files.cloudflaredTunnelCredentials;
   proxyUrl = if config.my.profiles.networking.reverseProxy == "caddy"
              then "https://127.0.0.1:443"
-             else "https://127.0.0.1:${toString config.my.ports.traefikHttps}";
+             else "https://127.0.0.1:${toString config.my.ports.edgeHttps}";
 in
 {
   options.my.cloudflare.tunnel = {

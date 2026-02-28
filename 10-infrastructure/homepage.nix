@@ -41,7 +41,6 @@ in
       }
       {
         "Infrastructure" = [
-          { "Traefik" = { icon = "traefik.png"; href = "https://${dnsMap.dnsMapping.traefik}"; }; }
           { "Pocket-ID" = { icon = "pocket-id.png"; href = "https://${dnsMap.dnsMapping.auth}"; }; }
           { "Netdata" = { icon = "netdata.png"; href = "https://netdata.${config.my.configs.identity.domain}"; }; }
           { "Scrutiny" = { icon = "scrutiny.png"; href = "https://${dnsMap.dnsMapping.scrutiny}"; }; }

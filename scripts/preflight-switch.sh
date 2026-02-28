@@ -26,7 +26,7 @@ if [[ "$perm" != "600" || "$owner" != "root:root" ]]; then
 fi
 
 echo "[4/6] critical services"
-for svc in sshd firewall fail2ban traefik; do
+for svc in sshd firewall fail2ban caddy; do
   state="$(systemctl is-active "$svc" || true)"
   if [[ "$state" != "active" ]]; then
     echo "ERROR: service $svc is not active (state=$state)"

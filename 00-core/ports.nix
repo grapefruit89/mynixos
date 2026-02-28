@@ -21,7 +21,7 @@
   config.my.ports = {
     # ── SYSTEM & EDGE ────────────────────────────────────────────────────────
     ssh = 53844;
-    traefikHttps = 443;
+    edgeHttps = 443;
 
     # ── 10-INFRASTRUCTURE (10xxx) ───────────────────────────────────────────
     adguard     = 10000;

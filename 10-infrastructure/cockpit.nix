@@ -29,17 +29,11 @@ in
       };
     };
 
-    services.traefik.dynamicConfigOptions.http = {
-      routers.cockpit = {
-        rule = "Host(`admin.${domain}`)";
-        entryPoints = [ "websecure" ];
-        tls.certResolver = "letsencrypt";
-        middlewares = [ "secured-chain@file" ];
-        service = "cockpit";
-      };
-      services.cockpit.loadBalancer.servers = [{
-        url = "http://127.0.0.1:${toString port}";
-      }];
+    services.caddy.virtualHosts."admin.${domain}" = {
+      extraConfig = ''
+        import sso_auth
+        reverse_proxy 127.0.0.1:${toString port}
+      '';
     };
   };
 }

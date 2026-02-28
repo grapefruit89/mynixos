@@ -33,9 +33,9 @@
       };
 
       reverseProxy = lib.mkOption {
-        type = lib.types.enum [ "caddy" "traefik" "none" ];
+        type = lib.types.enum [ "caddy" "none" ];
         default = "caddy";
-        description = "Aktiver Reverse-Proxy. Nur EINER darf Port 443 binden.";
+        description = "Aktiver Reverse-Proxy. Muss Port 443 binden.";
       };
     };
 

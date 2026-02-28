@@ -41,7 +41,6 @@
 
     # 10 — Infrastructure
     ./10-infrastructure/tailscale.nix
-    ./10-infrastructure/traefik.nix
     ./10-infrastructure/caddy.nix
     
     ./10-infrastructure/homepage.nix

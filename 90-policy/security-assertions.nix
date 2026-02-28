@@ -16,7 +16,6 @@ let
   must = assertion: message: { inherit assertion message; };
 
   sshSettings = config.services.openssh.settings;
-  traefikEnv = config.systemd.services.traefik.serviceConfig.EnvironmentFile or [ ];
   sharedSecretEnv = config.my.secrets.files.sharedEnv;
 in
 {
@@ -29,13 +28,7 @@ in
       (must (sshSettings.PermitRootLogin == "no") "[SEC-SSH-002] Root-Login via SSH muss deaktiviert sein.")
       (must (sshSettings.MaxAuthTries <= 3) "[SEC-SSH-003] MaxAuthTries darf maximal 3 sein.")
       (must (sshSettings.LoginGraceTime <= 20) "[SEC-SSH-004] LoginGraceTime muss <= 20s sein.")
-      (must (if config.services.traefik.enable then (builtins.elem sharedSecretEnv traefikEnv) else true) "[SEC-TRFK-001] Traefik muss das zentrale Secret-Environment laden.")
       (must (config.hardware.cpu.intel.updateMicrocode == true) "[SEC-SYS-001] CPU-Microcode Updates müssen aktiv sein.")
-    ] ++ [
-      {
-        assertion = !(config.services.caddy.enable && config.services.traefik.enable);
-        message = "[INFRA-001] Caddy UND Traefik gleichzeitig aktiv. Nur ein Proxy darf Port 443 binden.";
-      }
     ];
   };
 }

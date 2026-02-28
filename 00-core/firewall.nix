@@ -35,9 +35,9 @@ in
   # source-id: CFG.firewall.backend
   networking.nftables.enable = true;
 
-  # source-id: CFG.ports.traefikHttps / CFG.ports.ssh
+  # source-id: CFG.ports.edgeHttps / CFG.ports.ssh
   networking.firewall.allowedTCPPorts = lib.mkForce [ 
-    config.my.ports.traefikHttps 80 
+    config.my.ports.edgeHttps 80 
     sshPort 
   ];
 

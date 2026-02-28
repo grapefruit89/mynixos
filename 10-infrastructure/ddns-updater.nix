@@ -24,16 +24,10 @@ in
     };
   };
 
-  services.traefik.dynamicConfigOptions.http = {
-    routers.ddns-updater = {
-      rule = "Host(`nix-ddns.${domain}`)";
-      entryPoints = [ "websecure" ];
-      tls.certResolver = "letsencrypt";
-      middlewares = [ "secure-headers@file" ];
-      service = "ddns-updater";
-    };
-    services.ddns-updater.loadBalancer.servers = [
-      { url = "http://127.0.0.1:${toString port}"; }
-    ];
+  services.caddy.virtualHosts."nix-ddns.${domain}" = {
+    extraConfig = ''
+      import sso_auth
+      reverse_proxy 127.0.0.1:${toString port}
+    '';
   };
 }
