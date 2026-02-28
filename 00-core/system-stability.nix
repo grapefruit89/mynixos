@@ -37,7 +37,6 @@
   # Cockpit ist die moderne, webbasierte Alternative für Monitoring & Management.
   services.cockpit = {
     enable = true;
-    port = 9090;
     settings.WebService.AllowUnencrypted = true; # Hinter Caddy/Tailscale okay
   };
 }

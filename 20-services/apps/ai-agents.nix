@@ -17,7 +17,7 @@ in
   # Ollama Dienst aktivieren
   services.ollama = {
     enable = true;
-    acceleration = if config.my.configs.hardware.intelGpu then "opencl" else null; # Intel GPU Support
+    acceleration = if config.my.configs.hardware.intelGpu then "vulkan" else null; # Intel GPU Support
     loadModels = [ "kimi-k2.5:cloud" ];
   };
 
