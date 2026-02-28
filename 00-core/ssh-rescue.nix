@@ -248,8 +248,8 @@ EOF
       message = "ssh-rescue: Recovery-Window muss mindestens 60s sein (aktuell: ${toString recoveryWindowSeconds}s)";
     }
     {
-      assertion = recoveryWindowSeconds <= 600;
-      message = "ssh-rescue: Recovery-Window sollte nicht länger als 10min sein (aktuell: ${toString recoveryWindowSeconds}s)";
+      assertion = recoveryWindowSeconds <= 900;
+      message = "ssh-rescue: Recovery-Window sollte nicht länger als 15min sein (aktuell: ${toString recoveryWindowSeconds}s)";
     }
   ];
   
