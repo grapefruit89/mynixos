@@ -1,13 +1,5 @@
----
-title: HEALTH_REPORT
-category: Projekt
-status: done
-trace_ids: []
-last_reviewed: 2026-02-28
-checksum: a4ba2487726bb4fe6763c014476aa851c54ff4137a70079e16eedfb2bfb0ed37
----
 # 🛰️ NIXHOME SYSTEM HEALTH REPORT
-**Generated:** Sat Feb 28 17:58:35 UTC 2026
+**Generated:** Sat Feb 28 18:09:19 UTC 2026
 
 ## 🛡️ Compliance Check (NMS-2026 Header)
 ✅ Alle .nix Dateien sind NMS-2026 konform.
@@ -15,13 +7,16 @@ checksum: a4ba2487726bb4fe6763c014476aa851c54ff4137a70079e16eedfb2bfb0ed37
 ## 📊 Traceability Matrix Summary
 | Trace-ID Prefix | Count |
 |:---|:---:|
-| NIXH-CORE | 32 |
+| NIXH-CORE | 34 |
 | NIXH-INF | 19 |
 | NIXH-POL | 2 |
-| NIXH-SRV | 33 |
+| NIXH-SRV | 34 |
 
 ## 🔍 Detailed Trace-ID Inventory
 ```
+* TRACE-ID
+* TRACE-ID
+* TRACE-ID
 * TRACE-ID
 * TRACE-ID
 * TRACE-ID
