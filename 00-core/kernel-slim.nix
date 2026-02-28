@@ -73,7 +73,7 @@
     "quiet" "loglevel=3" "systemd.show_status=auto" "rd.udev.log_level=3" "logo.nologo"
   ];
 
-  services.rngd.enable = true; # Hardware Entropy Daemon
+  services.haveged.enable = true; # Modern Entropy Daemon (Alternative zu rngd)
 
   boot.kernel.sysctl = {
     "net.ipv4.conf.all.rp_filter" = lib.mkForce 1;
@@ -91,10 +91,11 @@
 
 
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:e546c8bb77a09bd9ffc742dead00aa8256bf45348fdfb90d08dc53b516355bec
+ *   checksum: sha256:2ae6085109d0738d811af010a80e2d65dafc2c17e01d8417b6affb758887aac5
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

@@ -38,9 +38,9 @@
   ];
 
   # Deaktiviere redundante Logging-Dienste für Performance
-  services.rsyslog.enable = false;
-  services.syslog-ng.enable = false;
+  # (Standardmäßig ohnehin aus, hier nur als explizite SRE-Entscheidung)
 }
+
 
 
 
@@ -49,7 +49,7 @@
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:97c77cd3bb2126ee883d31619bc88a929604e5dddca068f0c8f5f8cc57f292b6
+ *   checksum: sha256:5de136ce4b6ab49fbab05112c4ec7ec83a646e5ef5decfa05c90a818a3e8c3dd
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28

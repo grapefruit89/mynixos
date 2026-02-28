@@ -58,10 +58,11 @@ lib.mkIf cfg.enable (lib.mkMerge [
 ])
 
 
+
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:2d2f8fbd60bbe2660d88dd4f7cd3316aa49e08d82d25432fb6bdc4c3790e1777
+ *   checksum: sha256:9d49e3996b6f447d61aa260c7fa03c8140a76f934d8a799f3d4c1c8e96decc06
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
  *   last_reviewed: 2026-02-28
