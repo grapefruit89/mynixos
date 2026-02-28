@@ -27,14 +27,12 @@ in
   hardware.cpu.amd.updateMicrocode = lib.mkIf (cpuType == "amd") true;
 
   # 2. GPU & MULTIMEDIA SYMBIOSE
-  hardware.graphics = lib.mkIf (gpuType == "intel") {
-    enable = true;
-    extraPackages = with pkgs; [
-      intel-media-driver
-      intel-compute-runtime
-      vpl-gpu-rt
-    ];
-  };
+  hardware.graphics.enable = lib.mkIf (gpuType == "intel") true;
+  hardware.graphics.extraPackages = lib.mkIf (gpuType == "intel") (with pkgs; [
+    intel-media-driver
+    intel-compute-runtime
+    vpl-gpu-rt
+  ]);
 
   # 3. KERNEL-TUNING BASIEREND AUF CPU/GPU
   boot.kernelParams = lib.mkMerge [
@@ -43,10 +41,8 @@ in
   ];
 
   # 4. RESSOURCEN-MANAGEMENT (RAM-SYMBIOSE)
-  nix.settings = {
-    max-jobs = if isLowRam then lib.mkForce 1 else lib.mkForce 2;
-    cores = if isLowRam then lib.mkForce 2 else lib.mkForce 4;
-  };
+  nix.settings.max-jobs = if isLowRam then lib.mkForce 1 else lib.mkForce 2;
+  nix.settings.cores = if isLowRam then lib.mkForce 2 else lib.mkForce 4;
   
   zramSwap.enable = isLowRam;
   zramSwap.memoryPercent = 50;

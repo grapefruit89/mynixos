@@ -22,11 +22,9 @@ let
   '';
 in
 {
-  services.ollama = {
-    enable = true;
-    package = if config.my.configs.hardware.intelGpu then pkgs.ollama-vulkan else pkgs.ollama;
-    loadModels = [ "kimi-k2.5:cloud" ];
-  };
+  services.ollama.enable = true;
+  services.ollama.package = if config.my.configs.hardware.intelGpu then pkgs.ollama-vulkan else pkgs.ollama;
+  services.ollama.loadModels = [ "kimi-k2.5:cloud" ];
 
   environment.systemPackages = [
     kimiClaudeScript
@@ -34,7 +32,5 @@ in
     pkgs.nodejs_22
   ];
 
-  programs.bash.shellAliases = {
-    "kimi" = "kimi-claude";
-  };
+  programs.bash.shellAliases.kimi = "kimi-claude";
 }

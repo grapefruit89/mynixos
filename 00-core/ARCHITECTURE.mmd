@@ -1,0 +1,44 @@
+graph TD
+    subgraph SSOT [Single Source of Truth]
+        CFG[configs.nix]
+        PORTS[ports.nix]
+        REG[registry.nix]
+    end
+
+    subgraph Security [Security Layer]
+        FW[firewall.nix]
+        RESCUE[ssh-rescue.nix]
+        ASSERT[security-assertions.nix]
+        SECRETS[secrets.nix]
+    end
+
+    subgraph Hardware [Hardware & Boot]
+        SYM[symbiosis.nix]
+        BOOT[boot-safeguard.nix]
+        SLIM[kernel-slim.nix]
+        STORAGE[storage.nix]
+    end
+
+    subgraph Workflow [Admin Workflow]
+        SHELL[shell-premium.nix]
+        TUNING[nix-tuning.nix]
+        MERGE[config-merger.nix]
+    end
+
+    %% Data Flows
+    CFG --> FW
+    CFG --> SYM
+    CFG --> STORAGE
+    CFG --> SECRETS
+    
+    PORTS --> FW
+    PORTS --> SHELL
+    
+    REG --> FW
+    REG --> BOOT
+
+    %% Security Highlights
+    style FW fill:#f96,stroke:#333,stroke-width:2px
+    style RESCUE fill:#f96,stroke:#333,stroke-width:2px
+    style SECRETS fill:#f96,stroke:#333,stroke-width:2px
+    style CFG fill:#9f9,stroke:#333,stroke-width:4px
