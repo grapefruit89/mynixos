@@ -1,10 +1,16 @@
-# meta:
-#   owner: media
-#   status: placeholder
-#   scope: service
-#   summary: Lidarr Platzhalter (noch nicht implementiert)
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Lidarr Music Manager
+ * TRACE-ID:     NIXH-SRV-031
+ * PURPOSE:      Automatisches Management von Musik (Platzhalter).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   []
+ * LAYER:        20-services
+ * STATUS:       Placeholder
+ */
 
 { ... }:
 {
-  # Nächster Schritt: Implementieren und in 20-services/media/default.nix importieren.
+  # Platzhalter – noch nicht implementiert
 }

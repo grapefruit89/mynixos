@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Media Service Factory
+ * TRACE-ID:     NIXH-SRV-003
+ * PURPOSE:      Generischer Generator für Media-Services (Sonarr, Radarr, etc.) mit Storage-Tiers.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [lib/helpers.nix, 00-core/configs.nix]
+ * LAYER:        20-services
+ * STATUS:       Stable
+ */
+
 { lib, pkgs }:
 { name
 , port
@@ -14,7 +26,6 @@ let
   cfg = config.my.media.${name};
   common = config.my.media.defaults;
   
-  # Map name to its native default port if patch fails
   nativePort = if name == "sonarr" then 8989
                else if name == "radarr" then 7878
                else if name == "prowlarr" then 9696
@@ -72,8 +83,6 @@ in
         ];
       };
 
-      # Bind-Mounts für Topf-Trennung (A/B)
-      # Wir schieben die speicherintensiven Ordner in den Fast-Pool (SSD + NVMe Überlauf)
       systemd.tmpfiles.rules = [
         "d /mnt/fast-pool/metadata/${name} 0750 ${cfg.user} ${cfg.group} -"
         "d /mnt/fast-pool/cache/${name} 0750 ${cfg.user} ${cfg.group} -"

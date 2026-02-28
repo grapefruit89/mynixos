@@ -1,8 +1,14 @@
-# meta:
-#   owner: core
-#   status: active
-#   scope: shared
-#   summary: Restic Backup (Tier A / App-Daten)
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Restic Backup System
+ * TRACE-ID:     NIXH-CORE-011
+ * PURPOSE:      Zentrales Backup-Management (Daily, Tier-A Schutz, Cloud-Sync).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/configs.nix]
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
 
 { config, lib, pkgs, ... }:
 let

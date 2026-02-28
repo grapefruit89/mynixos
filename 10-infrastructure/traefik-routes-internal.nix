@@ -1,10 +1,20 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Traefik Internal Routes
+ * TRACE-ID:     NIXH-INF-004
+ * PURPOSE:      Definition interner Test-Routen und WhoAmI-Container für Traefik.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [10-infra/traefik-core.nix]
+ * LAYER:        10-infra
+ * STATUS:       Stable
+ */
+
 { config, pkgs, lib, ... }:
 let
-  # source-id: CFG.identity.domain
   domain = config.my.configs.identity.domain;
 in
 {
-  # Simple local test endpoint, intentionally internal-only.
   virtualisation.oci-containers.containers.whoami = lib.mkIf (config.my.profiles.networking.reverseProxy == "traefik") {
     image = "traefik/whoami";
     extraOptions = [

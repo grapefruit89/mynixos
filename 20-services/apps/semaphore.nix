@@ -1,11 +1,15 @@
-# modules/40-services/semaphore.nix
-# ══════════════════════════════════════════════════════════════════════════════
-# DUMMY – NOCH NICHT AKTIV
-# Semaphore – Ansible UI
-# ══════════════════════════════════════════════════════════════════════════════
-# DIESES MODUL ERST IMPORTIEREN wenn es vollständig ausgearbeitet ist!
-# (Import in hosts/q958/default.nix ergänzen)
-# ══════════════════════════════════════════════════════════════════════════════
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Semaphore UI
+ * TRACE-ID:     NIXH-SRV-026
+ * PURPOSE:      Ansible Web-UI (Platzhalter).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   []
+ * LAYER:        20-services
+ * STATUS:       Placeholder
+ */
+
 { ... }:
 {
   # Platzhalter – noch nicht implementiert

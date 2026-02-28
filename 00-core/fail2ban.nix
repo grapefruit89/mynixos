@@ -1,24 +1,26 @@
-# meta:
-#   owner: core
-#   status: active
-#   scope: shared
-#   summary: fail2ban Modul
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Fail2Ban Intrusion Prevention
+ * TRACE-ID:     NIXH-CORE-014
+ * PURPOSE:      Brute-Force Schutz für SSH & Caddy-Auth via NFTables.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/configs.nix, 00-core/ports.nix]
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
 
-{ config, ... }:
+{ config, pkgs, ... }:
 let
   sshPort = toString config.my.ports.ssh;
-  # source-id: CFG.network.lanCidrs
   lanCidrs = config.my.configs.network.lanCidrs;
-  # source-id: CFG.network.tailnetCidrs
   tailnetCidrs = config.my.configs.network.tailnetCidrs;
 in
 {
-  # source: /etc/secrets/* is not needed; fail2ban reads auth failures from journal.
-  # sink: protects sshd on my.ports.ssh with nftables bans.
   services.fail2ban = {
     enable = true;
 
-    # Internal/private ranges should never be banned by brute-force heuristics.
+    # Internal/private ranges should never be banned.
     ignoreIP = [
       "127.0.0.1/8"
       "::1"
@@ -27,7 +29,6 @@ in
     bantime = "1h";
     maxretry = 5;
 
-    # Traceability: this jail is intentionally tied to the single SSH port registry.
     jails.sshd.settings = {
       enabled = true;
       port = sshPort;

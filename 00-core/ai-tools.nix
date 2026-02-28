@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        AI & Automation Tools
+ * TRACE-ID:     NIXH-CORE-023
+ * PURPOSE:      Installation von AI-Agenten-Tools (Aider, Gemini CLI) & Bash-Tweaks.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   []
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
+
 { pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
@@ -5,14 +17,11 @@
   ];
 
   programs.bash.interactiveShellInit = ''
-    # ble.sh laden (Fix: Ohne ungültige Flags)
     if [[ -f ${pkgs.blesh}/share/blesh/ble.sh ]]; then
       source ${pkgs.blesh}/share/blesh/ble.sh
-      # Multiline-Modus via bleopt deaktivieren, falls unterstützt
       bleopt edit_multi_line=0 2>/dev/null || true
     fi
 
-    # inshellisense nur bei Bedarf
     if command -v inshellisense > /dev/null; then
        alias gemini-hint='inshellisense bind gemini -- gemini'
       alias p-graph='python3 /etc/nixos/scripts/generate-mermaid.py'

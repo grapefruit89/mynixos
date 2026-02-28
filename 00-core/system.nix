@@ -1,8 +1,14 @@
-# meta:
-#   owner: core
-#   status: active
-#   scope: shared
-#   summary: system Modul (Basis-Konfiguration & Bootloader)
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        System Base Configuration
+ * TRACE-ID:     NIXH-CORE-019
+ * PURPOSE:      Globale Nix-Einstellungen, Bootloader und Basispakete.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   []
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
 
 { config, lib, pkgs, ... }:
 {
@@ -27,16 +33,9 @@
     };
   };
 
-  # -- SYSTEM BASIS ---------------------------------------------------------
-  
   nixpkgs.config.allowUnfree = true;
-
-  # -- NIX EINSTELLUNGEN ----------------------------------------------------
-
-  # -- COMPATIBILITY --------------------------------------------------------
   programs.nix-ld.enable = true;
 
-  # -- PAKETE ---------------------------------------------------------------
   environment.systemPackages = with pkgs; [
     nodejs_22 alejandra git htop wget curl tree unzip file nix-output-monitor
   ];
@@ -45,7 +44,6 @@
     PATH = "/home/${config.my.configs.identity.user}/.npm-global/bin:$PATH";
   };
 
-  # source: /etc/git-hooks/pre-commit
   environment.etc."git-hooks/pre-commit" = {
     mode = "0755";
     text = ''

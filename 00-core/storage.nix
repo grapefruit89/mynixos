@@ -1,8 +1,14 @@
-# meta:
-#   owner: core
-#   status: active
-#   scope: shared
-#   summary: 3-Tier ABC Speicher-Architektur (NVMe -> SATA SSD -> HDD) mit Einkaufslisten-Logik
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        3-Tier ABC Storage Architecture
+ * TRACE-ID:     NIXH-CORE-007
+ * PURPOSE:      Physisches Mount-Management (NVMe/SSD/HDD) & MergerFS Pools.
+ * COMPLIANCE:   NMS-2026-STD (Audit-S1-01: nofail-policy)
+ * DEPENDS-ON:   [00-core/configs.nix]
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
 
 { config, lib, pkgs, ... }:
 let

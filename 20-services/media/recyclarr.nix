@@ -1,10 +1,16 @@
-# meta:
-#   owner: media
-#   status: placeholder
-#   scope: service
-#   summary: Recyclarr Platzhalter (noch nicht implementiert)
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Recyclarr
+ * TRACE-ID:     NIXH-SRV-032
+ * PURPOSE:      Sync-Tool für Trash-Guides Profiles (Platzhalter).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   []
+ * LAYER:        20-services
+ * STATUS:       Placeholder
+ */
 
 { ... }:
 {
-  # Nächster Schritt: Nur bei Bedarf aktivieren (aktuell bewusst nicht genutzt).
+  # Platzhalter – noch nicht implementiert
 }

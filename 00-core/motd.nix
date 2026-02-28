@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        MOTD & Shell Welcome
+ * TRACE-ID:     NIXH-CORE-017
+ * PURPOSE:      Benutzerbegrüßung, Status-Warnungen (Firewall/Hardware) beim Login.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   []
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
+
 { config, pkgs, ... }:
 let
   firewallReminder = if config.networking.firewall.enable then

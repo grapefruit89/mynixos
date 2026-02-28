@@ -1,29 +1,41 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        No Legacy Policy
+ * TRACE-ID:     NIXH-POL-002
+ * PURPOSE:      Erzwingung moderner Standards (Blockierung von GRUB, Cron, X11, PulseAudio).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   []
+ * LAYER:        90-policy
+ * STATUS:       Stable
+ */
+
 { config, lib, pkgs, ... }:
 let
-  msg = prefix: alt: "🚫 [LEGACY-BLOCK] ${prefix} ist veraltet (Pre-2015 Tech). Bitte nutze stattdessen ${alt}. Grund: Performance, Security und 2026-Standard.";
+  msg = prefix: alt: "🚫 [LEGACY-BLOCK] ${prefix} ist veraltet. Bitte nutze stattdessen ${alt}.";
 in
 {
   config = {
     assertions = [
       {
         assertion = !config.boot.loader.grub.enable;
-        message = msg "GRUB Bootloader" "systemd-boot (boot.loader.systemd-boot.enable = true)";
+        message = msg "GRUB Bootloader" "systemd-boot";
       }
       {
         assertion = !config.services.cron.enable;
-        message = msg "Cron-Jobs" "systemd.timers (deutlich besseres Logging & Abhängigkeiten)";
+        message = msg "Cron-Jobs" "systemd.timers";
       }
       {
         assertion = !config.networking.networkmanager.enable;
-        message = msg "NetworkManager" "systemd-networkd (schlanker, deklarativer, server-tauglich)";
+        message = msg "NetworkManager" "systemd-networkd";
       }
       {
         assertion = !config.services.xserver.enable;
-        message = msg "X11 / XServer" "Headless-Betrieb (keine GUI auf dem Server-Stick)";
+        message = msg "X11 / XServer" "Headless-Betrieb";
       }
       {
         assertion = !config.services.pulseaudio.enable;
-        message = msg "PulseAudio" "PipeWire (services.pipewire.enable = true)";
+        message = msg "PulseAudio" "PipeWire";
       }
     ];
 

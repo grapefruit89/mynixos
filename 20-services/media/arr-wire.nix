@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        ARR API Wiring Helper
+ * TRACE-ID:     NIXH-SRV-029
+ * PURPOSE:      Validierung und Health-Check der API-Kommunikation zwischen Sonarr/Radarr/Prowlarr.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/secrets.nix, 00-core/ports.nix]
+ * LAYER:        20-services
+ * STATUS:       Stable
+ */
+
 { lib, config, pkgs, ... }:
 let
   cfg = config.my.media.arrWire;
@@ -35,7 +47,6 @@ in
           exit 1
         fi
 
-        # shellcheck disable=SC1091
         source "${envFile}"
 
         : "''${SONARR_API_KEY:?SONARR_API_KEY missing in ${envFile}}"
@@ -56,8 +67,6 @@ in
         curl -fsS "''${SABNZBD_URL}/api?mode=version&apikey=''${SABNZBD_API_KEY}&output=json" >/dev/null
 
         echo "arr-wire: APIs erreichbar."
-        echo "arr-wire: Aktuell ist dies ein sicherer Rotations-Helper (Health + Validierung)."
-        echo "arr-wire: Manuell starten via: sudo systemctl start arr-wire.service"
       '';
     };
   };

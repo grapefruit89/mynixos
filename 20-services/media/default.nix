@@ -1,7 +1,17 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Media Module Aggregator
+ * TRACE-ID:     NIXH-SRV-030
+ * PURPOSE:      Import-Liste aller Media-Module.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   []
+ * LAYER:        20-services
+ * STATUS:       Stable
+ */
+
 { ... }:
 {
-  # source: media module import list
-  # sink:   activates shared media module stack
   imports = [
     ./services-common.nix
     ./arr-wire.nix

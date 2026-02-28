@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Paperless-ngx
+ * TRACE-ID:     NIXH-SRV-020
+ * PURPOSE:      Digitales Dokumentenmanagementsystem.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/ports.nix]
+ * LAYER:        20-services
+ * STATUS:       Stable
+ */
+
 { config, lib, ... }:
 let
   myLib = import ../../lib/helpers.nix { inherit lib; };

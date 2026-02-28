@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        DNS Mapping Static
+ * TRACE-ID:     NIXH-INF-010
+ * PURPOSE:      Statische Definition der Subdomain-Struktur (wird von dns-guard validiert).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   []
+ * LAYER:        10-infra
+ * STATUS:       Stable
+ */
+
 {
   useNixSubdomain = true;
   dnsMapping = {

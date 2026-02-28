@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        DNS Guard Automation
+ * TRACE-ID:     NIXH-INF-007
+ * PURPOSE:      Vermeidung von Cloudflare DNS-Konflikten durch automatische Laufzeit-Mappings.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/configs.nix, 00-core/secrets.nix]
+ * LAYER:        10-infra
+ * STATUS:       Stable
+ */
+
 { config, pkgs, lib, ... }:
 let
   runtimeDnsMap = "/var/lib/nixhome/dns-map-runtime.json";
@@ -15,11 +27,8 @@ in
       ExecStart = pkgs.writeShellScript "dns-guard-runtime" ''
         set -euo pipefail
         
-        # Get Cloudflare token via SOPS (if env is not available)
-        # Assuming we have a secret for cloudflare_token in secrets.yaml
         TOKEN=$(${pkgs.sops}/bin/sops -d --extract '["cloudflare_token"]' ${../secrets.yaml})
         
-        # Check for conflicts
         ZONE_DATA=$(${pkgs.curl}/bin/curl -sf -X GET "https://api.cloudflare.com/client/v4/zones" \
           -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json")
         ZONE_ID=$(echo "$ZONE_DATA" | ${pkgs.jq}/bin/jq -r ".result[0].id")
@@ -31,7 +40,6 @@ in
             if [[ "$record" == "*.${domain}" ]]; then GLOBAL_CONFLICT=true; break; fi
         done
         
-        # Write runtime map
         ${pkgs.jq}/bin/jq -n \
           --arg subdomain "$GLOBAL_CONFLICT" \
           --arg domain "${domain}" \

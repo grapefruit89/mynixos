@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Media Stack Permissions
+ * TRACE-ID:     NIXH-SRV-028
+ * PURPOSE:      Definition gemeinsamer Gruppen (media) und Tmpfiles-Berechtigungen.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   []
+ * LAYER:        20-services
+ * STATUS:       Stable
+ */
+
 { lib, ... }:
 {
   users.groups.media = {};

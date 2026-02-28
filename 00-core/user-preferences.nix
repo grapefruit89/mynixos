@@ -1,17 +1,17 @@
-# meta:
-#   owner: user
-#   status: active
-#   scope: shared
-#   summary: Benutzerdefinierte, persönliche Einstellungen und Tweaks
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        User Preferences
+ * TRACE-ID:     NIXH-CORE-031
+ * PURPOSE:      Persönliche Benutzer-Tweaks und Pakete (Freifeld für den Admin).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   []
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
 
 { config, lib, pkgs, ... }:
 
 {
-  # Hier kannst du deine ganz persönlichen Anpassungen vornehmen,
-  # die nirgendwo anders reinpassen (z.B. spezielle Pakete nur für dich).
-  
-  # environment.systemPackages = with pkgs; [
-  #   neofetch
-  #   micro
-  # ];
+  # Platz für persönliche Anpassungen.
 }

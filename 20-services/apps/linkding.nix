@@ -1,11 +1,15 @@
-# modules/40-services/linkding.nix
-# ══════════════════════════════════════════════════════════════════════════════
-# DUMMY – NOCH NICHT AKTIV
-# Linkding – Bookmark Manager
-# ══════════════════════════════════════════════════════════════════════════════
-# DIESES MODUL ERST IMPORTIEREN wenn es vollständig ausgearbeitet ist!
-# (Import in hosts/q958/default.nix ergänzen)
-# ══════════════════════════════════════════════════════════════════════════════
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Linkding
+ * TRACE-ID:     NIXH-SRV-023
+ * PURPOSE:      Bookmark-Management Dienst (Platzhalter).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   []
+ * LAYER:        20-services
+ * STATUS:       Placeholder
+ */
+
 { ... }:
 {
   # Platzhalter – noch nicht implementiert

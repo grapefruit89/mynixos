@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Cloudflare Tunnel Ingress
+ * TRACE-ID:     NIXH-INF-006
+ * PURPOSE:      Bridge zwischen Cloudflare Zero Trust Tunnel und lokalem Proxy.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/configs.nix, 00-core/secrets.nix]
+ * LAYER:        10-infra
+ * STATUS:       Stable
+ */
+
 { config, lib, ... }:
 let
   cfg = config.my.cloudflare.tunnel;
@@ -13,13 +25,11 @@ in
     tunnelId = lib.mkOption {
       type = lib.types.str;
       default = "";
-      description = "Cloudflare tunnel UUID (as shown in Cloudflare Zero Trust).";
-      example = "00000000-0000-0000-0000-000000000000";
+      description = "Cloudflare tunnel UUID.";
     };
 
     domain = lib.mkOption {
       type = lib.types.str;
-      # source-id: CFG.identity.domain
       default = config.my.configs.identity.domain;
       description = "Base domain used by the tunnel ingress wildcard.";
     };
@@ -27,7 +37,7 @@ in
     wildcardPrefix = lib.mkOption {
       type = lib.types.str;
       default = "*.nix";
-      description = "Subdomain wildcard routed through tunnel (default: *.nix).";
+      description = "Subdomain wildcard routed through tunnel.";
     };
   };
 
@@ -37,10 +47,8 @@ in
         assertion = cfg.tunnelId != "";
         message = "cloudflared: set my.cloudflare.tunnel.tunnelId to your tunnel UUID.";
       }
-      # builtins.pathExists creds ENTFERNT (Laufzeit-Check)
     ];
 
-    # Laufzeit-Check statt Build-Zeit-Assertion
     systemd.services."cloudflared-tunnel-${cfg.tunnelId}".preStart = ''
       if [ ! -f "${creds}" ]; then
         echo "FEHLER: Cloudflared-Credentials fehlen unter ${creds}"
@@ -49,15 +57,10 @@ in
       fi
     '';
 
-    # Traceability:
-    # source: ${creds}
-    # sink: services.cloudflared.tunnels.${cfg.tunnelId}
     services.cloudflared = {
       enable = true;
       tunnels.${cfg.tunnelId} = {
         credentialsFile = creds;
-
-        # All nix-* hosts terminate at Proxy (HTTPS-only on localhost:443).
         ingress = {
           "${cfg.wildcardPrefix}.${cfg.domain}" = {
             service = proxyUrl;
@@ -67,7 +70,6 @@ in
             };
           };
         };
-
         default = "http_status:404";
       };
     };

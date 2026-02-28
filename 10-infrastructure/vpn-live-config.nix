@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        VPN Live Config (Runtime)
+ * TRACE-ID:     NIXH-INF-014
+ * PURPOSE:      Speicherort für zur Laufzeit eingespielte VPN-Parameter (wird von secret-ingest überschrieben).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   []
+ * LAYER:        10-infra
+ * STATUS:       Experimental (Runtime Managed)
+ */
+
 { lib, ... }:
 {
   my.configs.vpn.privado = {

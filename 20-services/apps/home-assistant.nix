@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Home Assistant
+ * TRACE-ID:     NIXH-SRV-004
+ * PURPOSE:      Zentrale Hausautomations-Instanz.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/configs.nix, 00-core/ports.nix]
+ * LAYER:        20-services
+ * STATUS:       Stable
+ */
+
 { config, lib, pkgs, ... }:
 let
   myLib = import ../../lib/helpers.nix { inherit lib; };
@@ -6,15 +18,13 @@ let
   serviceBase = myLib.mkService {
     inherit config;
     name = "homeassistant";
-    useSSO = false; # HA has its own robust auth and mobile app needs it
+    useSSO = false;
     description = "Home Automation (Vanilla Core)";
   };
 in
 lib.mkMerge [
   serviceBase
   {
-    # ── HOME ASSISTANT CORE ──────────────────────────────────────────────────
-    # Hinweis: SLZB-06M (Ethernet) wird in HA via ZHA (socket://IP:PORT) eingebunden.
     services.home-assistant = {
       enable = true;
       extraPackages = python3Packages: with python3Packages; [
@@ -35,7 +45,6 @@ lib.mkMerge [
           trusted_proxies = [ "127.0.0.1" "::1" ];
         };
 
-        # Standard-Komponenten
         frontend = { };
         config = { };
         history = { };

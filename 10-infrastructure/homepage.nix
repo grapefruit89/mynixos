@@ -1,7 +1,18 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Homepage Dashboard
+ * TRACE-ID:     NIXH-INF-012
+ * PURPOSE:      Zentrales Web-Dashboard zur Dienst-Navigation.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [10-infra/dns-map.nix]
+ * LAYER:        10-infra
+ * STATUS:       Stable
+ */
+
 { config, pkgs, lib, ... }:
 let
   dnsMap = import ./dns-map.nix;
-  vaultIP = "10.200.1.2";
   host = dnsMap.dnsMapping.dashboard or "nixhome.${dnsMap.baseDomain}";
 in
 {
@@ -42,19 +53,16 @@ in
 
   services.caddy.virtualHosts."${host}" = {
     extraConfig = ''
-      # Local Access (.local)
       @local host nixhome.local
       handle @local {
         reverse_proxy 127.0.0.1:8082
       }
 
-      # TAILSCALE BYPASS (Wichtig!)
       @tailscale remote_ip 100.64.0.0/10
       handle @tailscale {
         reverse_proxy 127.0.0.1:8082
       }
 
-      # PocketID-Auth für Public Access
       import sso_auth
       reverse_proxy 127.0.0.1:8082
     '';

@@ -1,15 +1,21 @@
-# meta:
-#   owner: core
-#   status: active
-#   scope: shared
-#   summary: ports Modul (Zentrale Register-Struktur 10k/20k)
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Central Port Registry
+ * TRACE-ID:     NIXH-CORE-015
+ * PURPOSE:      Definition aller Dienst-Ports (10xxx: Infra, 20xxx: Apps).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   []
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
 
 { lib, ... }:
 {
   options.my.ports = lib.mkOption {
     type = lib.types.attrsOf lib.types.port;
     default = { };
-    description = "Zentrales Port-Register. 10xxx = Infrastruktur, 20xxx = Services.";
+    description = "Zentrales Port-Register.";
   };
 
   config.my.ports = {
@@ -28,29 +34,24 @@
     cockpit     = 10090;
 
     # ── 20-SERVICES (20xxx) ─────────────────────────────────────────────────
-    # Media-Stack
     audiobookshelf = 20000;
-    filebrowser = 20001;
+    filebrowser    = 20001;
     vaultwarden    = 20002;
     readeck        = 20007;
     miniflux       = 20016;
     n8n            = 20017;
     scrutiny       = 20020;
-    monica         = 20031; # Wait, user wanted 20xxx
+    monica         = 20031;
     jellyseerr     = 20055;
     sabnzbd        = 20080;
     jellyfin       = 20096;
     
-    # Arr-Stack
     radarr         = 20878;
     readarr        = 20787;
     sonarr         = 20989;
     prowlarr       = 20696;
     
-    # Automation
     homeassistant  = 28123;
-    
-    # Tools
     paperless      = 20981;
   };
 }

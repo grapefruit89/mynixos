@@ -1,8 +1,17 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Valkey In-Memory DB
+ * TRACE-ID:     NIXH-INF-023
+ * PURPOSE:      Hochperformante In-Memory Datenbank (Redis Fork) für interne Dienste.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   []
+ * LAYER:        10-infra
+ * STATUS:       Stable
+ */
+
 { pkgs, lib, ... }:
 {
-  # source: pkgs.valkey + services.redis.servers.valkey
-  # sink:   local valkey on 127.0.0.1:6379 for internal apps
-  # Native Valkey via the Redis NixOS module.
   services.redis = {
     package = pkgs.valkey;
 

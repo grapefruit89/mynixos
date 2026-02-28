@@ -1,8 +1,14 @@
-# meta:
-#   owner: core
-#   status: active
-#   scope: shared
-#   summary: zentrale Konfigurationswerte (Single Source of Truth)
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Global Configuration (SSOT)
+ * TRACE-ID:     NIXH-CORE-006
+ * PURPOSE:      Zentraler Speicherort für alle systemweiten Parameter (Single Source of Truth).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [10-infrastructure/vpn-live-config.nix]
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
 
 { lib, config, ... }:
 {
@@ -229,4 +235,3 @@
     ];
   };
 }
-

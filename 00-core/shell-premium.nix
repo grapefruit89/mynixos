@@ -1,8 +1,14 @@
-# meta:
-#   owner: core
-#   status: active
-#   scope: shared
-#   summary: Shell-Workflow-Modul – Premium-Aliase + Fastfetch MOTD + Produktivitäts-Tools
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Premium Shell Workflow
+ * TRACE-ID:     NIXH-CORE-001
+ * PURPOSE:      Zentrale Shell-Aliase, Fastfetch-MOTD und SRE-Produktivitäts-Tools.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/configs.nix, 00-core/ports.nix]
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
 
 { config, lib, pkgs, ... }:
 

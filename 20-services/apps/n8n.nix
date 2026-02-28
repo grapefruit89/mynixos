@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        n8n Workflow Automation
+ * TRACE-ID:     NIXH-SRV-019
+ * PURPOSE:      Zentrales Automatisierungs-Tool für Workflows und API-Integrationen.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/ports.nix]
+ * LAYER:        20-services
+ * STATUS:       Stable
+ */
+
 { config, lib, ... }:
 let
   myLib = import ../../lib/helpers.nix { inherit lib; };

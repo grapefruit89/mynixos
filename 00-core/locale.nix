@@ -1,8 +1,14 @@
-# meta:
-#   owner: core
-#   status: active
-#   scope: shared
-#   summary: locale/profile Modul
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Locale & Internationalization
+ * TRACE-ID:     NIXH-CORE-027
+ * PURPOSE:      Zeitzonen, Tastaturlayouts & Locale-Profile (DE/AT/CH/EN).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/configs.nix]
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
 
 { lib, config, ... }:
 let
@@ -56,13 +62,10 @@ in
     ];
 
     time.timeZone = cfg.timeZone;
-
     i18n.defaultLocale = cfg.locale;
     i18n.supportedLocales = lib.mkForce [ "de_DE.UTF-8/UTF-8" "en_US.UTF-8/UTF-8" ];
-
     console.keyMap = lib.mkForce cfg.keyMap;
 
-    # Keyboard layout for X11 and Wayland
     services.xserver.xkb = {
       layout = cfg.xkbLayout;
       variant = "";
@@ -70,17 +73,13 @@ in
 
     networking.timeServers = cfg.ntp;
 
-    # source-id: CFG.network.dnsNamed
-    networking.nameservers =
-      [ "127.0.0.1" ]
-      ++ config.my.configs.network.dnsNamed;
+    networking.nameservers = [ "127.0.0.1" ] ++ config.my.configs.network.dnsNamed;
 
     services.resolved = {
       enable = true;
       dnssec = "true";
       dnsovertls = "opportunistic";
       domains = [ "~." ];
-      # source-id: CFG.network.dnsFallback
       fallbackDns = config.my.configs.network.dnsFallback;
     };
   };

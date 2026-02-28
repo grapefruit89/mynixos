@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Readeck Read Later
+ * TRACE-ID:     NIXH-SRV-008
+ * PURPOSE:      Selbstgehostete "Read-it-later" Alternative.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/ports.nix]
+ * LAYER:        20-services
+ * STATUS:       Stable
+ */
+
 { config, lib, ... }:
 let
   myLib = import ../../lib/helpers.nix { inherit lib; };

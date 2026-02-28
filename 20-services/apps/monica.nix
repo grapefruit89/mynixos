@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Monica Personal CRM
+ * TRACE-ID:     NIXH-SRV-009
+ * PURPOSE:      Beziehungsmanagement-Tool für Freunde und Familie.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/ports.nix]
+ * LAYER:        20-services
+ * STATUS:       Stable
+ */
+
 { config, lib, ... }:
 let
   myLib = import ../../lib/helpers.nix { inherit lib; };

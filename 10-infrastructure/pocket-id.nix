@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        PocketID Authentication
+ * TRACE-ID:     NIXH-INF-003
+ * PURPOSE:      Zentraler OIDC-Identitätsprovider für Single-Sign-On (SSO).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/configs.nix, 00-core/ports.nix]
+ * LAYER:        10-infra
+ * STATUS:       Stable
+ */
+
 { config, lib, pkgs, ... }:
 let
   cfg = config.my.profiles.services.pocket-id;

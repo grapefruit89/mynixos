@@ -1,58 +1,34 @@
-# meta:
-#   owner: <owner-name>
-#   status: draft | active
-#   scope: shared | private
-#   summary: <Kurze Beschreibung des Dienstes>
-#   specIds: [<SPEC-ID-001>, ...] # Falls vorhanden
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Service Blueprint Template
+ * TRACE-ID:     NIXH-SRV-033
+ * PURPOSE:      Standard-Vorlage für neue Dienste mit systemd-Hardening & Proxy-Anbindung.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/configs.nix, 00-core/ports.nix]
+ * LAYER:        20-services
+ * STATUS:       Template
+ */
 
 { config, lib, pkgs, ... }:
 
 let
-  # 1. Konstanten & Lokale Variablen
-  # source-id: CFG.identity.domain
   domain = config.my.configs.identity.domain;
-  
-  # source: 00-core/ports.nix
-  servicePort = config.my.ports.<service-name>; # <-- In ports.nix definieren!
-  
+  # servicePort = config.my.ports.<service-name>;
   serviceName = "<service-name>";
 in
 {
-  # 2. Dienst-Konfiguration
   services.${serviceName} = {
     enable = true;
-    # Weitere dienstspezifische Optionen hier...
   };
 
-  # 3. Traefik Reverse-Proxy Integration
-  services.traefik.dynamicConfigOptions.http = {
-    routers.${serviceName} = {
-      rule = "Host(`${serviceName}.${domain}`)";
-      entryPoints = [ "websecure" ];
-      tls.certResolver = "letsencrypt";
-      middlewares = [ "secured-chain@file" ];
-      service = serviceName;
-    };
-    services.${serviceName}.loadBalancer.servers = [{
-      url = "http://127.0.0.1:${toString servicePort}";
-    }];
-  };
-
-  # 4. Systemd-Härtung (Security Sandboxing)
+  # ── SYSTEMD HARDENING ───────────────────────────────────────────────────
   systemd.services.${serviceName}.serviceConfig = {
-    # Basis-Schutz
     NoNewPrivileges = lib.mkForce true;
     PrivateTmp = lib.mkForce true;
     PrivateDevices = lib.mkForce true;
     ProtectHome = lib.mkForce true;
     ProtectSystem = lib.mkForce "strict";
-    
-    # Pfade, in die der Dienst schreiben darf
-    ReadWritePaths = [
-      "/var/lib/${serviceName}"
-    ];
-
-    # Kernel- & Ressourcenschutz
     ProtectKernelTunables = lib.mkForce true;
     ProtectKernelModules = lib.mkForce true;
     ProtectControlGroups = lib.mkForce true;

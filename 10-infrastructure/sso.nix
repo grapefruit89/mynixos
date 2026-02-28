@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        SSO Logic Integration
+ * TRACE-ID:     NIXH-INF-013
+ * PURPOSE:      Glue-Logic für PocketID Integration & Caddy Routes.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [10-infra/pocket-id.nix]
+ * LAYER:        10-infra
+ * STATUS:       Stable
+ */
+
 { config, lib, pkgs, ... }:
 let
   cfg = config.my.profiles.services.pocket-id;
@@ -20,7 +32,6 @@ in
       require_verified_email = false;
     };
     
-    # Netdata Caddy Route (Replacement for Traefik Service)
     services.caddy.virtualHosts."netdata.${domain}" = {
       extraConfig = ''
         import sso_auth

@@ -1,9 +1,14 @@
-# meta:
-#   owner: infrastructure
-#   status: active
-#   scope: shared
-#   summary: VPN Confinement v1.8 (The Vault)
-#   description: Physische Isolation des Media-Stacks in einen Network-Namespace (netns).
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        VPN Confinement (The Vault)
+ * TRACE-ID:     NIXH-INF-009
+ * PURPOSE:      Netns-Isolation für den Media-Stack mit WireGuard Health-Checks.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/configs.nix, 00-core/secrets.nix]
+ * LAYER:        10-infra
+ * STATUS:       Stable
+ */
 
 { config, lib, pkgs, ... }:
 let
@@ -11,7 +16,6 @@ let
   hostIP = "10.200.1.1";
   vaultIP = "10.200.1.2";
   
-  # ONLY use sops, never plaintext repo files
   wgKey = config.sops.secrets.wg_privado_private_key.path;
   wgConfig = config.my.configs.vpn.privado;
 in
@@ -67,14 +71,11 @@ in
     script = ''
       set -euo pipefail
       
-      # Cleanup previous state
       ip link del privado 2>/dev/null || true
       ip netns exec ${nsName} ip link del privado 2>/dev/null || true
       
-      # Create interface
       ip link add privado type wireguard
       
-      # Load keys - ONLY from SOPS
       wg set privado \
         private-key ${wgKey} \
         peer ${wgConfig.publicKey} \
@@ -82,13 +83,11 @@ in
         allowed-ips 0.0.0.0/0 \
         persistent-keepalive 25
       
-      # Move to namespace and configure
       ip link set privado netns ${nsName}
       ip netns exec ${nsName} ip addr add ${wgConfig.address} dev privado
       ip netns exec ${nsName} ip link set privado up
       ip netns exec ${nsName} ip route add default dev privado || true
       
-      # Health Check - fail if VPN is not reachable
       echo "Performing VPN Health Check..."
       timeout 10 ip netns exec ${nsName} \
         ping -c 3 -W 3 ${lib.head wgConfig.dns} \

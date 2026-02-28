@@ -1,17 +1,20 @@
-# meta:
-#   owner: policy
-#   status: active
-#   scope: shared
-#   summary: Zentrale Sicherheits-Assertions (einzige Quelle der Wahrheit)
-#   specIds: [SEC-POL-001, SEC-NET-001, SEC-SSH-001]
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Global Security Assertions
+ * TRACE-ID:     NIXH-POL-001
+ * PURPOSE:      Zentrale Sicherheitsprüfungen (Einzige Quelle der Wahrheit).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/configs.nix]
+ * LAYER:        90-policy
+ * STATUS:       Stable
+ */
 
 { config, lib, ... }:
 let
   bastelmodus = config.my.configs.bastelmodus;
-  user = config.my.configs.identity.user;
   must = assertion: message: { inherit assertion message; };
 
-  sshPort = config.my.ports.ssh;
   sshSettings = config.services.openssh.settings;
   traefikEnv = config.systemd.services.traefik.serviceConfig.EnvironmentFile or [ ];
   sharedSecretEnv = config.my.secrets.files.sharedEnv;
@@ -19,8 +22,6 @@ in
 {
   config = {
     assertions = [
-      # Bastelmodus-Check (Warne wenn er an ist, aber blocke nur wenn nicht gewünscht)
-      # Hier könnten wir ein Zeitlimit setzen, aber wir lassen es erst mal informativ
     ] ++ lib.optionals (!bastelmodus) [
       (must (config.networking.firewall.enable == true) "[SEC-NET-001] Firewall muss im Produktionsmodus aktiv sein.")
       (must (config.networking.nftables.enable == true) "[SEC-NET-002] NFTables muss aktiv sein.")
@@ -33,7 +34,7 @@ in
     ] ++ [
       {
         assertion = !(config.services.caddy.enable && config.services.traefik.enable);
-        message = "[INFRA-001] Caddy UND Traefik gleichzeitig aktiv. Nur ein Proxy darf Port 443 binden. Wähle in registry.nix: my.profiles.networking.reverseProxy";
+        message = "[INFRA-001] Caddy UND Traefik gleichzeitig aktiv. Nur ein Proxy darf Port 443 binden.";
       }
     ];
   };

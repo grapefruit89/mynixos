@@ -1,8 +1,14 @@
-# meta:
-#   owner: core
-#   status: active
-#   scope: shared
-#   summary: Shell-Workflow-Modul – Aliase & Grundeinstellungen
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Standard Shell Workflow
+ * TRACE-ID:     NIXH-CORE-024
+ * PURPOSE:      Basis Shell-Aliase, Git-Konfiguration und Standard-Pakete.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/configs.nix]
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
 
 { config, lib, pkgs, ... }:
 
@@ -11,23 +17,19 @@ let
 in
 {
   programs.bash.shellAliases = lib.mkIf (user == "moritz") {
-    # NIX REBUILD
     nsw = "sudo nixos-rebuild switch";
     ntest = "sudo nixos-rebuild test";
     ndry = "sudo nixos-rebuild dry-run";
     nboot = "sudo nixos-rebuild boot";
     
-    # NIX MAINTENANCE
     nclean = "sudo nix-env -p /nix/var/nix/profiles/system --delete-generations +5 && sudo nix-store --gc";
     nopt = "sudo nix-store --optimise";
     ngen = "sudo nix-env -p /nix/var/nix/profiles/system --list-generations";
     
-    # NAVIGATION
     ncfg = "cd /etc/nixos";
     ngit = "cd /etc/nixos && git status -sb";
     nlog = "journalctl -xef";
     
-    # MODERNE TOOLS
     ls = "${pkgs.eza}/bin/eza --icons";
     ll = "${pkgs.eza}/bin/eza -la --icons --git";
     tree = "${pkgs.eza}/bin/eza --tree --icons";
@@ -37,7 +39,6 @@ in
     df = "${pkgs.duf}/bin/duf";
     du = "${pkgs.dust}/bin/dust";
     
-    # SYSTEM INFO
     ports = "sudo ss -tulpn";
   };
   

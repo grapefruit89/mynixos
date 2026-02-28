@@ -1,9 +1,14 @@
-# meta:
-#   owner: core
-#   status: active
-#   scope: shared
-#   summary: Boot-Partition Safeguard – NVRAM-schonend (3 Generationen)
-#   priority: P0 (Blocker)
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Boot Partition Safeguard
+ * TRACE-ID:     NIXH-CORE-008
+ * PURPOSE:      NVRAM-Schonung & Pre-Build-Checks für die /boot Partition.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   []
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
 
 { config, lib, pkgs, ... }:
 

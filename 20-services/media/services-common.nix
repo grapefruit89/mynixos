@@ -1,7 +1,17 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Media Global Options
+ * TRACE-ID:     NIXH-SRV-017
+ * PURPOSE:      Definition globaler Optionen für alle Media-Module (Host-Prefix, Cert-Resolver).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   []
+ * LAYER:        20-services
+ * STATUS:       Stable
+ */
+
 { lib, config, ... }:
 {
-  # source: my.media.defaults.* options
-  # sink:   host generation + traefik defaults for all media modules
   options.my.media.defaults = {
     domain = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
@@ -13,7 +23,7 @@
     hostPrefix = lib.mkOption {
       type = lib.types.str;
       default = "nix";
-      description = "Prefix used for generated hosts, e.g. nix-sonarr.example.com.";
+      description = "Prefix used for generated hosts.";
     };
 
     certResolver = lib.mkOption {
@@ -31,14 +41,13 @@
     netns = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
       default = null;
-      description = "Network Namespace to run media services in (VPN Confinement).";
+      description = "Network Namespace to run media services in.";
     };
   };
 
   config.assertions = [
     {
       assertion = config.my.media.defaults.domain != null;
-      # source-id: CFG.identity.domain
       message = "my.media.defaults.domain must be set for generated media hostnames.";
     }
   ];

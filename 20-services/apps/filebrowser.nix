@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        FileBrowser
+ * TRACE-ID:     NIXH-SRV-018
+ * PURPOSE:      Web-basiertes Dateimanagement für das lokale Storage.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/ports.nix]
+ * LAYER:        20-services
+ * STATUS:       Stable
+ */
+
 { config, lib, ... }:
 let
   myLib = import ../../lib/helpers.nix { inherit lib; };

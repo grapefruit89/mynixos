@@ -1,10 +1,14 @@
-# meta:
-#   owner: core
-#   status: active
-#   scope: shared
-#   summary: SSH Recovery Window – 5min Passwort-Login nach Boot (Notfall-Zugang)
-#   priority: P1 (Critical)
-#   issue: SSH-Key Verlust führt zu permanentem Lockout
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        SSH & Avahi Recovery Window
+ * TRACE-ID:     NIXH-CORE-004
+ * PURPOSE:      15-Minuten Passwort-Login Fenster auf Port 2222 nach Boot (Notfall-Zugang).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/configs.nix, 00-core/ports.nix]
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
 
 { config, lib, pkgs, ... }:
 
@@ -50,13 +54,6 @@ let
   '';
 in
 {
-  # ══════════════════════════════════════════════════════════════════════════
-  # SSH BASISKONFIGURATION (Unverändert aus ssh.nix übernommen)
-  # ══════════════════════════════════════════════════════════════════════════
-  
-  # WICHTIG: Dieses Modul erweitert ssh.nix, ersetzt es NICHT!
-  # ssh.nix muss weiterhin importiert bleiben.
-  
   # ══════════════════════════════════════════════════════════════════════════
   # RECOVERY WINDOW SERVICE
   # ══════════════════════════════════════════════════════════════════════════
@@ -292,42 +289,3 @@ EOF
     '';
   };
 }
-
-# ══════════════════════════════════════════════════════════════════════════
-# USAGE GUIDE
-# ══════════════════════════════════════════════════════════════════════════
-#
-# NORMALER BETRIEB:
-#   - Nach Reboot: Erste 5 Minuten Passwort-Login möglich
-#   - Danach: Nur noch SSH-Key funktioniert
-#
-# NOTFALL-SZENARIO (Key verloren):
-#   1. Server neu booten (physischer Zugang oder Remote-Management)
-#   2. Innerhalb 5 Minuten per SSH mit PASSWORT einloggen
-#   3. Neuen SSH-Key generieren:
-#      $ ssh-keygen -t ed25519 -C "recovery-key-$(date +%Y%m%d)"
-#   4. Public Key in Config eintragen:
-#      $ sudo micro /etc/nixos/00-core/users.nix
-#      # users.users.moritz.openssh.authorizedKeys.keys = [
-#      #   "ssh-ed25519 AAAA... neuer-key"
-#      # ];
-#   5. Aktivieren:
-#      $ sudo nixos-rebuild switch
-#   6. Testen (neue SSH-Session):
-#      $ ssh moritz@server -i ~/.ssh/id_ed25519
-#
-# MANUELLER TRIGGER (ohne Reboot):
-#   $ sudo systemctl start ssh-recovery-manual
-#   (Aktiviert Passwort für 10 Minuten)
-#
-# STATUS PRÜFEN:
-#   $ ssh-recovery-status
-#   ⏱  SSH Recovery Window: AKTIV
-#   Verbleibend: 237s
-#   Passwort-Login: MÖGLICH
-#
-# MONITORING:
-#   $ journalctl -u ssh-recovery-window -f
-#   $ journalctl -u ssh-recovery-audit
-#
-# ══════════════════════════════════════════════════════════════════════════

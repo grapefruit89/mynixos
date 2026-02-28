@@ -1,11 +1,15 @@
-# modules/10-infrastructure/clamav.nix
-# ══════════════════════════════════════════════════════════════════════════════
-# DUMMY – NOCH NICHT AKTIV
-# ClamAV – Antivirus Scanner
-# ══════════════════════════════════════════════════════════════════════════════
-# DIESES MODUL ERST IMPORTIEREN wenn es vollständig ausgearbeitet ist!
-# (Import in hosts/q958/default.nix ergänzen)
-# ══════════════════════════════════════════════════════════════════════════════
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        ClamAV Antivirus
+ * TRACE-ID:     NIXH-INF-018
+ * PURPOSE:      Virenscanner für den Media-Stack (Platzhalter).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   []
+ * LAYER:        10-infra
+ * STATUS:       Placeholder
+ */
+
 { ... }:
 {
   # Platzhalter – noch nicht implementiert

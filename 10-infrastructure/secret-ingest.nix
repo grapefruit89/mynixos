@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Secret Ingest Agent
+ * TRACE-ID:     NIXH-INF-008
+ * PURPOSE:      Automatischer Import von WireGuard-Configs in die SSOT (Ohne Plaintext-Lecks).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/secrets.nix]
+ * LAYER:        10-infra
+ * STATUS:       Stable
+ */
+
 { config, lib, pkgs, ... }:
 let
   python = pkgs.python311;

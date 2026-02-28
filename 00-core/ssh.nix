@@ -1,8 +1,14 @@
-# meta:
-#   owner: core
-#   status: active
-#   scope: shared
-#   summary: ssh Modul - Gehärtet & Sicher
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Hardened SSH Stack
+ * TRACE-ID:     NIXH-CORE-030
+ * PURPOSE:      Sichere SSH-Konfiguration (Ed25519-only, Anti-OOM, restricted Ciphers).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/configs.nix, 00-core/ports.nix]
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
 
 { lib, config, pkgs, ... }:
 let

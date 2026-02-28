@@ -1,9 +1,14 @@
-# meta:
-#   owner: core
-#   status: active
-#   scope: shared
-#   summary: Aggressive Kernel Slimming - Support für moderne Consumer-Hardware (ca. 2016+)
-#   priority: P3 (Medium)
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Aggressive Kernel Slimming
+ * TRACE-ID:     NIXH-CORE-003
+ * PURPOSE:      Reduzierung der Angriffsfläche & Boot-Beschleunigung durch Blacklisting.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [90-policy/no-legacy.nix]
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
 
 { config, lib, pkgs, ... }:
 

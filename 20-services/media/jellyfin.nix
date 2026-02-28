@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Jellyfin Media Server
+ * TRACE-ID:     NIXH-SRV-001
+ * PURPOSE:      Main Media-Streaming Service (Hardware-Beschleunigung aktiv).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [20-services/media/_lib.nix]
+ * LAYER:        20-services
+ * STATUS:       Stable
+ */
+
 { lib, pkgs, config, ... }:
 {
   imports = [

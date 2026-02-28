@@ -1,8 +1,14 @@
-# meta:
-#   owner: core
-#   status: active
-#   summary: Landing Zone UI - Der intuitive Rettungsweg
-#   priority: P2
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Landing Zone UI
+ * TRACE-ID:     NIXH-INF-011
+ * PURPOSE:      HTML-Interface für den intuitiven Rettungsweg (Headless-Support).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/configs.nix]
+ * LAYER:        10-infra
+ * STATUS:       Stable
+ */
 
 { config, pkgs, lib, ... }:
 
@@ -10,7 +16,6 @@ let
   domain = config.my.configs.identity.domain;
   lanIP = config.my.configs.server.lanIP;
   
-  # Das Rettungs-HTML
   rescueHtml = pkgs.writeTextDir "index.html" ''
     <!DOCTYPE html>
     <html lang="de">
@@ -65,7 +70,6 @@ let
   '';
 in
 {
-  # Systemd-Tmpfiles, um die UI-Dateien an den richtigen Ort zu legen
   systemd.tmpfiles.rules = [
     "d /var/www/landing-zone 0755 caddy caddy -"
     "L+ /var/www/landing-zone/index.html - - - - ${rescueHtml}/index.html"

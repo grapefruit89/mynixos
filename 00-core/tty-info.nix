@@ -1,8 +1,14 @@
-# meta:
-#   owner: core
-#   status: active
-#   summary: TTY Info - Zeigt IP-Adresse beim Booten auf der Konsole an
-#   priority: P2
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        TTY System Info
+ * TRACE-ID:     NIXH-CORE-012
+ * PURPOSE:      Anzeige der IP-Adressen & Zugangs-Links auf der physischen Konsole (TTY1).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/network.nix]
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
 
 { config, pkgs, lib, ... }:
 

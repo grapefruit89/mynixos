@@ -1,4 +1,17 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Hardware Symbiosis
+ * TRACE-ID:     NIXH-CORE-005
+ * PURPOSE:      Dynamische Hardware-Optimierung (CPU/GPU/RAM) basierend auf Profilen.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/configs.nix]
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
+
 { config, lib, pkgs, ... }:
+
 let
   userConfigFile = "/var/lib/nixhome/user-config.json";
   

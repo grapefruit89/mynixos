@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Sabnzbd Downloader
+ * TRACE-ID:     NIXH-SRV-010
+ * PURPOSE:      Hochperformanter Usenet-Downloader (Netns-Bound).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [20-services/media/_lib.nix]
+ * LAYER:        20-services
+ * STATUS:       Stable
+ */
+
 { lib, pkgs, config, ... }:
 {
   imports = [

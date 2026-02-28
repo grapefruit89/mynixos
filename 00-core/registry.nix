@@ -1,8 +1,14 @@
-# meta:
-#   owner: core
-#   status: active
-#   scope: shared
-#   summary: Zentrales Feature-Register (Toggles für Profile und Dienste)
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Feature Registry
+ * TRACE-ID:     NIXH-CORE-010
+ * PURPOSE:      Zentrales Register für Toggles, Profile und Dienst-Aktivierung.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   []
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
 
 { lib, ... }:
 {

@@ -1,8 +1,19 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Caddy Edge Proxy
+ * TRACE-ID:     NIXH-INF-002
+ * PURPOSE:      Moderner Reverse-Proxy mit automatischem HTTPS und "Breaking Glass" Bypass.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/configs.nix, 00-core/ports.nix]
+ * LAYER:        10-infra
+ * STATUS:       Stable
+ */
+
 { config, lib, pkgs, ... }:
 let
   domain = config.my.configs.identity.domain;
   lanIP = config.my.configs.server.lanIP;
-  # Erzeugt eine sslip.io Adresse (z.B. 192-168-2-73.sslip.io)
   sslipHost = "${lib.replaceStrings ["."] ["-"] lanIP}.sslip.io";
 in
 {
@@ -39,9 +50,7 @@ in
       }
 
       # --- LOKALER ZUGRIFF (mDNS + sslip.io Fallback + Notfall-IP + LAN-IP) ---
-      # Erreichbar unter nixhome.local UND der IP-basierten sslip-Domain UND der Notfall-IP UND der LAN-IP direkt
       nixhome.local, ${sslipHost}, rescue.local, 10.254.0.1, ${lanIP} {
-        # Lokaler Zugriff zeigt die Landing-Zone UI als zentralen Einstieg
         root * /var/www/landing-zone
         file_server
       }

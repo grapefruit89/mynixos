@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        SOPS Secrets Management
+ * TRACE-ID:     NIXH-CORE-022
+ * PURPOSE:      Zentrales Management verschlüsselter Secrets via SOPS-Nix.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   []
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
+
 { config, lib, ... }:
 {
   config = {
@@ -11,7 +23,6 @@
         generateKey = true;
       };
 
-      # Mappings from SOPS to individual files in /run/secrets/
       secrets = {
         github_token = { };
         cloudflare_token = { };
@@ -30,7 +41,6 @@
         ssh_unraid_key = { };
       };
 
-      # The "Digitaler Briefschlitz" template - creates a unified .env file
       templates."secrets.env" = {
         content = ''
           GITHUB_TOKEN="${config.sops.placeholder.github_token}"
@@ -53,12 +63,10 @@
 
   options.my.secrets = {
     files = {
-      # INJECTED: Shared environment file now comes from SOPS
       sharedEnv = lib.mkOption { 
         type = lib.types.path; 
         default = config.sops.templates."secrets.env".path;
       };
-      # INJECTED: SSH Keys now come from SOPS
       sshGithubKey = lib.mkOption { 
         type = lib.types.path; 
         default = config.sops.secrets.ssh_github_key.path; 

@@ -1,4 +1,17 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Nix Daemon Tuning
+ * TRACE-ID:     NIXH-CORE-002
+ * PURPOSE:      Optimierung des Nix-Builders, Binary Caches und OOM-Schutz.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/configs.nix]
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
+
 { config, lib, pkgs, ... }:
+
 let
   # Erkennung von wenig RAM (<= 4GB)
   # Wir nutzen hier den Wert aus der Hardware-Config

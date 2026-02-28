@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Jellyseerr Request Manager
+ * TRACE-ID:     NIXH-SRV-011
+ * PURPOSE:      Anfrage-Management für Filme und Serien.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [20-services/media/_lib.nix]
+ * LAYER:        20-services
+ * STATUS:       Stable
+ */
+
 { lib, pkgs, config, ... }:
 {
   imports = [
@@ -10,7 +22,6 @@
     })
   ];
 
-  # Ensure stable user/group for Jellyseerr (DynamicUser causes UID drift -> EACCES).
   users.groups.jellyseerr = { };
   users.users.jellyseerr = {
     isSystemUser = true;

@@ -1,12 +1,19 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Traefik Core Configuration
+ * TRACE-ID:     NIXH-INF-001
+ * PURPOSE:      Main Reverse-Proxy (TLS, ACME, Cloudflare, Middleware Chains).
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/configs.nix, 00-core/ports.nix]
+ * LAYER:        10-infra
+ * STATUS:       Stable (Legacy Support)
+ */
+
 { config, lib, pkgs, ... }:
 let
-  # source-id: CFG.identity.domain
   domain = config.my.configs.identity.domain;
-
-  # source-id: CFG.network.lanCidrs
   lanCidrs = config.my.configs.network.lanCidrs;
-
-  # source-id: CFG.network.tailnetCidrs
   tailnetCidrs = config.my.configs.network.tailnetCidrs;
 
   trustedIPs = [
@@ -77,7 +84,6 @@ in
           address = ":443";
           http.tls = {
             options = "default@file";
-            # certResolver per Router für Self-Signed Fallback
           };
           forwardedHeaders.trustedIPs = trustedIPs;
         };
@@ -163,13 +169,11 @@ in
       http.routers.traefik-dashboard = {
         rule = "Host(`traefik.${domain}`)";
         entryPoints = [ "websecure" ];
-        # Dashboard nutzt SSO + Whitelist
         middlewares = [ "sso-internal@file" ];
         service = "api@internal";
         tls.certResolver = "letsencrypt";
       };
 
-      # Break-Glass (Bypass Auth via Tailscale)
       http.routers.traefik-dashboard-bypass = {
         rule = "Host(`traefik.${domain}`) && ClientIP(`100.64.0.0/10`)";
         entryPoints = [ "websecure" ];

@@ -1,14 +1,20 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Tailscale Mesh VPN
+ * TRACE-ID:     NIXH-INF-021
+ * PURPOSE:      Zero-Config VPN für sicheren Remote-Zugriff.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   []
+ * LAYER:        10-infra
+ * STATUS:       Stable
+ */
+
 { ... }:
 {
-  # source: services.tailscale.* options here
-  # sink:   tailscaled systemd unit + firewall behavior
   services.tailscale = {
     enable = true;
-
-    # Keep firewall policy centralized in 00-core/firewall.nix.
     openFirewall = false;
-
-    # No subnet-router / exit-node behavior unless explicitly enabled later.
     useRoutingFeatures = "none";
   };
 }

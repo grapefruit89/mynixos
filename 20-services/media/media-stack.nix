@@ -1,11 +1,19 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Media Stack Enablement
+ * TRACE-ID:     NIXH-SRV-016
+ * PURPOSE:      Zentrale Aktivierung und Namespace-Zuordnung aller Media-Dienste.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/configs.nix]
+ * LAYER:        20-services
+ * STATUS:       Stable
+ */
+
 { config, ... }:
 {
   my.media = {
-    # source-id: CFG.identity.domain
     defaults.domain = config.my.configs.identity.domain;
-
-    # FULL-STACK CONFINEMENT (Phase 3, Step 2)
-    # All services below are physically isolated in 'media-vault'
     defaults.netns = "media-vault";
 
     jellyfin.enable = true;

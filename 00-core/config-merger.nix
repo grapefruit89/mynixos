@@ -1,3 +1,15 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Runtime Config Merger
+ * TRACE-ID:     NIXH-CORE-018
+ * PURPOSE:      Zusammenführung von Nix-Buildzeit-Werten mit User-Laufzeit-JSON.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/configs.nix]
+ * LAYER:        00-core
+ * STATUS:       Stable
+ */
+
 { config, lib, pkgs, ... }:
 let
   runDir = "/run/nixhome";

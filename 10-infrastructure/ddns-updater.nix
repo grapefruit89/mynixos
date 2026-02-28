@@ -1,14 +1,21 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        DDNS Updater
+ * TRACE-ID:     NIXH-INF-020
+ * PURPOSE:      Automatisches Update der IP-Adresse bei Cloudflare & Co.
+ * COMPLIANCE:   NMS-2026-STD
+ * DEPENDS-ON:   [00-core/configs.nix, 00-core/ports.nix]
+ * LAYER:        10-infra
+ * STATUS:       Stable (Inactive)
+ */
+
 { config, ... }:
 let
-  # source-id: CFG.identity.domain
   domain = config.my.configs.identity.domain;
   port = config.my.ports.ddnsUpdater;
 in
 {
-  # Module kept for future use, currently disabled by not importing it in configuration.nix.
-  # Traceability:
-  # source (future): ddns provider credentials
-  # sink (future): services.ddns-updater + Traefik router nix-ddns.${domain}
   services.ddns-updater = {
     enable = true;
     environment = {
