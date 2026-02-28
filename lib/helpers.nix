@@ -5,14 +5,14 @@
  * TRACE-ID:     NIXH-CORE-033
  * PURPOSE:      Zentrale Abstraktion für die Erstellung von Diensten (mkService).
  * COMPLIANCE:   NMS-2026-STD
- * DEPENDS-ON:   [10-infrastructure/dns-map.nix, 00-core/configs.nix]
- * LAYER:        00-core
+ * DEPENDS-ON:   [20-infrastructure/dns-map.nix, 10-core/configs.nix]
+ * LAYER:        10-core
  * STATUS:       Stable
  */
 
 { lib, ... }:
 let
-  dnsMap = import ../10-infrastructure/dns-map.nix;
+  dnsMap = import ../20-infrastructure/dns-map.nix;
 in
 {
   # mkService: v3.1 (Caddy Migration + Metadata)

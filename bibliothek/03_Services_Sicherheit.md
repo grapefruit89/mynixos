@@ -1,4 +1,12 @@
 ---
+title: 03_Services_Sicherheit
+category: Architektur
+status: done
+trace_ids: []
+last_reviewed: 2026-02-28
+checksum: ddfd4e4016142b7c49750cd47276915e3a703b3723563a2e2775ecbf14ab0e62
+---
+---
 title: Services & Sicherheit
 author: Moritz
 last_updated: 2026-02-26

@@ -1,13 +1,12 @@
 /**
  * 🛰️ NIXHOME CONFIGURATION UNIT
  * ============================
- * TITLE:        Global Security Assertions
- * TRACE-ID:     NIXH-POL-001
- * PURPOSE:      Zentrale Sicherheitsprüfungen (Einzige Quelle der Wahrheit).
- * COMPLIANCE:   NMS-2026-STD
- * DEPENDS-ON:   [00-core/configs.nix]
- * LAYER:        90-policy
+ * TITLE:        Security Assertions
+ * TRACE-ID:     NIXH-POL-002
+ * REQ-REF:      REQ-POL
+ * LAYER:        90
  * STATUS:       Stable
+ * INTEGRITY:    SHA256:e71041da9bd99cc48da7e11197efe563a535232a1716a936b66575bf1ca78183
  */
 
 { config, lib, ... }:

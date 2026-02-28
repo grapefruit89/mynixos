@@ -1,3 +1,11 @@
+---
+title: README
+category: Projekt
+status: done
+trace_ids: []
+last_reviewed: 2026-02-28
+checksum: 5837770909725e3b2759b2ffe06689ab91e3dcfeabb72cd4d85576422282c575
+---
 # 🚀 Fujitsu Esprimo Q958 | NixOS Homelab
 
 <p align="center">

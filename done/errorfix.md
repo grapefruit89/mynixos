@@ -1,3 +1,11 @@
+---
+title: Errorfix
+category: Betrieb
+status: done
+trace_ids: []
+last_reviewed: 2026-02-28
+checksum: 667d9c0d6ed765156029056f98700f21cfcef70b54a372298735b4ae65520d73
+---
 es ist schon wieeder passiert ich weiss nicht warum und wieso obsolete symlink ‘/etc/containers/registries.conf’...                                                                                                                                   │
 
 │ sops-install-secrets: Imported /etc/ssh/ssh_host_rsa_key as GPG key with fingerprint 904c1b1a671d757b569286d379b409b5dd8ce84d                                                                    │

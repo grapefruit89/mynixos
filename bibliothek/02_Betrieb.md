@@ -1,4 +1,12 @@
 ---
+title: 02_Betrieb
+category: Architektur
+status: done
+trace_ids: []
+last_reviewed: 2026-02-28
+checksum: 9a283828d3398bae642b21aa2469daf864a3c2efa2878b8130e8b0801670be37
+---
+---
 title: Betrieb & Workflow
 author: Moritz
 last_updated: 2026-02-26

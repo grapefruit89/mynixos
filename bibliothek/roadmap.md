@@ -1,3 +1,11 @@
+---
+title: Roadmap
+category: Architektur
+status: done
+trace_ids: []
+last_reviewed: 2026-02-28
+checksum: faa338b04d010f5f93f897725532599c5be26aea50dc75811c44e614a3c68c11
+---
 https://github.com/pocket-id/pocket-id
 https://github.com/nix-media-server/nixarr
 https://github.com/NixOS/nixpkgs/tree/nixos-25.11/nixos/modules/services/backup

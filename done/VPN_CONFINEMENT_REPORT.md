@@ -1,3 +1,11 @@
+---
+title: VPN_CONFINEMENT_REPORT
+category: Betrieb
+status: done
+trace_ids: []
+last_reviewed: 2026-02-28
+checksum: 2cd090b34040c35b823490f2111255200cdbe6c47e0c37de72bca29940d4f270
+---
 # Network Architecture: Media Vault Confinement (v2.3)
 
 ```mermaid

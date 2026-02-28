@@ -1,13 +1,12 @@
 /**
  * 🛰️ NIXHOME CONFIGURATION UNIT
  * ============================
- * TITLE:        No Legacy Policy
- * TRACE-ID:     NIXH-POL-002
- * PURPOSE:      Erzwingung moderner Standards (Blockierung von GRUB, Cron, X11, PulseAudio).
- * COMPLIANCE:   NMS-2026-STD
- * DEPENDS-ON:   []
- * LAYER:        90-policy
+ * TITLE:        No Legacy
+ * TRACE-ID:     NIXH-POL-001
+ * REQ-REF:      REQ-POL
+ * LAYER:        90
  * STATUS:       Stable
+ * INTEGRITY:    SHA256:1b702ddb8e9d06a043bf34cca4693abc58a9368e9ee52dc65fad2d97b5df10de
  */
 
 { config, lib, pkgs, ... }:

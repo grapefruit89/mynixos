@@ -1,0 +1,72 @@
+/**
+ * 🛰️ NIXHOME CONFIGURATION UNIT
+ * ============================
+ * TITLE:        Arr Wire
+ * TRACE-ID:     NIXH-SRV-025
+ * REQ-REF:      REQ-SRV
+ * LAYER:        30
+ * STATUS:       Stable
+ * INTEGRITY:    SHA256:abe569766c1c6b17276a7f306e78bef132c74af19ccc58484cbbb4930a8530d3
+ */
+
+{ lib, config, pkgs, ... }:
+let
+  cfg = config.my.media.arrWire;
+  envFile = config.my.secrets.files.sharedEnv;
+in
+{
+  options.my.media.arrWire = {
+    enable = lib.mkEnableOption "ARR API wiring helper (manuell + optional beim Boot)";
+
+    runOnBoot = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Wenn true, arr-wire läuft einmalig beim Boot (oneshot).";
+    };
+  };
+
+  config = lib.mkIf cfg.enable {
+    systemd.services.arr-wire = {
+      description = "ARR API wiring helper";
+      after = [ "sonarr.service" "radarr.service" "prowlarr.service" "sabnzbd.service" "network-online.target" ];
+      wants = [ "network-online.target" ];
+      wantedBy = lib.mkIf cfg.runOnBoot [ "multi-user.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+      };
+
+      path = with pkgs; [ bash curl jq coreutils gnugrep ];
+
+      script = ''
+        set -euo pipefail
+
+        if [ ! -f "${envFile}" ]; then
+          echo "arr-wire: missing env file ${envFile}" >&2
+          exit 1
+        fi
+
+        source "${envFile}"
+
+        : "''${SONARR_API_KEY:?SONARR_API_KEY missing in ${envFile}}"
+        : "''${RADARR_API_KEY:?RADARR_API_KEY missing in ${envFile}}"
+        : "''${PROWLARR_API_KEY:?PROWLARR_API_KEY missing in ${envFile}}"
+        : "''${SABNZBD_API_KEY:?SABNZBD_API_KEY missing in ${envFile}}"
+
+        SONARR_URL="''${SONARR_URL:-http://127.0.0.1:${toString config.my.ports.sonarr}}"
+        RADARR_URL="''${RADARR_URL:-http://127.0.0.1:${toString config.my.ports.radarr}}"
+        PROWLARR_URL="''${PROWLARR_URL:-http://127.0.0.1:${toString config.my.ports.prowlarr}}"
+        SABNZBD_URL="''${SABNZBD_URL:-http://127.0.0.1:${toString config.my.ports.sabnzbd}}"
+
+        echo "arr-wire: Prüfe API Erreichbarkeit..."
+
+        curl -fsS "''${SONARR_URL}/api/v3/system/status?apikey=''${SONARR_API_KEY}" >/dev/null
+        curl -fsS "''${RADARR_URL}/api/v3/system/status?apikey=''${RADARR_API_KEY}" >/dev/null
+        curl -fsS "''${PROWLARR_URL}/api/v1/system/status?apikey=''${PROWLARR_API_KEY}" >/dev/null
+        curl -fsS "''${SABNZBD_URL}/api?mode=version&apikey=''${SABNZBD_API_KEY}&output=json" >/dev/null
+
+        echo "arr-wire: APIs erreichbar."
+      '';
+    };
+  };
+}

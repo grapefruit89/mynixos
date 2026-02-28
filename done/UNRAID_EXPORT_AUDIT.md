@@ -1,3 +1,11 @@
+---
+title: UNRAID_EXPORT_AUDIT
+category: Betrieb
+status: done
+trace_ids: []
+last_reviewed: 2026-02-28
+checksum: 52fa0d2449ee92355ab9788a294b6ec2acbc6b8b0644d0a62b8eda32e92bf2c8
+---
 # 📄 Audit-Bericht: Unraid-Exporte vs. IST-Zustand (v2.3.0)
 
 **Datum:** 27. Februar 2026  

@@ -1,3 +1,11 @@
+---
+title: RECOVERY_REPORT_20260228
+category: Betrieb
+status: done
+trace_ids: []
+last_reviewed: 2026-02-28
+checksum: ede399080fe1759240d9cd90f27ab7fdbbcbfcac458e0a37c3a27d419efca58f
+---
 # 🏥 Recovery Report — Obduktions-Heilung (Phase 1)
 **Datum:** 2026-02-28  
 **Status:** Phase 1 abgeschlossen

@@ -1,4 +1,12 @@
 ---
+title: Ideen_aus_anderen_Repos
+category: Architektur
+status: done
+trace_ids: []
+last_reviewed: 2026-02-28
+checksum: 6931d2fa5db65ad5e4a2f0855816a9dc433693595bfa8c2fb86f35aef922f896
+---
+---
 title: Ideen aus anderen Repositories
 author: Moritz
 last_updated: 2026-02-26

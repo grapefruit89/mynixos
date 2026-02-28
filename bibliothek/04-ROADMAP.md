@@ -1,4 +1,12 @@
 ---
+title: 04 ROADMAP
+category: Architektur
+status: done
+trace_ids: []
+last_reviewed: 2026-02-28
+checksum: ddb9d20fcc3ddb40488d6f02eada777a2d172b2e7c6a5eaf55fb9e911cdbbb64
+---
+---
 title: Roadmap & Obduktions-Heilung (Recovery Phase)
 author: Moritz / Gemini-Agent
 last_updated: 2026-02-28

@@ -1,4 +1,12 @@
 ---
+title: Inspirationen_aus_der_Reposammlung
+category: Architektur
+status: done
+trace_ids: []
+last_reviewed: 2026-02-28
+checksum: 4e4e6f019913f75c76d4f75dc71a113e33817c81ca730ca3ad2148d98ccd4622
+---
+---
 title: Inspirationen aus der Reposammlung
 author: Moritz (via Gemini)
 last_updated: 2026-02-26

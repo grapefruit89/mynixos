@@ -1,4 +1,12 @@
 ---
+title: AI_CONTEXT
+category: Architektur
+status: done
+trace_ids: []
+last_reviewed: 2026-02-28
+checksum: 7f7660491fc688ea760bfe5ae389f962dc436e5e4413d1f30daf0e595b53cab4
+---
+---
 title: KI Kontext & Direktiven
 author: Moritz
 last_updated: 2026-02-26

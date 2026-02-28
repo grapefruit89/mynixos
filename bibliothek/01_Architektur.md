@@ -1,4 +1,12 @@
 ---
+title: 01_Architektur
+category: Architektur
+status: done
+trace_ids: []
+last_reviewed: 2026-02-28
+checksum: 605ff343db23745355d46e32b1c54662ea1c4ae72b2a93181b15918540bfd726
+---
+---
 title: Architektur & Hardware
 author: Moritz
 last_updated: 2026-02-26

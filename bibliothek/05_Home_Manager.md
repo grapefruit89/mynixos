@@ -1,4 +1,12 @@
 ---
+title: 05_Home_Manager
+category: Architektur
+status: done
+trace_ids: []
+last_reviewed: 2026-02-28
+checksum: 798bfeba4c001ea91a4e4f00df699063c74d21a39498f140a5fc5d3a73303cc5
+---
+---
 title: Home-Manager Guide
 author: Moritz
 last_updated: 2026-02-26

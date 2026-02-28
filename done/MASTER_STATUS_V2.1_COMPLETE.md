@@ -1,4 +1,12 @@
 ---
+title: MASTER_STATUS_V2.1_COMPLETE
+category: Betrieb
+status: done
+trace_ids: []
+last_reviewed: 2026-02-28
+checksum: 7e693fbfaf1801611a3467a514c06d51977ecb61546ee3bb481b6e1e834164d2
+---
+---
 title: Master Status & Projektplan
 author: Moritz Baumeister
 project: mynixos (Fujitsu Q958 Homelab)

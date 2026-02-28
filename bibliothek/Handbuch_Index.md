@@ -1,4 +1,12 @@
 ---
+title: Handbuch_Index
+category: Architektur
+status: done
+trace_ids: []
+last_reviewed: 2026-02-28
+checksum: 9d5788626d5157da3a3d7524bd5ad70d05619ea362f1d81c08af7dfe3ae00a47
+---
+---
 title: Handbuch Index / Handbook Index
 author: Moritz
 last_updated: 2026-02-26

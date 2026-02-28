@@ -1,3 +1,11 @@
+---
+title: SOPS_GUIDE
+category: Architektur
+status: done
+trace_ids: []
+last_reviewed: 2026-02-28
+checksum: f0b8ffba22a9dc76e59c1e6aa69f2a8cd812fc4475d50a760e07579487ebf6aa
+---
 # 🔐 SOPS-Nix & Zero-Store Geheimnis-Management
 
 Dieses Repository nutzt **SOPS** (Secrets OPerational Support) und **sops-nix**, um Geheimnisse sicher zu verwalten. 

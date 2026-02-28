@@ -1,3 +1,11 @@
+---
+title: HEALTH_REPORT
+category: Projekt
+status: done
+trace_ids: []
+last_reviewed: 2026-02-28
+checksum: a4ba2487726bb4fe6763c014476aa851c54ff4137a70079e16eedfb2bfb0ed37
+---
 # 🛰️ NIXHOME SYSTEM HEALTH REPORT
 **Generated:** Sat Feb 28 17:58:35 UTC 2026
 
