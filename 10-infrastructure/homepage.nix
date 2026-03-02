@@ -20,8 +20,25 @@ in
     enable = true;
     
     # 🔐 SECRETS
-    # Nutzt Umgebungsvariablen für API-Keys in Widgets
     environmentFile = config.my.secrets.files.sharedEnv;
+
+    # 📊 WIDGETS (SRE Monitoring)
+    widgets = [
+      {
+        resources = {
+          cpu = true;
+          memory = true;
+          disk = "/";
+          uptime = true;
+        };
+      }
+      {
+        search = {
+          provider = "duckduckgo";
+          target = "_blank";
+        };
+      }
+    ];
 
     # 🛠️ SERVICES (Deklarativ via Nix)
     services = [
@@ -46,9 +63,10 @@ in
       }
       {
         "Infrastructure" = [
+          { "OliveTin" = { icon = "olivetin.png"; href = "https://${dnsMap.dnsMapping.olivetin or "olivetin.m7c5.de"}"; }; }
           { "Pocket-ID" = { icon = "pocket-id.png"; href = "https://${dnsMap.dnsMapping.auth}"; }; }
           { "Netdata" = { icon = "netdata.png"; href = "https://netdata.${config.my.configs.identity.domain}"; }; }
-          { "Scrutiny" = { icon = "scrutiny.png"; href = "https://${dnsMap.dnsMapping.scrutiny}"; }; }
+          { "AdGuard" = { icon = "adguard-home.png"; href = "https://${dnsMap.dnsMapping.adguard or "adguard.m7c5.de"}"; }; }
         ];
       }
     ];
@@ -59,6 +77,7 @@ in
       layout = {
         Media = { style = "grid"; columns = 3; };
         Tools = { style = "grid"; columns = 3; };
+        Infrastructure = { style = "grid"; columns = 2; };
       };
     };
   };

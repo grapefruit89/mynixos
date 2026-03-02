@@ -5,7 +5,7 @@
  *   id: NIXH-10-INF-010
  *   title: "OliveTin (SRE Control Panel)"
  *   layer: 10
- * summary: Web-based control panel for safe system operations.
+ * summary: Web-based control panel for safe system operations with interactive SRE workflows.
  * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/web-apps/olivetin.nix
  * ---
  */
@@ -14,6 +14,8 @@ let
   port = config.my.ports.olivetin;
   mtlsScript = "/etc/nixos/00-core/scripts/mtls-manager.sh";
   dnsScript = "/etc/nixos/00-core/scripts/dns-optimizer.sh";
+  cfScript = "/etc/nixos/00-core/scripts/validate-cloudflare-key.sh";
+  moverScript = "/etc/nixos/00-core/scripts/nixhome-mover.sh";
 in
 {
   # 🚀 OLIVETIN EXHAUSTION
@@ -52,7 +54,7 @@ in
         }
         {
           title = "API Key: Cloudflare Token prüfen";
-          shell = "/etc/nixos/00-core/scripts/validate-cloudflare-key.sh '{{ cf_token }}'";
+          shell = "${cfScript} '{{ cf_token }}'";
           icon = "&#128273;";
           arguments = [
             {
@@ -61,6 +63,11 @@ in
               description = "Cloudflare API Token einfügen (wird direkt gegen die API geprüft)";
             }
           ];
+        }
+        {
+          title = "Smart Mover: Status & HDD-Tiering prüfen";
+          shell = "sudo ${moverScript} --status";
+          icon = "&#128640;"; 
         }
         {
           title = "mTLS: Download-Link anzeigen";
@@ -96,6 +103,7 @@ in
         { command = "${pkgs.nix}/bin/nix-store"; options = [ "NOPASSWD" ]; }
         { command = "/run/current-system/sw/bin/systemctl"; options = [ "NOPASSWD" ]; }
         { command = "${mtlsScript}"; options = [ "NOPASSWD" ]; }
+        { command = "${moverScript}"; options = [ "NOPASSWD" ]; }
         { command = "${pkgs.openssl}/bin/openssl"; options = [ "NOPASSWD" ]; }
       ];
     }

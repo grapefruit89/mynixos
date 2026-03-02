@@ -19,9 +19,13 @@ let
   trustedIPs = "127.0.0.1 100.64.0.0/10 ${lib.concatStringsSep " " config.my.configs.network.lanCidrs}";
 in
 {
+  # 🚀 KERNEL NETWORK TUNING (QUIC/HTTP3 Optimized)
   boot.kernel.sysctl = {
-    "net.core.rmem_max" = 2500000;
-    "net.core.wmem_max" = 2500000;
+    "net.core.rmem_max" = 8388608; # 8MB for high-performance QUIC/UDP
+    "net.core.wmem_max" = 8388608;
+    "net.ipv4.udp_rmem_min" = 16384;
+    "net.ipv4.udp_wmem_min" = 16384;
+    "net.ipv4.tcp_slow_start_after_idle" = 0; # Keep connections warm
   };
 
   services.caddy = {
@@ -36,8 +40,13 @@ in
 
     globalConfig = ''
       admin localhost:2019
+      
+      # 🚀 Ultra-Performance Settings
       servers {
         trusted_proxies static 173.245.48.0/20 103.21.244.0/22 103.22.200.0/22 103.31.4.0/22 141.101.64.0/18 108.162.192.0/18 190.93.240.0/20 188.114.96.0/20 197.234.240.0/22 198.41.128.0/17 162.158.0.0/15 104.16.0.0/13 104.24.0.0/14 172.64.0.0/13 131.0.72.0/22
+        
+        # Enable HTTP/3 and QUIC performance
+        protocols h1 h2 h3
       }
     '';
 
@@ -77,6 +86,7 @@ in
           copy_headers X-Forwarded-User
         }
         import security_headers
+        encode zstd gzip # Performance: Kompression für alle SSO-geschützten Apps
       }
 
       nixhome.local, ${lanIP}, ${sslipHost}, rescue.local {
@@ -86,6 +96,7 @@ in
           reverse_proxy localhost:${toString config.my.ports.olivetin}
         }
         import security_headers
+        encode zstd gzip
       }
     '';
   };
