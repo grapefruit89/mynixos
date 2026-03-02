@@ -22,7 +22,7 @@ in
     # SRE: Pakete für die Shell-Aktionen bereitstellen
     path = with pkgs; [ 
       bash openssl jq coreutils gnused systemd 
-      nixos-rebuild nix-output-monitor 
+      nixos-rebuild nix-output-monitor curl
     ];
     
     settings = {
@@ -40,8 +40,27 @@ in
         }
         {
           title = "mTLS: Neues Client-Zertifikat erstellen";
-          shell = "sudo ${mtlsScript} 'browser-client'";
+          shell = "sudo ${mtlsScript} '{{ cert_name }}'";
           icon = "&#128274;"; 
+          arguments = [
+            {
+              name = "cert_name";
+              type = "ascii";
+              description = "Name für das Zertifikat (z.B. handy-moritz)";
+            }
+          ];
+        }
+        {
+          title = "API Key: Cloudflare Token prüfen";
+          shell = "/etc/nixos/00-core/scripts/validate-cloudflare-key.sh '{{ cf_token }}'";
+          icon = "&#128273;";
+          arguments = [
+            {
+              name = "cf_token";
+              type = "ascii";
+              description = "Cloudflare API Token einfügen (wird direkt gegen die API geprüft)";
+            }
+          ];
         }
         {
           title = "mTLS: Download-Link anzeigen";
