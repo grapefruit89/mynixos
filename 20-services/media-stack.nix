@@ -3,57 +3,47 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-20-SRV-033
- *   title: "Media Stack"
+ *   title: "Media Stack (Exhausted Layout)"
  *   layer: 20
- * architecture:
- *   req_refs: [REQ-SRV]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Canonical data/state layout with ABC-tiering enforcement and global media permissions.
  * ---
  */
-{ lib, ... }:
+{ config, lib, ... }:
+let
+  srePaths = config.my.configs.paths;
+in
 {
-  users.groups.media = {};
+  users.groups.media = {
+    gid = 169;
+  };
 
   # Shared media access across local services.
-  users.groups.media.members = [ "jellyfin" "sabnzbd" "audiobookshelf" ];
+  users.groups.media.members = [ 
+    "jellyfin" "sabnzbd" "audiobookshelf" "sonarr" "radarr" "lidarr" "readarr" "prowlarr" 
+  ];
 
-  # Canonical data/state layout for backups and predictable permissions.
+  # ── CANONICAL SRE LAYOUT ────────────────────────────────────────────────
   systemd.tmpfiles.rules = [
-    "d /data 0775 root media -"
-    "d /data/media 0775 root media -"
-    "d /data/media/movies 0775 jellyfin media -"
-    "d /data/media/shows 0775 jellyfin media -"
-    "d /data/media/music 0775 jellyfin media -"
-    "d /data/media/books 0775 audiobookshelf media -"
-    "d /data/downloads 0775 sabnzbd media -"
+    # Tier C: Bibliothek
+    "d ${srePaths.mediaLibrary} 0775 root media -"
+    "d ${srePaths.mediaLibrary}/movies 0775 radarr media -"
+    "d ${srePaths.mediaLibrary}/tv 0775 sonarr media -"
+    "d ${srePaths.mediaLibrary}/music 0775 lidarr media -"
+    "d ${srePaths.mediaLibrary}/books 0775 readarr media -"
+    "d ${srePaths.mediaLibrary}/documents 0775 paperless media -"
 
-    "d /data/state 0755 root root -"
-    "d /data/state/n8n 0750 n8n n8n -"
-    "d /data/state/homepage 0755 homepage homepage -"
-    "d /data/state/sabnzbd 0750 sabnzbd sabnzbd -"
+    # Tier B: Downloads
+    "d ${srePaths.storagePool}/downloads 0775 root media -"
+    "d ${srePaths.storagePool}/downloads/torrents 0775 prowlarr media -"
+    "d ${srePaths.storagePool}/downloads/usenet 0775 sabnzbd media -"
+    
+    # Tier A: State & Metadata
+    "d ${srePaths.stateDir} 0755 root root -"
+    "d /mnt/fast-pool/metadata 0775 root media -"
+    "d /mnt/fast-pool/cache 0775 root media -"
   ];
 }
-
-
-
-
-
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:9f37ec10360566946a9a9544ad7e09f267809ec8d31ab0305b4b0274bb52ba19
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */
