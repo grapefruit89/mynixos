@@ -5,7 +5,7 @@
  *   id: NIXH-20-SRV-027
  *   title: "Radarr (SRE Exhausted)"
  *   layer: 20
- * summary: Movie management safely locked inside a network namespace with resource guarding.
+ * summary: Movie management with maximized NixOS options and ABC-tiering enforcement.
  * ---
  */
 args@{ lib, config, pkgs, ... }:

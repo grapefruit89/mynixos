@@ -20,13 +20,22 @@
       useVpn = true;
       extraServiceConfig = {
         serviceConfig = {
-          # Usenet can be CPU intensive
-          CPUWeight = 80;
+          # 🚀 SRE Performance: Usenet braucht CPU-Power für Entpacken
+          CPUWeight = 100;
           MemoryMax = "2G";
+          # Schutz vor Dateisystem-Exploits
+          ProtectProc = "invisible";
+          ProcSubset = "pid";
         };
       };
     })
   ];
+  
+  # 🚀 OPTIONS EXHAUSTION
+  services.sabnzbd = {
+    user = "sabnzbd";
+    group = "media";
+  };
 }
 /**
  * technical_integrity:

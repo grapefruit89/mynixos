@@ -5,7 +5,7 @@
  *   id: NIXH-20-SRV-032
  *   title: "Sonarr (SRE Exhausted)"
  *   layer: 20
- * summary: TV show management safely locked inside a network namespace with resource guarding.
+ * summary: TV show management with maximized NixOS options and ABC-tiering enforcement.
  * ---
  */
 args@{ lib, config, pkgs, ... }:
@@ -16,7 +16,6 @@ args@{ lib, config, pkgs, ... }:
   defaultStateDir = "/var/lib/sonarr";
   useVpn = true;
   extraServiceConfig = {
-    # 🚀 SRE Stabilität: Schutz vor Memory-Leaks (Mono/.NET)
     serviceConfig = {
       MemoryMax = "1.5G";
       Environment = [ "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false" ];
