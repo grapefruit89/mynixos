@@ -44,7 +44,7 @@ in
       # 🚀 SLZB-06 ETHERNET ANBINDUNG
       serial = {
         port = "tcp://${cfg.zigbeeStickIP}:6638";
-        adapter = "ezsp";
+        adapter = "ember";
       };
 
       # Web-UI

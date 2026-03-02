@@ -110,6 +110,32 @@ Dieser Index bündelt alle Informationen aus der "NixOs Bibliothek" (Unraid). Er
 53. **[53_NIXARR_FLAKE_UPGRADE_MARCH_2026.md](./53_NIXARR_FLAKE_UPGRADE_MARCH_2026.md)**
     - Integration der Nixarr-Logik (VPN-Confinement, API-Sync) und Flake-Foundation.
 
+## 🚀 Gruppe 6: Rollout & Reconstruction (60-69)
+
+60. **[60_MARCH_2026_ROLLOUT_SUMMARY.md](./60_MARCH_2026_ROLLOUT_SUMMARY.md)**
+    - Zusammenfassung der chirurgischen System-Rekonstruktion und Fehlerbehebung.
+
+61. **[61_SSOT_CENTRALIZATION_STANDARDS.md](./61_SSOT_CENTRALIZATION_STANDARDS.md)**
+    - Spezifikation des neuen Defaults-Systems und der Port-Registry.
+
+62. **[62_RECOVERY_TTY_UX_REFORM.md](./62_RECOVERY_TTY_UX_REFORM.md)**
+    - Dokumentation des passiven SSH-Rescue Modells ohne blockierenden TTY-Countdown.
+
+63. **[63_SERVARR_FACTORY_HARDENING.md](./63_SERVARR_FACTORY_HARDENING.md)**
+    - Vorstellung des Factory-Patterns für einheitliches Media-Hardening.
+
+64. **[64_IOT_ZIGBEE_PROVISIONING.md](./64_IOT_ZIGBEE_PROVISIONING.md)**
+    - Netzwerk-Discovery, IP-Korrektur und Migration auf den Zigbee-`ember` Treiber.
+
+65. **[65_DYNAMICUSER_SOPS_TROUBLESHOOTING.md](./65_DYNAMICUSER_SOPS_TROUBLESHOOTING.md)**
+    - Lösungen für Berechtigungsprobleme bei n8n und sops-nix unter DynamicUser.
+
+66. **[66_UNIVERSAL_MIGRATION_GUIDE.md](./66_UNIVERSAL_MIGRATION_GUIDE.md)**
+    - Umfassender Leitfaden für die Migration von Unraid/Docker zu nativem NixOS.
+
+67. **[67_CLOUDFLARE_INGRESS_GUIDE.md](./67_CLOUDFLARE_INGRESS_GUIDE.md)**
+    - Best-Practices für Cloudflare Tunnel, WAF-Regeln und Zero-Trust Ingress.
+
 ## 🔗 Gruppe 9: Externe Quellen & Links (99)
 
 99. **[99_LINK_REGISTRY_SOURCES.md](./99_LINK_REGISTRY_SOURCES.md)**
