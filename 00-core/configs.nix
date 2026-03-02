@@ -42,6 +42,28 @@
     description = "Primary administrative user.";
   };
 
+  # ── LOCALES & TIME (Master Sources) ───────────────────────────────────
+  # source-id: CFG.locale.timezone
+  options.my.configs.locale.timezone = lib.mkOption {
+    type = lib.types.str;
+    default = "Europe/Berlin";
+    description = "Global system timezone.";
+  };
+
+  # source-id: CFG.locale.default
+  options.my.configs.locale.default = lib.mkOption {
+    type = lib.types.str;
+    default = "de_DE.UTF-8";
+    description = "Global default system locale.";
+  };
+
+  # source-id: CFG.locale.ocrLanguage
+  options.my.configs.locale.ocrLanguage = lib.mkOption {
+    type = lib.types.str;
+    default = "deu+eng";
+    description = "Standard languages for OCR processing (e.g., Paperless).";
+  };
+
   # ── HARDWARE (Master Sources) ───────────────────────────────────────────
   # source-id: CFG.hardware.ramGB
   options.my.configs.hardware.ramGB = lib.mkOption {

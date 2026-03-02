@@ -30,8 +30,8 @@ in
     
     settings = {
       # Performance Tuning (i3-9100 / 16GB RAM)
-      PAPERLESS_OCR_LANGUAGE = "deu+eng";
-      PAPERLESS_TIME_ZONE = config.time.timeZone;
+      PAPERLESS_OCR_LANGUAGE = config.my.configs.locale.ocrLanguage; # SSoT: Zentrale Steuerung
+      PAPERLESS_TIME_ZONE = config.my.configs.locale.timezone;
       PAPERLESS_ENABLE_NLTK = true;
       
       # Parallelisierung (Drosselung für System-Stabilität)
