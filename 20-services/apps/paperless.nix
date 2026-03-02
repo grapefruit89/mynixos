@@ -29,9 +29,17 @@ in
     configureTika = true;
     
     settings = {
+      # Performance Tuning (i3-9100 / 16GB RAM)
       PAPERLESS_OCR_LANGUAGE = "deu+eng";
       PAPERLESS_TIME_ZONE = config.time.timeZone;
       PAPERLESS_ENABLE_NLTK = true;
+      
+      # Parallelisierung (Drosselung für System-Stabilität)
+      PAPERLESS_TASK_WORKERS = 2; 
+      PAPERLESS_THREADS_PER_WORKER = 1;
+      
+      # Redis Integration (SSoT: Nutzt Valkey aus Layer 10)
+      PAPERLESS_REDIS = "redis://127.0.0.1:6379";
     };
 
     passwordFile = config.sops.secrets.paperless_secret_key.path;

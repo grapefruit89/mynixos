@@ -14,7 +14,10 @@
   services.postgresql = {
     enable = true;
     # ── VERSION & PACKAGE ──────────────────────────────────────────────────
-    package = pkgs.postgresql_16; # SSoT: Feste Version für Stabilität
+    package = pkgs.postgresql_17; # Upgrade auf Version 17 (NixOS 25.11 Standard)
+    
+    # ── DATA INTEGRITY ────────────────────────────────────────────────────
+    initdbArgs = [ "--data-checksums" ]; # Schutz vor schleichender Datenkorruption
     
     # ── DEKLARATIVE DB-VERWALTUNG ──────────────────────────────────────────
     ensureDatabases = [ "miniflux" "paperless" "n8n" ];
@@ -24,23 +27,25 @@
       { name = "n8n"; ensureDBOwnership = true; }
     ];
 
-    # ── PERFORMANCE TUNING (Q958 optimized) ────────────────────────────────
+    # ── PERFORMANCE TUNING (Lean SRE v2.4 / 16GB RAM) ────────────────────
+    enableJIT = true; # Performance-Boost bleibt aktiv
     settings = {
-      # Memory Tuning (Für 16GB RAM)
-      shared_buffers = "1GB";
-      effective_cache_size = "3GB";
-      maintenance_work_mem = "256MB";
+      # Memory Tuning (Konservativ für Mixed-Workload)
+      shared_buffers = "512MB";         # Reserviert weniger festen RAM
+      effective_cache_size = "4GB";     # Schätzung für den OS-Cache
+      maintenance_work_mem = "128MB";
       checkpoint_completion_target = 0.9;
       wal_buffers = "16MB";
       default_statistics_target = 100;
-      random_page_cost = 1.1; # SSD Optimierung
+      random_page_cost = 1.1;           # SSD Optimierung
       effective_io_concurrency = 200;
-      work_mem = "10MB";
-      min_wal_size = "1GB";
-      max_wal_size = "4GB";
+      work_mem = "8MB";                 # Reicht für Home-Apps völlig aus
+      min_wal_size = "512MB";
+      max_wal_size = "2GB";
+      huge_pages = "try";
       
       # Logging (Fließt ins zentrale Journal)
-      log_min_duration_statement = 200; # Loggt langsame Queries (>200ms)
+      log_min_duration_statement = 250; # Reduziert Noise, loggt nur langsame Queries
       log_checkpoints = "on";
       log_connections = "on";
       log_disconnections = "on";

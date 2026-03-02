@@ -25,9 +25,13 @@ in
       N8N_EDITOR_BASE_URL = "https://n8n.${domain}";
       
       # ── SRE PERFORMANCE & HYGIENE ────────────────────────────────────────
+      N8N_NODE_OPTIONS = "--max-old-space-size=2048"; # Reserviert max 2GB RAM
       EXECUTIONS_DATA_PRUNE = "true";
       EXECUTIONS_DATA_MAX_AGE = "336"; # 14 Tage
       N8N_LOG_LEVEL = "info";
+      
+      # Worker Concurrency (Stabil auf i3-9100)
+      N8N_CONCURRENCY_PRODUCTION_LIMIT = "5"; 
       
       # DB Wiring (Postgres aus Layer 10)
       DB_TYPE = "postgresdb";
