@@ -17,7 +17,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  myLib = import ../../00-core/lib/helpers.nix { inherit lib; };
+  myLib = import ../00-core/lib-helpers.nix { inherit lib; };
   port = config.my.ports.matrix;
   domain = config.my.configs.identity.domain;
   subdomain = config.my.configs.identity.subdomain;

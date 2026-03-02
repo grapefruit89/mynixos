@@ -15,17 +15,17 @@
 { ... }:
 {
   imports = [
-    ./services-common.nix
-    ./arr-wire.nix
-    ./jellyfin.nix
-    ./jellyseerr.nix
-    ./sonarr.nix
-    ./radarr.nix
-    ./lidarr.nix
-    ./readarr.nix
-    ./prowlarr.nix
-    ./sabnzbd.nix
-    ./recyclarr.nix
+    ./service-media-services-common.nix
+    ./service-media-arr-wire.nix
+    ./service-media-jellyfin.nix
+    ./service-media-jellyseerr.nix
+    ./service-media-sonarr.nix
+    ./service-media-radarr.nix
+    ./service-media-lidarr.nix
+    ./service-media-readarr.nix
+    ./service-media-prowlarr.nix
+    ./service-media-sabnzbd.nix
+    ./service-media-recyclarr.nix
   ];
 }
 

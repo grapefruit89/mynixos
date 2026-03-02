@@ -2,8 +2,8 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: NIXH-20-SRV-031
- *   title: "radarr"
+ *   id: NIXH-20-SRV-033
+ *   title: "readarr"
  *   layer: 20
  * architecture:
  *   req_refs: [REQ-SRV]
@@ -14,40 +14,40 @@
  */
 
 # =============================================================================
-# modules/services/arr/radarr.nix
+# modules/services/arr/readarr.nix
 # =============================================================================
-# Radarr — Film Downloader
-# Nativport: 7878
+# Readarr — Buch/E-Book Downloader
+# Nativport: 8787
 #
-# nixpkgs Basis: services/misc/servarr/radarr.nix @ 957de226
-# Änderungen: identisch zu sonarr.nix (siehe dort)
+# nixpkgs Basis: services/misc/servarr/readarr.nix @ 957de226
+# Ergänzung: nixpkgs-readarr hatte kein Hardening — hier nachgerüstet
 # =============================================================================
 { config, lib, pkgs, ... }:
 
 let
-  factory = import ./_servarr-factory.nix { inherit lib pkgs; };
-  myLib   = import ../../00-core/lib/helpers.nix { inherit lib; };
+  factory = import ./service-media-_servarr-factory.nix { inherit lib pkgs; };
+  myLib   = import ../00-core/lib-helpers.nix { inherit lib; };
 
-  cfg  = config.my.media.radarr;
+  cfg  = config.my.media.readarr;
   defs = config.my.defaults;
 
-  nativeName = "radarr";
-  nativePort = 7878;
+  nativeName = "readarr";
+  nativePort = 8787;
 
-  stateDir = "${defs.paths.statePrefix}/${nativeName}/.config/Radarr";
+  stateDir = "${defs.paths.statePrefix}/${nativeName}";
 
   serviceBase = myLib.mkService {
     inherit config;
     name        = nativeName;
     port        = cfg.settings.server.port;
     useSSO      = defs.security.ssoEnable;
-    description = "Radarr Movie Downloader";
+    description = "Readarr E-Book Downloader";
     netns       = cfg.netns;
   };
 in
 {
-  options.my.media.radarr = {
-    enable = lib.mkEnableOption "Radarr Film-Downloader";
+  options.my.media.readarr = {
+    enable = lib.mkEnableOption "Readarr E-Book/Buch Downloader";
 
     stateDir = lib.mkOption {
       type    = lib.types.str;
@@ -82,7 +82,7 @@ in
     serviceBase
     {
       systemd.services.${nativeName} = {
-        description = "Radarr";
+        description = "Readarr";
         after       = [ "network.target" ];
         wantedBy    = [ "multi-user.target" ];
         environment = factory.mkServarrSettingsEnvVars
@@ -93,32 +93,25 @@ in
           User            = cfg.user;
           Group           = cfg.group;
           EnvironmentFile = cfg.environmentFiles;
-          ExecStart       = "${pkgs.radarr}/bin/Radarr -nobrowser -data='${cfg.stateDir}'";
+          ExecStart       = "${pkgs.readarr}/bin/Readarr -nobrowser -data='${cfg.stateDir}'";
           Restart         = "on-failure";
-                      ReadWritePaths  = [
-                        cfg.stateDir
-                        defs.paths.mediaRoot
-                        defs.paths.downloadsDir
-                      ];
-                      BindPaths = [
-                        "${defs.paths.fastPoolRoot}/metadata/${nativeName}:/var/lib/${nativeName}/MediaCover"
-                      ];
-                    } // factory.mkServarrHardening;
-                  };
-          
-                  systemd.tmpfiles.settings = (factory.mkServarrTmpfiles nativeName cfg) // {
-                    "10-${nativeName}-meta"."${defs.paths.fastPoolRoot}/metadata/${nativeName}".d = {
-                      inherit (cfg) user group;
-                      mode = "0750";
-                    };
-                  };
-          
-                  networking.firewall.allowedTCPPorts = lib.mkForce [];
-                users.users.${cfg.user} = lib.mkIf (cfg.user == nativeName) {
+          ReadWritePaths  = [
+            cfg.stateDir
+            defs.paths.mediaRoot
+            defs.paths.downloadsDir
+          ];
+        } // factory.mkServarrHardening;   # ← in nixpkgs fehlte das für Readarr!
+      };
+
+      systemd.tmpfiles.settings = factory.mkServarrTmpfiles nativeName cfg;
+
+      networking.firewall.allowedTCPPorts = lib.mkForce [];
+
+      users.users.${cfg.user} = lib.mkIf (cfg.user == nativeName) {
         group        = cfg.group;
         home         = cfg.stateDir;
-        uid          = config.ids.uids.radarr;
-        isSystemUser = false;
+        isSystemUser = true;
+        description  = "Readarr service user";
       };
       users.groups.${cfg.group} = lib.mkDefault {};
     }

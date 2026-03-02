@@ -14,7 +14,7 @@
  */
 { lib, ... }:
 let
-  dnsMap = import ../../10-infrastructure/dns-map.nix;
+  dnsMap = import ../10-infrastructure/dns-map.nix;
 in
 {
   # mkService: v3.1 (Caddy Migration + Metadata)

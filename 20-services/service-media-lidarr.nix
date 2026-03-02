@@ -25,8 +25,8 @@
 { config, lib, pkgs, ... }:
 
 let
-  factory = import ./_servarr-factory.nix { inherit lib pkgs; };
-  myLib   = import ../../00-core/lib/helpers.nix { inherit lib; };
+  factory = import ./service-media-_servarr-factory.nix { inherit lib pkgs; };
+  myLib   = import ../00-core/lib-helpers.nix { inherit lib; };
 
   cfg  = config.my.media.lidarr;
   defs = config.my.defaults;

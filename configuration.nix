@@ -23,8 +23,8 @@
     ./00-core/tty-info.nix
     inputs.sops-nix.nixosModules.sops
     ./10-infrastructure/sso.nix
-    ./00-core/hosts/q958/hardware-configuration.nix
-    ./00-core/hosts/q958/hardware-profile.nix
+    ./00-core/host-q958-hardware-configuration.nix
+    ./00-core/host-q958-hardware-profile.nix
 
     # 00 — Core
     ./00-core/registry.nix
@@ -75,25 +75,26 @@
     ./10-infrastructure/olivetin.nix
 
     # 20 — Services
-    ./20-services/media/default.nix
-    ./20-services/media/media-stack.nix
-    ./20-services/apps/audiobookshelf.nix
-    ./20-services/apps/vaultwarden.nix
-    ./20-services/apps/paperless.nix
-    ./20-services/apps/miniflux.nix
-    ./20-services/apps/n8n.nix
-    ./20-services/apps/scrutiny.nix
-    ./20-services/apps/filebrowser.nix
-    ./20-services/apps/ai-agents.nix
-    ./20-services/apps/home-assistant.nix
-    ./20-services/apps/zigbee-stack.nix
-    ./20-services/apps/karakeep.nix
-    ./20-services/apps/matrix-conduit.nix
+    ./20-services/service-media-default.nix
+    ./20-services/service-media-media-stack.nix
+    ./20-services/service-app-audiobookshelf.nix
+    ./20-services/service-app-vaultwarden.nix
+    ./20-services/service-app-paperless.nix
+    ./20-services/service-app-miniflux.nix
+    ./20-services/service-app-n8n.nix
+    ./20-services/service-app-scrutiny.nix
+    ./20-services/service-app-filebrowser.nix
+    ./20-services/service-app-ai-agents.nix
+    ./20-services/service-app-home-assistant.nix
+    ./20-services/service-app-zigbee-stack.nix
+    ./20-services/service-app-karakeep.nix
+    ./20-services/service-app-matrix-conduit.nix
 
     # 90 — Policy
     ./90-policy/security-assertions.nix # <-- Aktiviert
     ./90-policy/no-legacy.nix
     ./90-policy/binary-only.nix
+    ./90-policy/flat-layout.nix
   ];
 
   system.stateVersion = "25.11";

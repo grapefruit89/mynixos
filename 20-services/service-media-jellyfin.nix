@@ -34,7 +34,7 @@ let
 in
 {
   imports = [
-    ((import ./_lib.nix { inherit lib pkgs; }) {
+    ((import ./service-media-_lib.nix { inherit lib pkgs; }) {
       name = "jellyfin";
       port = config.my.ports.jellyfin;
       stateOption = "dataDir";

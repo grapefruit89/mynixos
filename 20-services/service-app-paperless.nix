@@ -43,7 +43,7 @@
 { lib, pkgs, config, ... }:
 
 let
-  myLib = import ../../00-core/lib/helpers.nix { inherit lib; };
+  myLib = import ../00-core/lib-helpers.nix { inherit lib; };
   cfg   = config.my.documents.paperless;
   defs  = config.my.defaults;
 
