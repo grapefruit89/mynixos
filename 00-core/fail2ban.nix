@@ -5,7 +5,7 @@
  *   id: NIXH-00-CORE-007
  *   title: "Fail2ban (SRE Aggressive)"
  *   layer: 00
- * summary: Aggressive brute-force protection with escalations and nftables backend.
+ * summary: Aggressive brute-force protection with specialized Caddy JSON filters.
  * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/security/fail2ban.nix
  * ---
  */
@@ -16,69 +16,71 @@ let
   tailnetCidrs = config.my.configs.network.tailnetCidrs;
 in
 {
-  # 🚀 FAIL2BAN SRE STANDARD
   services.fail2ban = {
     enable = true;
-    
-    # ── NFTABLES BACKEND (Modern) ─────────────────────────────────────────
     banaction = "nftables-multiport";
     banaction-allports = "nftables-allports";
 
-    # ── GLOBAL WHITELIST ──────────────────────────────────────────────────
-    ignoreIP = [
-      "127.0.0.1/8"
-      "::1"
-    ] ++ lanCidrs ++ tailnetCidrs;
+    ignoreIP = [ "127.0.0.1/8" "::1" ] ++ lanCidrs ++ tailnetCidrs;
 
-    # ── ESKALIERENDE BAN-ZEITEN ───────────────────────────────────────────
-    # Wer wiederholt angreift, wird exponentiell länger gesperrt.
     bantime = "1h";
     bantime-increment = {
       enable = true;
       multipliers = "1 2 4 8 16 32 64"; 
-      maxtime = "168h"; # Max 1 Woche Isolation
+      maxtime = "168h";
       overalljails = true; 
     };
     
     maxretry = 5;
 
-    # ── JAILS ─────────────────────────────────────────────────────────────
     jails = {
-      sshd = {
-        settings = {
-          enabled = true;
-          port = sshPort;
-          mode = "aggressive";
-          findtime = "10m";
-          bantime = "1h";
-          maxretry = 3;
-        };
+      sshd.settings = {
+        enabled = true;
+        port = sshPort;
+        mode = "aggressive";
       };
 
-      # Caddy / HTTP Brute Force Protection (RAM Journal Source)
-      caddy-auth = {
-        settings = {
-          enabled = true;
-          port = "http,https";
-          filter = "caddy-auth";
-          backend = "systemd";
-          maxretry = 5;
-          findtime = "5m";
-          bantime = "24h";
-        };
+      # ── CADDY AUTH JAIL (RAM Journal Source) ───────────────────────────
+      caddy-auth.settings = {
+        enabled = true;
+        port = "http,https";
+        filter = "caddy-json";
+        backend = "systemd";
+        maxretry = 3;
+        findtime = "5m";
+        bantime = "24h";
+      };
+
+      # ── CADDY SCANNER JAIL (Anti-Bot) ──────────────────────────────────
+      caddy-scan.settings = {
+        enabled = true;
+        port = "http,https";
+        filter = "caddy-scan";
+        backend = "systemd";
+        maxretry = 2;
+        findtime = "1m";
+        bantime = "168h"; # 1 Woche Bann für Scanner
       };
     };
   };
 
-  # ── CUSTOM FILTERS ──────────────────────────────────────────────────────
-  environment.etc."fail2ban/filter.d/caddy-auth.conf".text = ''
-    [Definition]
-    failregex = ^.*"remote_ip":"<ADDR>".*"status":401.*$
-                ^.*"remote_ip":"<ADDR>".*"status":403.*$
-    journalmatch = _SYSTEMD_UNIT=caddy.service
-  '';
+  # ── CUSTOM FILTERS (SRE Optimized for Caddy JSON) ────────────────────────
+  environment.etc = {
+    # Erkennt fehlgeschlagene Logins (401/403)
+    "fail2ban/filter.d/caddy-json.conf".text = ''
+      [Definition]
+      failregex = ^.*"remote_ip":"<ADDR>".*"status":(401|403).*$
+      journalmatch = _SYSTEMD_UNIT=caddy.service
+    '';
 
-  # ── PERFORMANCE HARDENING ───────────────────────────────────────────────
+    # Erkennt Bot-Scanner (Sucht nach .env, wp-admin, etc.)
+    "fail2ban/filter.d/caddy-scan.conf".text = ''
+      [Definition]
+      failregex = ^.*"remote_ip":"<ADDR>".*"uri":".*(?:/\.git|/\.env|/wp-admin|/wp-login\.php|/xmlrpc\.php)".*"status":404.*$
+      journalmatch = _SYSTEMD_UNIT=caddy.service
+    '';
+  };
+
   systemd.services.fail2ban.serviceConfig = {
     OOMScoreAdjust = 500;
     ProtectSystem = "strict";
