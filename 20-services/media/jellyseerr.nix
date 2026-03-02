@@ -31,7 +31,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  myLib = import ../../lib/helpers.nix { inherit lib; };
+  myLib = import ../../00-core/lib/helpers.nix { inherit lib; };
 
   cfg  = config.my.media.jellyseerr;
   defs = config.my.defaults;

@@ -24,7 +24,7 @@ in
     backupFileExtension = "hm-backup";
     
     users.${user} = { ... }: {
-      imports = [ (./.. + "/users/${user}/home.nix") ];
+      imports = [ (./. + "/users/${user}/home.nix") ];
       
       # ── SHELL HARDENING ──────────────────────────────────────────────────
       # Lädt Geheimnisse aus dem RAM-Template sicher in die interaktive Shell.

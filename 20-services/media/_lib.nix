@@ -22,7 +22,7 @@
 }:
 { config, ... }:
 let
-  myLib = import ../../lib/helpers.nix { inherit lib; };
+  myLib = import ../../00-core/lib/helpers.nix { inherit lib; };
   cfg = config.my.media.${name};
   sreConfig = config.my.configs;
   srePaths = config.my.configs.paths;

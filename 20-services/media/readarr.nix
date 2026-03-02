@@ -26,7 +26,7 @@
 
 let
   factory = import ./_servarr-factory.nix { inherit lib pkgs; };
-  myLib   = import ../../lib/helpers.nix { inherit lib; };
+  myLib   = import ../../00-core/lib/helpers.nix { inherit lib; };
 
   cfg  = config.my.media.readarr;
   defs = config.my.defaults;

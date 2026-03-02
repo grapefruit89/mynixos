@@ -23,8 +23,8 @@
     ./00-core/tty-info.nix
     inputs.sops-nix.nixosModules.sops
     ./10-infrastructure/sso.nix
-    ./hosts/q958/hardware-configuration.nix
-    ./hosts/q958/hardware-profile.nix
+    ./00-core/hosts/q958/hardware-configuration.nix
+    ./00-core/hosts/q958/hardware-profile.nix
 
     # 00 — Core
     ./00-core/registry.nix
