@@ -65,8 +65,11 @@ Um das System schlank und wartbar zu halten, wurden folgende Ansätze bewusst ve
     - [ ] Verschlüsselung via SOPS (Age).
     - [ ] Health-Monitoring via Uptime Kuma (Push-Heartbeat).
 
-### Phase 3: "Holy State" & Flakes
-- [ ] **Impermanence**: Umstellung von `/` auf `tmpfs`.
+### Phase 3: "Holy State" & Flakes (Aviation Grade)
+- [ ] **Impermanence (tmpfs-root)**:
+    - [ ] Root-Dateisystem (`/`) als `tmpfs` (RAM-Disk) einhängen.
+    - [ ] Nutzung von `environment.persistence` (Impermanence-Modul) für selektiven Erhalt von Daten (z.B. `/var/lib`, `/var/log`).
+    - [ ] `trap 'history -a' EXIT` in der Bash-Config verankern, um Command-History vor dem Reboot zu sichern.
 - [ ] **Flake Integration**: Pinning der Inputs via `flake.lock`.
 
 > **[NixOS Expert-Einschub: Impermanence Best-Practice]**
