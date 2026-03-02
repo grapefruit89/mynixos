@@ -36,6 +36,12 @@
     netdata     = 10999;
     # source-id: PORT.valkey
     valkey      = 6379;
+    # source-id: PORT.olivetin
+    olivetin    = 10080;
+    # source-id: PORT.cockpit
+    cockpit     = 10090;
+    # source-id: PORT.ddnsUpdater
+    ddnsUpdater = 10100;
 
     # ── 20-SERVICES (20xxx) ─────────────────────────────────────────────────
     # source-id: PORT.jellyfin
@@ -56,6 +62,24 @@
     lidarr         = 20686;
     # source-id: PORT.prowlarr
     prowlarr       = 20696;
+    # source-id: PORT.readarr
+    readarr        = 20787;
+    # source-id: PORT.sabnzbd
+    sabnzbd        = 20080;
+    # source-id: PORT.jellyseerr
+    jellyseerr     = 25055;
+    
+    # Missing Ports
+    audiobookshelf = 20081;
+    readeck        = 20005;
+    scrutiny       = 20007;
+    miniflux       = 20008;
+    filebrowser    = 20001;
+    karakeep       = 20003;
+    openWebui      = 20009;
+    monica         = 20004;
+
+    # ── IOT & MESSAGING ──────────────────────────────────────────────────────
     # source-id: PORT.zigbee2mqtt
     zigbee2mqtt    = 28080;
     # source-id: PORT.mqtt

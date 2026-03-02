@@ -20,8 +20,9 @@ in
     config = {
       # 🚀 Built-in Socket Activation support
       LISTEN_ADDR = "fd://3";
-      WATCHDOG = "1";
-      RUN_MIGRATIONS = "1";
+      WATCHDOG = 1;
+      RUN_MIGRATIONS = 1;
+      ADMIN_USERNAME = "admin";
     };
     createDatabaseLocally = true;
     adminCredentialsFile = config.sops.secrets.miniflux_admin_password.path;

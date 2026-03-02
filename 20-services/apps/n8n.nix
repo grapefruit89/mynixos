@@ -39,11 +39,17 @@ in
       DB_POSTGRESDB_HOST = "/run/postgresql";
       DB_POSTGRESDB_USER = "n8n";
 
-      # 🛡️ SECURE SECRET HANDLING (Modern Pattern)
-      # Wir nutzen das _FILE Pattern von nixpkgs, um Secrets sicher via systemd
-      # credentials zu laden.
-      N8N_ENCRYPTION_KEY_FILE = config.sops.secrets.n8n_enc_key.path;
-    };
+              # 🛡️ SECURE SECRET HANDLING (Modern Pattern)
+
+              # Wir nutzen das _FILE Pattern von nixpkgs, um Secrets sicher via systemd
+
+              # credentials zu laden.
+
+              N8N_ENCRYPTION_KEY_FILE = "/run/credentials/n8n.service/n8n_enc_key";
+
+            };
+
+      
   };
 
   # ── CADDY INTEGRATION ────────────────────────────────────────────────────
@@ -57,21 +63,20 @@ in
   # ── SRE SANDBOXING (Level: High) ─────────────────────────────────────────
   systemd.services.n8n.serviceConfig = {
     # DynamicUser isoliert den Dienst pro Start (keine permanenten UIDs nötig)
-    DynamicUser = true;
+    DynamicUser = lib.mkForce true;
     StateDirectory = "n8n"; # Mappt auf /var/lib/n8n
     
-    ProtectSystem = "strict";
-    ProtectHome = true;
-    PrivateTmp = true;
-    PrivateDevices = true;
-    
-    # n8n braucht Netzwerk für Webhooks
-    RestrictAddressFamilies = [ "AF_UNIX" "AF_INET" "AF_INET6" ];
-    
-    # MemoryDenyWriteExecute muss auf 'no' bleiben, da n8n/node JIT nutzt.
-    MemoryDenyWriteExecute = false; 
-    
-    # Verweist auf sops-Secrets via LoadCredential
+        ProtectSystem = lib.mkForce "strict";
+        ProtectHome = lib.mkForce true;
+        PrivateTmp = lib.mkForce true;
+        PrivateDevices = lib.mkForce true;
+        
+        # n8n braucht Netzwerk für Webhooks
+        RestrictAddressFamilies = lib.mkForce [ "AF_UNIX" "AF_INET" "AF_INET6" ];
+        
+        # MemoryDenyWriteExecute muss auf 'no' bleiben, da n8n/node JIT nutzt.
+        MemoryDenyWriteExecute = lib.mkForce false; 
+        # Verweist auf sops-Secrets via LoadCredential
     LoadCredential = [ "n8n_enc_key:${config.sops.secrets.n8n_enc_key.path}" ];
   };
 }

@@ -43,15 +43,15 @@ in
     serviceConfig = {
       ProtectSystem = lib.mkForce "strict";
       ReadWritePaths = [ "/var/lib/vaultwarden" ];
-      MemoryDenyWriteExecute = true;
-      RestrictAddressFamilies = [ "AF_INET" "AF_UNIX" ];
-      SystemCallFilter = [ "@system-service" "~@privileged" "~@resources" ];
-      CapabilityBoundingSet = "";
-      NoNewPrivileges = true;
-      PrivateDevices = true;
-      PrivateTmp = true;
-      ProtectProc = "invisible";
-      ProcSubset = "pid";
+      MemoryDenyWriteExecute = lib.mkForce true;
+      RestrictAddressFamilies = lib.mkForce [ "AF_INET" "AF_UNIX" ];
+      SystemCallFilter = lib.mkForce [ "@system-service" "~@privileged" "~@resources" ];
+      CapabilityBoundingSet = lib.mkForce "";
+      NoNewPrivileges = lib.mkForce true;
+      PrivateDevices = lib.mkForce true;
+      PrivateTmp = lib.mkForce true;
+      ProtectProc = lib.mkForce "invisible";
+      ProcSubset = lib.mkForce "pid";
       OOMScoreAdjust = 200; # Darf im Leerlauf schlafen
     };
   };

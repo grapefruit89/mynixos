@@ -7,35 +7,35 @@
  *   layer: 10
  * architecture:
  *   req_refs: [REQ-INF]
- *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   upstream: [NIXH-00-CORE-006, NIXH-00-CORE-018, NIXH-10-INF-002]
  *   downstream: []
  *   status: audited
  * ---
  */
 { config, lib, pkgs, ... }:
 let
-  cfg = config.my.profiles.services.cockpit;
+  cfg    = config.my.profiles.services.cockpit;
+  # source: CFG.identity.domain → 00-core/configs.nix
   domain = config.my.configs.identity.domain;
-  port = config.my.ports.cockpit;
+  # source: PORT.cockpit → 00-core/ports.nix  (NEU: Port registrieren!)
+  port   = config.my.ports.cockpit;
 in
 {
   config = lib.mkIf cfg.enable {
-    # 🚀 COCKPIT EXHAUSTION
     services.cockpit = {
-      enable = true;
-      port = port;
-      package = pkgs.cockpit; # Standard-Paket
-      
-      # DEKLARATIVE EINSTELLUNGEN
+      enable  = true;
+      port    = port;
+      package = pkgs.cockpit;
+
       settings = {
         WebService = {
-          AllowUnencrypted = true;
-          ProtocolHeader = "X-Forwarded-Proto";
-          MaxStartups = 10;
+          AllowUnencrypted   = true;         # Caddy übernimmt TLS
+          ProtocolHeader     = "X-Forwarded-Proto";
+          MaxStartups        = 10;
         };
         Session = {
-          IdleTimeout = 15; # 15 Min Inaktivität
-          Banner = "/etc/motd";
+          IdleTimeout = 15;
+          Banner      = "/etc/motd";
         };
       };
     };
@@ -49,17 +49,16 @@ in
   };
 }
 
-
-
-
-
 /**
  * ---
  * technical_integrity:
- *   checksum: sha256:3a8b5e8ba6dcc726797f5d67cd24fe116f03f0a25d37a2322b4f4410fe889258
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
+ *   last_reviewed: 2026-03-02
+ *   complexity_score: 1
+ *   changes_from_previous:
+ *     - NMS-ID FIX: NIXH-10-INF-010 → NIXH-10-INF-005 (Kollision mit olivetin.nix)
+ *     - Architecture-Header ergänzt
+ *     - source-id Kommentare für domain und port
  * ---
  */

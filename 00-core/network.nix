@@ -54,14 +54,13 @@ in
 
   # ── PERFORMANCE TUNING (TCP BBR) ──────────────────────────────────────────
   # 🚀 Aktiviert modernste Staukontrolle für stabilen Ingress/Egress.
-  boot.kernel.sysctl = lib.mkIf cfg.enable {
-    "net.core.default_qdisc" = "fq";
-    "net.ipv4.tcp_congestion_control" = "bbr";
-    "net.core.netdev_max_backlog" = 10000;
-    "net.ipv4.tcp_slow_start_after_idle" = 0;
-  };
-
-  # ── AVAHI (mDNS) ──────────────────────────────────────────────────────────
+      boot.kernel.sysctl = lib.mkIf cfg.enable {
+        "net.core.default_qdisc" = lib.mkForce "fq";
+        "net.ipv4.tcp_congestion_control" = lib.mkForce "bbr";
+        "net.core.netdev_max_backlog" = lib.mkForce 10000;
+        "net.ipv4.tcp_slow_start_after_idle" = lib.mkForce 0;
+      };
+    # ── AVAHI (mDNS) ──────────────────────────────────────────────────────────
   services.avahi = lib.mkIf cfg.enable {
     enable = true;
     nssmdns4 = true;

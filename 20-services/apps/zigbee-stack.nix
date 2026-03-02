@@ -32,7 +32,7 @@ in
     dataDir = "/var/lib/zigbee2mqtt";
     
     settings = {
-      homeassistant = true;
+      homeassistant = { enabled = true; };
       permit_join = false; # SRE: Standardmäßig aus
       
       # MQTT Anbindung
@@ -44,6 +44,7 @@ in
       # 🚀 SLZB-06 ETHERNET ANBINDUNG
       serial = {
         port = "tcp://${cfg.zigbeeStickIP}:6638";
+        adapter = "ezsp";
       };
 
       # Web-UI

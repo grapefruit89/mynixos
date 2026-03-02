@@ -15,6 +15,7 @@
 { lib, pkgs, config, ... }:
 {
   imports = [
+    ./00-core/defaults.nix
     ./00-core/boot-safeguard.nix
     ./00-core/ssh-rescue.nix
     ./00-core/kernel-slim.nix

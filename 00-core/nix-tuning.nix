@@ -28,10 +28,6 @@ in
 
   # ── ⛔ NO-LOCAL-BUILD POLICY (Aviation Grade) ────────────────────────────
   nix.settings = {
-    # 🚀 Verhindert lokales Kompilieren, wenn kein Binary gefunden wird.
-    # Erzwingt die Nutzung von Caches.
-    require-substitutes = true;
-    
     # Schnelle Erkennung von Netzwerkproblemen
     connect-timeout = 5;
     

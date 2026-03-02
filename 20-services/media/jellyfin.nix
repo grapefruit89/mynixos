@@ -68,8 +68,8 @@ in
         DeviceAllow = [ "/dev/dri/renderD128 rw" ];
         
         # Resources (Jellyfin braucht mehr RAM für Transcoding)
-        MemoryMax = "4G";
-        CPUWeight = 80;
+        MemoryMax = lib.mkForce "4G";
+        CPUWeight = lib.mkForce 80;
         
         # Network Hardening (Jellyfin ist NICHT via VPN isoliert für lokale Discovery)
         IPAddressDeny = [ "any" ];
