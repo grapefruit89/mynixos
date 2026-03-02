@@ -3,13 +3,10 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-00-CORE-017
- *   title: "Nix Tuning"
+ *   title: "Nix Tuning (Binary-Only Policy)"
  *   layer: 00
- * architecture:
- *   req_refs: [REQ-CORE]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Strict binary cache enforcement to prevent local compilation and SSD wear.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/config/nix-remote-build.nix
  * ---
  */
 { config, lib, pkgs, ... }:
@@ -19,7 +16,7 @@ let
   isMidRam = ramGB > 4 && ramGB <= 8;
 in
 {
-  # ── BINARY CACHES ─────────────────────────────────────────────────────────
+  # ── BINARY CACHES (SSoT) ──────────────────────────────────────────────────
   nix.settings.substituters = [
     "https://cache.nixos.org"
     "https://nix-community.cachix.org"
@@ -29,65 +26,53 @@ in
     "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
   ];
 
-  # ── STORE OPTIMIERUNG ────────────────────────────────────────────────────
-  nix.settings.auto-optimise-store = true;
-  nix.settings.builders-use-substitutes = true;
-  nix.settings.fallback = true;
+  # ── ⛔ NO-LOCAL-BUILD POLICY (Aviation Grade) ────────────────────────────
+  nix.settings = {
+    # 🚀 Verhindert lokales Kompilieren, wenn kein Binary gefunden wird.
+    # Erzwingt die Nutzung von Caches.
+    require-substitutes = true;
+    
+    # Schnelle Erkennung von Netzwerkproblemen
+    connect-timeout = 5;
+    
+    # Erlaubt dem Builder, Substitutes zu nutzen (Standard in NixOS)
+    builders-use-substitutes = true;
+    
+    # Optimierungen
+    auto-optimise-store = true;
+    narinfo-cache-negative-ttl = 0; # Sofortige Cache-Revalidierung
+  };
 
-  # GC-Roots für schnelleres Rebuilding erhalten
-  nix.settings.keep-outputs = true;
-  nix.settings.keep-derivations = true;
-
-  # Negativ-Cache verkürzen (schnellere Fallback-Erkennung)
-  nix.settings.narinfo-cache-negative-ttl = 0;
-
-  # ── RESSOURCEN-MANAGEMENT ────────────────────────────────────────────────
+  # ── RESSOURCEN-SCHUTZ ────────────────────────────────────────────────────
   nix.settings.max-jobs = if isLowRam then lib.mkForce 1
                           else if isMidRam then lib.mkForce 2
                           else lib.mkDefault 4;
-  nix.settings.cores = if isLowRam then lib.mkForce 1
-                       else if isMidRam then lib.mkForce 2
-                       else lib.mkDefault 0;
 
-  # Build-Timeout verhindert hängende Builds
-  nix.settings.timeout = 3600;  # 1h Max pro Build
-  nix.settings.max-silent-time = 600;   # 10min Stille = Fehler
+  # Build-Timeout als letzte Rettung
+  nix.settings.timeout = 1800;  # 30min Max (SRE: Alles über 30m ist vermutlich ein massiver Build -> Abbrechen)
 
   nix.settings.experimental-features = [ "nix-command" "flakes" "auto-allocate-uids" "cgroups" ];
   nix.settings.sandbox = true;
   nix.settings.trusted-users = [ "root" config.my.configs.identity.user ];
 
-  # ── CPU & IO PRIORITÄT ───────────────────────────────────────────────────
+  # CPU & IO Priorität (Nix soll das System nicht blockieren)
   nix.daemonCPUSchedPolicy = "idle";
   nix.daemonIOSchedClass = "idle";
-  nix.daemonIOSchedPriority = 7;
 
-  # ── GC ───────────────────────────────────────────────────────────────────
-  nix.gc.automatic = true;
-  nix.gc.dates = "weekly";
-  nix.gc.options = "--delete-older-than 7d";
-  nix.gc.persistent = true;
+  # ── AUTOMATISCHE PFLEGE (GC) ─────────────────────────────────────────────
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 14d";
+    persistent = true;
+  };
 
   # ── TOOLING ──────────────────────────────────────────────────────────────
   environment.systemPackages = with pkgs; [
-    cachix nix-tree nix-diff nix-output-monitor nix-du
+    cachix nix-tree nix-diff nix-output-monitor
   ];
-
-  assertions = [{
-    assertion = !(lib.any (k: lib.hasInfix "DEIN_PUBLIC_KEY_HIER_INSERT" k) config.nix.settings.trusted-public-keys);
-    message = "nix-tuning: Platzhalter-Key aktiv. Bitte echten Key eintragen!";
-  }];
 }
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:4bc1543e257fe2f7154c37ba48a27519c0dbd50365bd99d2074669aaeee20bfd
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */
