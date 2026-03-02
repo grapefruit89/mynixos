@@ -26,8 +26,11 @@ in
     "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
   ];
 
-  # ── ⛔ NO-LOCAL-BUILD POLICY (Aviation Grade) ────────────────────────────
+  # ── ⛔ NO-LOCAL-BUILD ENFORCEMENT (Aviation Grade) ──────────────────────
   nix.settings = {
+    # Absolutes Verbot für lokale Builds (0 Slots)
+    max-jobs = lib.mkForce 0;
+    
     # Schnelle Erkennung von Netzwerkproblemen
     connect-timeout = 5;
     
@@ -40,9 +43,7 @@ in
   };
 
   # ── RESSOURCEN-SCHUTZ ────────────────────────────────────────────────────
-  nix.settings.max-jobs = if isLowRam then lib.mkForce 1
-                          else if isMidRam then lib.mkForce 2
-                          else lib.mkDefault 4;
+
 
   # Build-Timeout als letzte Rettung
   nix.settings.timeout = 1800;  # 30min Max (SRE: Alles über 30m ist vermutlich ein massiver Build -> Abbrechen)

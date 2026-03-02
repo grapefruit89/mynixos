@@ -8,7 +8,7 @@
  * summary: User-environment management with secure shell-secret loading.
  * ---
  */
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 let
   # sink: CFG.identity.user
   user = config.my.configs.identity.user;
@@ -16,7 +16,7 @@ let
   envFile = config.my.secrets.files.sharedEnv;
 in
 {
-  imports = [ <home-manager/nixos> ];
+  imports = [ inputs.home-manager.nixosModules.home-manager ];
   
   home-manager = {
     useGlobalPkgs = true;

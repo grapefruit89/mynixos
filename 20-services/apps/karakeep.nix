@@ -32,15 +32,6 @@ in
     '';
   };
 
-  # ── SRE SANDBOXING ───────────────────────────────────────────────────────
-  systemd.services.karakeep.serviceConfig = {
-    ProtectSystem = "strict";
-    ProtectHome = true;
-    PrivateTmp = true;
-    PrivateDevices = true;
-    NoNewPrivileges = true;
-    SystemCallFilter = [ "@system-service" "~@privileged" ];
-  };
 }
 /**
  * technical_integrity:

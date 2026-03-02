@@ -56,10 +56,8 @@ in
 
       preStart = ''
         mkdir -p ${srePaths.stateDir}/jellyfin/config
-        if [ ! -f ${srePaths.stateDir}/jellyfin/config/encoding.xml ]; then
-          cp ${encodingXml} ${srePaths.stateDir}/jellyfin/config/encoding.xml
-          chown jellyfin:media ${srePaths.stateDir}/jellyfin/config/encoding.xml
-        fi
+        cp -f ${encodingXml} ${srePaths.stateDir}/jellyfin/config/encoding.xml
+        chmod 644 ${srePaths.stateDir}/jellyfin/config/encoding.xml
       '';
 
       serviceConfig = {

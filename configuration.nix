@@ -12,7 +12,7 @@
  *   status: audited
  * ---
  */
-{ lib, pkgs, config, ... }:
+{ lib, pkgs, config, inputs, ... }:
 {
   imports = [
     ./00-core/defaults.nix
@@ -21,7 +21,7 @@
     ./00-core/kernel-slim.nix
     ./00-core/shell-premium.nix
     ./00-core/tty-info.nix
-    <sops-nix/modules/sops>
+    inputs.sops-nix.nixosModules.sops
     ./10-infrastructure/sso.nix
     ./hosts/q958/hardware-configuration.nix
     ./hosts/q958/hardware-profile.nix
@@ -93,6 +93,7 @@
     # 90 — Policy
     ./90-policy/security-assertions.nix # <-- Aktiviert
     ./90-policy/no-legacy.nix
+    ./90-policy/binary-only.nix
   ];
 
   system.stateVersion = "25.11";

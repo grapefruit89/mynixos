@@ -99,7 +99,7 @@ in
     # AdGuard braucht Port 53 → CAP_NET_BIND_SERVICE + CAP_NET_RAW für DNS-Pings
     CapabilityBoundingSet = [ "CAP_NET_BIND_SERVICE" "CAP_NET_RAW" ];
     AmbientCapabilities   = [ "CAP_NET_BIND_SERVICE" "CAP_NET_RAW" ];
-    ReadWritePaths        = [ "/var/lib/adguardhome" ];
+    ReadWritePaths        = [ "/var/lib/AdGuardHome" ];
 
     ProtectSystem         = "strict";
     ProtectHome           = true;

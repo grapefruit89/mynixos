@@ -192,21 +192,6 @@ in
   ];
   
   # ══════════════════════════════════════════════════════════════════════════
-  # COMPILER-OPTIMIERUNGEN
-  # ══════════════════════════════════════════════════════════════════════════
-  
-  # Kernel mit optimiertem GCC-Build
-  nixpkgs.config.packageOverrides = pkgs: {
-    linuxPackages_latest = pkgs.linuxPackages_latest.extend (self: super: {
-      kernel = super.kernel.override {
-        # LTO (Link-Time Optimization)
-        # WARNUNG: Erhöht Build-Zeit um ~30min!
-        # stdenv = pkgs.overrideCC pkgs.stdenv pkgs.gcc12;
-      };
-    });
-  };
-  
-  # ══════════════════════════════════════════════════════════════════════════
   # MONITORING & DEBUGGING
   # ══════════════════════════════════════════════════════════════════════════
   
