@@ -3,107 +3,82 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-00-CORE-025
- *   title: "Ssh"
+ *   title: "SSH (SRE Expert Edition)"
  *   layer: 00
- * architecture:
- *   req_refs: [REQ-CORE]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Hardened SSH daemon with connection protection and modern crypto.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/networking/ssh/sshd.nix
  * ---
  */
 { lib, config, pkgs, ... }:
 let
   sshPort = config.my.ports.ssh;
   user = config.my.configs.identity.user;
-  hasAuthorizedKeys = (config.users.users.${user}.openssh.authorizedKeys.keys or [ ]) != [ ];
-  allowPasswordFallback = !hasAuthorizedKeys;
   lanCidrs = config.my.configs.network.lanCidrs;
   tailnetCidrs = config.my.configs.network.tailnetCidrs;
   matchCidrs = lib.concatStringsSep "," (lanCidrs ++ tailnetCidrs);
 in
 {
-  # 🚀 SSH EXHAUSTION
   services.openssh = {
     enable = true;
-    openFirewall = false; # Via firewall.nix gesteuert
-    ports = lib.mkForce [ sshPort ];
+    openFirewall = false; # Gesteuert via 00-core/firewall.nix
+    ports = lib.mkForce [ 22 sshPort ];
     
     settings = {
-      # Grundlagen
-      PermitRootLogin = lib.mkForce "no";
-      PermitTTY = lib.mkForce true;
-      PasswordAuthentication = lib.mkForce allowPasswordFallback;
-      KbdInteractiveAuthentication = lib.mkForce allowPasswordFallback;
+      # ── GRUNDLAGEN ────────────────────────────────────────────────────────
+      PermitRootLogin = "no";
+      PasswordAuthentication = false; # Key-only Standard
+      KbdInteractiveAuthentication = false;
       AllowUsers = [ "${user}" ];
+      LogLevel = "VERBOSE"; # Erhöhte Sichtbarkeit für SRE-Audits
       
-      # Hardening (Extreme SRE)
-      LoginGraceTime = 20;
-      MaxAuthTries = 3;
+      # ── HARDENING ─────────────────────────────────────────────────────────
+      LoginGraceTime = 20;   # Schneller Timeout bei Geister-Logins
+      MaxAuthTries = 3;      # Strikte Begrenzung gegen Brute-Force
       ClientAliveInterval = 300;
       ClientAliveCountMax = 2;
-      MaxSessions = 10;
-      PermitEmptyPasswords = false;
-      X11Forwarding = false;
-      AllowAgentForwarding = false;
-      AllowTcpForwarding = true; # Notwendig für Tunneling
-      GatewayPorts = "no";
-      Compression = "delayed";
       
-      # Enforce Modern Ciphers & Algorithms
-      HostKeyAlgorithms = "ssh-ed25519";
+      # ── MODERNE CRYPTO (Infosec Standard 2026) ───────────────────────────
       KexAlgorithms = [
         "curve25519-sha256"
         "curve25519-sha256@libssh.org"
+        "sntrup761x25519-sha512@openssh.com" # Post-Quantum Resilience
       ];
       Ciphers = [
         "chacha20-poly1305@openssh.com"
         "aes256-gcm@openssh.com"
-        "aes128-gcm@openssh.com"
-      ];
-      Macs = [
-        "hmac-sha2-512-etm@openssh.com"
-        "hmac-sha2-256-etm@openssh.com"
-        "umac-128-etm@openssh.com"
       ];
     };
 
-    # Deklarative Modifikatoren für lokale Netze
+    # ── LOKALE AUSNAHMEN (Match Block) ──────────────────────────────────────
     extraConfig = ''
+      # In vertrauenswürdigen Netzen erlauben wir TTY und X11-Forwarding
       Match Address 127.0.0.1,::1,${matchCidrs}
-        PermitTTY yes
-        AllowUsers ${user}
-        # In lokalen Netzen etwas entspannter
-        PasswordAuthentication ${if allowPasswordFallback then "yes" else "no"}
+        X11Forwarding yes
+        AllowTcpForwarding yes
+        GatewayPorts yes
     '';
   };
 
-  # SSHD Alive & OOM Protection
-  systemd.services.sshd.serviceConfig = {
-    Restart = "always";
-    RestartSec = "5s";
-    OOMScoreAdjust = lib.mkForce (-1000);
-    # Hardening the service unit itself
-    ProtectSystem = "full";
-    ProtectHome = "read-only";
-    PrivateTmp = true;
+  # ── SYSTEMD SRE TUNING ──────────────────────────────────────────────────
+  systemd.services.sshd = {
+    # 🚀 KRITISCH: Verhindert Verbindungsabbruch bei nixos-rebuild
+    stopIfChanged = false;
+
+    serviceConfig = {
+      Restart = "always";
+      RestartSec = "5s";
+      
+      # Sandboxing des SSH-Prozesses
+      ProtectProc = "invisible";
+      ProcSubset = "pid";
+      PrivateTmp = true;
+      ProtectSystem = "strict";
+      ProtectHome = "read-only";
+      CapabilityBoundingSet = [ "CAP_CHOWN" "CAP_SETUID" "CAP_SETGID" "CAP_SYS_CHROOT" "CAP_AUDIT_WRITE" "CAP_NET_BIND_SERVICE" ];
+    };
   };
 }
-
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:3cba43cb88386f2332b24d9f5bc2caf67ae7264b8a6ae80d622d5719eb14cddc
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */

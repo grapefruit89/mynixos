@@ -28,7 +28,7 @@ in
       echo "🧹 Bereinige verwaiste EFI-Boot-Einträge (NVRAM Protection)..."
       # Entferne Einträge die nicht 'systemd-boot' oder 'NixOS' im Namen haben
       ${pkgs.efibootmgr}/bin/efibootmgr | grep "Boot[0-9]" | grep -vE "systemd-boot|NixOS|Linux|USB|Hard Drive|Network" | \
-        awk '{print $1}' | sed 's/Boot//;s/\*//' | \
+        ${pkgs.gawk}/bin/awk '{print $1}' | ${pkgs.gnused}/bin/sed 's/Boot//;s/\*//' | \
         xargs -I{} ${pkgs.efibootmgr}/bin/efibootmgr -b {} -B 2>/dev/null || true
     '';
   };

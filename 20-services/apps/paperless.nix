@@ -29,6 +29,29 @@ lib.mkMerge [
       enable = true;
       address = "127.0.0.1";
       port = config.my.ports.paperless;
+      
+      # Use local Postgres configuration
+      database.createLocally = true;
+      
+      # Tika and Gotenberg for Office documents
+      settings = {
+        PAPERLESS_TIKA_ENABLED = 1;
+        PAPERLESS_TIKA_GOTENBERG_ENDPOINT = "http://localhost:3000";
+        PAPERLESS_TIKA_ENDPOINT = "http://localhost:9998";
+      };
+      
+      # Password / Secret
+      passwordFile = config.sops.secrets.paperless_secret_key.path;
+    };
+
+    services.gotenberg = {
+      enable = true;
+      port = 3000;
+    };
+
+    services.tika = {
+      enable = true;
+      port = 9998;
     };
   }
 ]

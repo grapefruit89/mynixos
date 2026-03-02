@@ -28,18 +28,6 @@
       description = "Prefix used for generated hosts.";
     };
 
-    certResolver = lib.mkOption {
-      type = lib.types.str;
-      default = "letsencrypt";
-      description = "Traefik certificate resolver name.";
-    };
-
-    secureMiddleware = lib.mkOption {
-      type = lib.types.str;
-      default = "secure-headers@file";
-      description = "Traefik middleware for security headers.";
-    };
-
     netns = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
       default = null;

@@ -44,7 +44,7 @@ description: Zentrale Wissensbasis für das Fujitsu Q958 NixOS Homelab.
 ### [03 — Services & Sicherheit](./03_Services_Sicherheit.md)
 > Welche Dienste laufen und wie sind sie abgesichert?
 *   **Ports:** Das konsistente 10k/20k Port-Register.
-*   **Edge:** Traefik Reverse-Proxy mit ACME (LetsEncrypt).
+*   **Edge:** Caddy Reverse-Proxy mit ACME (LetsEncrypt).
 *   **VPN:** Der NFTables Killswitch für den Media-Stack.
 *   **Härtung:** SSH-Schutz und Systemd Sandboxing.
 
@@ -74,7 +74,7 @@ description: Zentrale Wissensbasis für das Fujitsu Q958 NixOS Homelab.
 ### [03 — Services & Security](./03_Services_Sicherheit.md)
 > Which services are active and how are they secured?
 *   **Ports:** The consistent 10k/20k Port Registry.
-*   **Edge:** Traefik Reverse-Proxy with ACME (LetsEncrypt).
+*   **Edge:** Caddy Reverse-Proxy with ACME (LetsEncrypt).
 *   **VPN:** The NFTables Killswitch for the media stack.
 *   **Hardening:** SSH protection and Systemd Sandboxing.
 

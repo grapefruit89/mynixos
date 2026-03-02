@@ -157,15 +157,17 @@ in
   };
   
   programs.bash.interactiveShellInit = lib.mkIf (user == "moritz") ''
-    # 🔒 TMUX AUTO-START (Verhindert Abbruch bei SSH-Restart)
-    if [ -z "$TMUX" ] && [ -n "$SSH_CONNECTION" ]; then
-      tmux attach -t main 2>/dev/null || tmux new-session -s main
-    fi
+    # 🔒 TMUX AUTO-START DEAKTIVIERT (Fix für SFTP & Mausrad)
+    # if [[ -z "$TMUX" && -n "$SSH_CONNECTION" && $- == *i* ]]; then
+    #   if [[ "$BASH_EXECUTION_STRING" != *sftp-server* ]]; then
+    #     tmux attach -t main 2>/dev/null || tmux new-session -s main
+    #   fi
+    # fi
 
-    if [ -n "$SSH_CONNECTION" ] || [ "$TERM" = "xterm-256color" ]; then
+    if [[ -n "$SSH_CONNECTION" || "$TERM" = "xterm-256color" ]] && [[ $- == *i* ]]; then
       ${pkgs.fastfetch}/bin/fastfetch --config ${fastfetchConfig}
       ${serviceStatusScript}/bin/check-services
-      BOOT_USAGE=$(df /boot | tail -1 | awk '{print $5}' | sed 's/%//')
+      BOOT_USAGE=$(df /boot | tail -1 | ${pkgs.gawk}/bin/awk '{print $5}' | ${pkgs.gnused}/bin/sed 's/%//')
       if [ "$BOOT_USAGE" -gt 80 ]; then
         echo "🚨 ACHTUNG: /boot ist zu ''${BOOT_USAGE}% voll!"
       fi

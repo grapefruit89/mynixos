@@ -54,11 +54,6 @@ in
 
   services.caddy.virtualHosts."${host}" = {
     extraConfig = ''
-      @local host nixhome.local
-      handle @local {
-        reverse_proxy 127.0.0.1:8082
-      }
-
       @tailscale remote_ip 100.64.0.0/10
       handle @tailscale {
         reverse_proxy 127.0.0.1:8082

@@ -15,7 +15,7 @@
 
     architecture = {
       core = "Ports/SSH/Firewall/Secrets/Systemgrundlagen";
-      infrastructure = "Traefik, Tailscale, WireGuard, Cloudflare-Tunnel, Monitoring-Bausteine";
+      infrastructure = "Caddy, Tailscale, WireGuard, Cloudflare-Tunnel, Monitoring-Bausteine";
       services = "Media- und App-Module hinter Reverse-Proxy";
       policy = "Sicherheitsassertions als Regression-Schutz";
     };

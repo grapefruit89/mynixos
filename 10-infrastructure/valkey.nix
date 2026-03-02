@@ -22,7 +22,20 @@
       bind = "127.0.0.1";
       port = 6379;
       openFirewall = false;
+      
+      settings = {
+        maxmemory = "512mb";
+        maxmemory-policy = "allkeys-lru";
+        save = [ "60 100" ];
+      };
     };
+  };
+
+  systemd.services.redis-valkey.serviceConfig = {
+    ProtectSystem = lib.mkForce "strict";
+    ReadWritePaths = [ "/var/lib/redis-valkey" ];
+    MemoryDenyWriteExecute = true;
+    RestrictAddressFamilies = [ "AF_INET" "AF_UNIX" ];
   };
 }
 

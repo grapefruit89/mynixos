@@ -61,6 +61,7 @@
     ./10-infrastructure/netdata.nix
     ./10-infrastructure/cloudflared-tunnel.nix
     ./10-infrastructure/valkey.nix
+    ./10-infrastructure/postgresql.nix
     
     ./10-infrastructure/homepage.nix
     ./10-infrastructure/cockpit.nix
@@ -70,6 +71,7 @@
     ./10-infrastructure/landing-zone-ui.nix
     ./10-infrastructure/pocket-id.nix
     ./10-infrastructure/dns-automation.nix
+    ./10-infrastructure/olivetin.nix
 
     # 20 — Services
     ./20-services/media/default.nix
@@ -83,6 +85,7 @@
     ./20-services/apps/filebrowser.nix
     ./20-services/apps/ai-agents.nix
     ./20-services/apps/home-assistant.nix
+    ./20-services/apps/karakeep.nix
 
     # 90 — Policy
     ./90-policy/security-assertions.nix # <-- Aktiviert

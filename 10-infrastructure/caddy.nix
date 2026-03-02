@@ -3,13 +3,10 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-10-INF-002
- *   title: "Caddy"
+ *   title: "Caddy (SRE Optimization)"
  *   layer: 10
- * architecture:
- *   req_refs: [REQ-INF]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: High-performance edge proxy with UDP/QUIC tuning and Journald logging.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/web-servers/caddy/default.nix
  * ---
  */
 { config, lib, pkgs, ... }:
@@ -20,27 +17,27 @@ let
   trustedIPs = "127.0.0.1 100.64.0.0/10 ${lib.concatStringsSep " " config.my.configs.network.lanCidrs}";
 in
 {
-  # 🚀 CADDY EXHAUSTION
+  boot.kernel.sysctl = {
+    "net.core.rmem_max" = 2500000;
+    "net.core.wmem_max" = 2500000;
+  };
+
   services.caddy = {
     enable = config.my.profiles.networking.reverseProxy == "caddy";
     
-    # Globales Hardening via Nix Option
-    globalConfig = ''
-      {
-        # SRE Security Tuning
-        servers {
-          protocol {
-            allow_h2c
-          }
-        }
-        # Admin Interface nur lokal
-        admin off
-      }
+    # ── LOG ZENTRALISIERUNG ────────────────────────────────────────────────
+    # Wir biegen die Caddy-Logs so um, dass sie NICHT in eine Datei schreiben,
+    # sondern direkt als JSON ins Systemd-Journal fließen.
+    logFormat = lib.mkForce ''
+      level INFO
+      format json
     '';
 
-    # Zentrale Konfiguration (Snippets & Bypasses)
+    globalConfig = ''
+      admin localhost:2019
+    '';
+
     extraConfig = ''
-      # 🛡️ Snippet für Security-Header
       (security_headers) {
         header {
           X-Content-Type-Options nosniff
@@ -50,7 +47,6 @@ in
         }
       }
 
-      # 🔐 Snippet für SSO Auth (Pocket-ID) mit "Breaking Glass" Bypass
       (sso_auth) {
         @needs_auth {
           not remote_ip ${trustedIPs}
@@ -68,42 +64,41 @@ in
         import security_headers
       }
 
-      # --- LOKALER ZUGRIFF (mDNS + sslip.io Fallback + Notfall-IP + LAN-IP) ---
-      nixhome.local, ${sslipHost}, rescue.local, 10.254.0.1, ${lanIP} {
-        root * /var/www/landing-zone
-        file_server
+      # Standard-Handler für alle vHosts: Logging ins Journal aktivieren
+      # Nutze 'log' Direktive in jedem vHost für detaillierte Access-Logs
+      
+      nixhome.local, ${lanIP}, ${sslipHost}, rescue.local, 10.254.0.1 {
+        log {
+          output discard # Standard-Output wegwerfen, da globalConfig ins Journal schreibt
+        }
+        tls internal
+        handle_path /certs/* {
+          root * /data/state/mtls
+          file_server browse
+        }
+        handle {
+          reverse_proxy localhost:${toString config.my.ports.olivetin}
+        }
         import security_headers
       }
     '';
   };
 
-  # systemd Hardening für Caddy
   systemd.services.caddy = {
     after = [ "adguardhome.service" "network-online.target" "sops-install-secrets.service" ];
-    wants = [ "adguardhome.service" ];
+    stopIfChanged = false;
     serviceConfig = {
-      # SRE: Capability Hardening
       AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" ];
       CapabilityBoundingSet = [ "CAP_NET_BIND_SERVICE" ];
-      # OOM Protection für den Edge-Proxy
       OOMScoreAdjust = -500;
+      NoNewPrivileges = true;
+      PrivateDevices = true;
+      ProtectHome = true;
+      ProtectSystem = "strict";
     };
   };
 }
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:d2f76dc71438ee5980fd66eb6772faf52993a513771c505fc99f845395842e78
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */

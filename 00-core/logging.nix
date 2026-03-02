@@ -3,58 +3,41 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-00-CORE-014
- *   title: "Logging"
+ *   title: "Logging (SRE Monitor Mode)"
  *   layer: 00
- * architecture:
- *   req_refs: [REQ-CORE]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Volatile logging with specific size and time limits to monitor log volume.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/logging/journald.nix
  * ---
  */
 { lib, ... }:
 {
-  # 🚀 JOURNALD EXHAUSTION
-  # Maximale Nutzung deklarativer Journald-Steuerung
+  # 🚀 JOURNALD SRE TUNING
   services.journald.extraConfig = ''
-    Storage=persistent
+    # ── SPEICHER-STRATEGIE (Monitor Mode) ──────────────────────────────────
+    # 'volatile' hält Logs im RAM.
+    Storage=volatile
+    
+    # ── LIMITS (User Wunsch: 100MB Pakete, 5 Tage) ──────────────────────────
+    # Wir setzen RuntimeMaxUse auf 500MB insgesamt, aber Files auf 100MB.
+    RuntimeMaxUse=500M
+    RuntimeMaxFileSize=100M
+    
+    # Lösche Logs, die älter als 5 Tage sind (im RAM)
+    MaxRetentionSec=5day
+    
+    # ── PERFORMANCE ─────────────────────────────────────────────────────────
     Compress=yes
-    SystemMaxUse=500M
-    SystemMaxFileSize=50M
-    MaxRetentionSec=7day
     RateLimitIntervalSec=30s
     RateLimitBurst=10000
+    
     ForwardToSyslog=no
     ForwardToConsole=no
-    TTYPath=/dev/tty12
-    MaxLevelConsole=info
+    
     MaxLevelStore=debug
+    MaxLevelConsole=info
   '';
-
-  # SRE: Automatisierte Journal-Bereinigung via Tmpfiles (Sicherheitsnetz)
-  systemd.tmpfiles.rules = [
-    "d /var/log/journal 2755 root systemd-journal - -"
-    "z /var/log/journal 2755 root systemd-journal - -"
-  ];
-
-  # Deaktiviere redundante Logging-Dienste für Performance
-  # (Standardmäßig ohnehin aus, hier nur als explizite SRE-Entscheidung)
 }
-
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:301557de633fd9eb05c41627cd8861179ce1a7f14c37b4d9651830085f8e8961
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */

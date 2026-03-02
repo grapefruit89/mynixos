@@ -31,12 +31,6 @@ lib.mkMerge [
     services.n8n = {
       enable = true;
       
-      # DEKLARATIVE COMMUNITY NODES
-      # Nutzt withPackages Pattern um Nodes als Nix-Artefakte zu binden
-      package = pkgs.n8n.withPackages (ps: [
-        # Hier können Community Nodes hinzugefügt werden sobald verpackt
-      ]);
-
       environment = {
         N8N_PORT = toString config.my.ports.n8n;
         N8N_HOST = "127.0.0.1";
@@ -47,9 +41,15 @@ lib.mkMerge [
         EXECUTIONS_DATA_MAX_AGE = "336"; # 14 Tage (Voll-Deklarativ)
         N8N_LOG_LEVEL = "info";
         
+        # PostgreSQL Configuration
+        DB_TYPE = "postgresdb";
+        DB_POSTGRESDB_DATABASE = "n8n";
+        DB_POSTGRESDB_HOST = "/run/postgresql";
+        DB_POSTGRESDB_USER = "n8n";
+
         # 🛡️ SECURE SECRET HANDLING
         # Verweist direkt auf sops-entschlüsselte Dateien (Kein Env-Leak)
-        # N8N_ENCRYPTION_KEY_FILE = config.sops.secrets.n8n_enc_key.path;
+        N8N_ENCRYPTION_KEY_FILE = config.sops.secrets.n8n_enc_key.path;
       };
     };
 
@@ -58,7 +58,7 @@ lib.mkMerge [
       ProtectSystem = lib.mkForce "strict";
       ReadWritePaths = [ "/data/state/n8n" ];
       # Ermöglicht Zugriff auf Secrets falls _FILE genutzt wird
-      # ReadOnlyPaths = [ config.sops.secrets.n8n_enc_key.path ];
+      ReadOnlyPaths = [ config.sops.secrets.n8n_enc_key.path ];
     };
   }
 ]

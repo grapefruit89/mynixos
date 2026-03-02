@@ -41,9 +41,15 @@
         unraid_root_password = { };
         ssh_github_key = { };
         ssh_unraid_key = { };
+        n8n_enc_key = { };
+        vaultwarden_env = { };
+        miniflux_admin_password = { };
+        paperless_secret_key = { };
       };
 
       templates."secrets.env" = {
+        owner = "moritz";
+        mode = "0400";
         content = ''
           GITHUB_TOKEN="${config.sops.placeholder.github_token}"
           CLOUDFLARE_TOKEN="${config.sops.placeholder.cloudflare_token}"

@@ -3,38 +3,48 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-00-CORE-029
- *   title: "System"
+ *   title: "System (SRE Boot & Security)"
  *   layer: 00
- * architecture:
- *   req_refs: [REQ-CORE]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: systemd-boot tuning for small ESP and kernel self-protection.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/system/boot/loader/systemd-boot/systemd-boot.nix
  * ---
  */
 { config, lib, pkgs, ... }:
 {
-  # -- BOOTLOADER -----------------------------------------------------------
+  # ── BOOTLOADER TUNING (Aviation Grade) ───────────────────────────────────
   boot = {
     loader = {
-      systemd-boot.enable = true;
+      systemd-boot = {
+        enable = true;
+        # 🚀 KRITISCH: Schützt die 1000MB Boot-Partition vor Überlauf
+        configurationLimit = 15;
+        # 🔒 SECURITY: Verhindert Manipulation der Kernel-Parameter am Boot-Prompt
+        editor = false;
+      };
       efi.canTouchEfiVariables = true;
       grub.enable = false;
       timeout = 3;
     };
 
+    # ── KERNEL SELF PROTECTION (SRE Standard) ──────────────────────────────
     kernel.sysctl = {
+      # Netzwerk-Härtung
       "net.ipv4.conf.all.rp_filter" = 1;
       "net.ipv4.conf.default.rp_filter" = 1;
       "net.ipv4.icmp_echo_ignore_broadcasts" = 1;
       "net.ipv4.conf.all.accept_source_route" = 0;
       "net.ipv6.conf.all.accept_source_route" = 0;
+      "net.ipv4.tcp_syncookies" = 1;
+      
+      # System-Härtung (ASLR & Info-Leak Protection)
       "kernel.kptr_restrict" = 2;
       "kernel.dmesg_restrict" = 1;
-      "net.ipv4.tcp_syncookies" = 1;
+      "kernel.unprivileged_bpf_disabled" = 1;
+      "kernel.perf_event_paranoid" = 3;
     };
   };
 
+  # ── SYSTEM BASIS ─────────────────────────────────────────────────────────
   nixpkgs.config.allowUnfree = true;
   programs.nix-ld.enable = true;
 
@@ -46,6 +56,7 @@
     PATH = "/home/${config.my.configs.identity.user}/.npm-global/bin:$PATH";
   };
 
+  # ── GIT HYGIENE (SRE Enforcement) ────────────────────────────────────────
   environment.etc."git-hooks/pre-commit" = {
     mode = "0755";
     text = ''
@@ -68,25 +79,7 @@
     config.core.hooksPath = "/etc/git-hooks";
   };
 }
-
-
-
-
-
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:8c0425a4c3607af8839a283e8df53913e11949314143a6a29420de2c5f6bc28e
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */

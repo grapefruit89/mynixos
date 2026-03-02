@@ -3,13 +3,10 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-00-CORE-007
- *   title: "Fail2ban"
+ *   title: "Fail2ban (SRE Aggressive)"
  *   layer: 00
- * architecture:
- *   req_refs: [REQ-CORE]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Aggressive brute-force protection with escalations and nftables backend.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/security/fail2ban.nix
  * ---
  */
 { config, pkgs, lib, ... }:
@@ -19,38 +16,33 @@ let
   tailnetCidrs = config.my.configs.network.tailnetCidrs;
 in
 {
-  # 🚀 FAIL2BAN EXHAUSTION (v2.3 SRE Standard)
+  # 🚀 FAIL2BAN SRE STANDARD
   services.fail2ban = {
     enable = true;
     
-    # Moderne Firewall-Backend (nftables statt iptables)
+    # ── NFTABLES BACKEND (Modern) ─────────────────────────────────────────
     banaction = "nftables-multiport";
     banaction-allports = "nftables-allports";
 
-    # Globale Whitelist (SRE: Keine Selbst-Aussperrung)
+    # ── GLOBAL WHITELIST ──────────────────────────────────────────────────
     ignoreIP = [
       "127.0.0.1/8"
       "::1"
     ] ++ lanCidrs ++ tailnetCidrs;
 
-    # 📈 ESKALIERENDE BAN-ZEITEN (NixOS Native Options)
+    # ── ESKALIERENDE BAN-ZEITEN ───────────────────────────────────────────
+    # Wer wiederholt angreift, wird exponentiell länger gesperrt.
     bantime = "1h";
     bantime-increment = {
       enable = true;
-      multipliers = "1 2 4 8 16 32 64"; # Verdopplung bei jedem Vergehen
-      maxtime = "168h"; # Max 1 Woche
-      overalljails = true; # IP-Historie gilt über alle Jails hinweg
+      multipliers = "1 2 4 8 16 32 64"; 
+      maxtime = "168h"; # Max 1 Woche Isolation
+      overalljails = true; 
     };
     
     maxretry = 5;
 
-    # 🗄️ DATABASE MANAGEMENT
-    daemonConfig = ''
-      [DEFAULT]
-      dbpurgeage = 14d
-      dbmaxmatches = 1000
-    '';
-
+    # ── JAILS ─────────────────────────────────────────────────────────────
     jails = {
       sshd = {
         settings = {
@@ -63,14 +55,13 @@ in
         };
       };
 
-      # Caddy / HTTP Brute Force Protection
+      # Caddy / HTTP Brute Force Protection (RAM Journal Source)
       caddy-auth = {
         settings = {
           enabled = true;
           port = "http,https";
           filter = "caddy-auth";
-          logpath = "/var/log/caddy/access.log";
-          backend = "auto";
+          backend = "systemd";
           maxretry = 5;
           findtime = "5m";
           bantime = "24h";
@@ -79,7 +70,7 @@ in
     };
   };
 
-  # Filter Definition via etc-Filesystem (Da keine Nix-Option für Custom Filter existiert)
+  # ── CUSTOM FILTERS ──────────────────────────────────────────────────────
   environment.etc."fail2ban/filter.d/caddy-auth.conf".text = ''
     [Definition]
     failregex = ^.*"remote_ip":"<ADDR>".*"status":401.*$
@@ -87,26 +78,15 @@ in
     journalmatch = _SYSTEMD_UNIT=caddy.service
   '';
 
-  # SRE: Performance & Reliability Hardening
+  # ── PERFORMANCE HARDENING ───────────────────────────────────────────────
   systemd.services.fail2ban.serviceConfig = {
-    OOMScoreAdjust = 500; # Darf vor dem Kernel/SSH sterben
+    OOMScoreAdjust = 500;
     ProtectSystem = "strict";
     ReadWritePaths = [ "/var/lib/fail2ban" "/var/run/fail2ban" ];
     PrivateTmp = true;
   };
 }
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:cf62a5ea284cf0ee2dff22473c14d8c5f6cad1a62633ee1ef153750d9cb158ca
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */

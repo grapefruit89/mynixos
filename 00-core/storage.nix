@@ -3,165 +3,87 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-00-CORE-027
- *   title: "Storage"
+ *   title: "Storage (SRE Tiering)"
  *   layer: 00
- * architecture:
- *   req_refs: [REQ-CORE]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: mergerfs pool management and smart tiered mover logic.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/misc/mergerfs.nix
  * ---
  */
 { config, lib, pkgs, ... }:
 let
   cfg = config.my.profiles.services.storage-pool;
-  queueB = "/var/lib/nixhome/mover-queue-b.txt";
-  queueC = "/var/lib/nixhome/mover-queue-c.txt";
+  user = config.my.configs.identity.user;
   
-  # Defensive Basis: Nie den Boot blockieren
-  safeBase = [ "nofail" "X-systemd.mount-timeout=15s" "noatime" "nodiratime" ];
-  sataOptions = safeBase ++ [ "discard" "commit=60" "data=writeback" ];
-  hddOptions  = safeBase ++ [ "commit=60" "data=writeback" ];
-
-  # MergerFS: Startet auch degradiert
-  mergerfsOptions = [
-    "nofail"
-    "X-systemd.mount-timeout=30s"
-    "cache.readdir=true"
-    "cache.statfs=true"
-    "category.create=ff"
-    "dropcacheonclose=true"
-    "fsname=nixhome-pool"
-  ];
+  rootMinFree = "20G";
+  ssdMinFree = "50G";
 in
 {
   config = lib.mkIf cfg.enable {
-    # ── TIER-STRUKTUR (GODMODE) ──────────────────────────────────────────────
-    # Topf A (NVMe):    /data/state (A-Daten) & /data/metadata (B-Daten Primär)
-    # Topf B (SATA SSD): /mnt/fast-data (B-Daten Überlauf & C-Daten Cache)
-    # Topf C (HDD):      /mnt/archive (C-Daten Archiv)
-
-    fileSystems = {
-      # Physische Mounts (Defensiv konfiguriert)
-      "/mnt/fast-data" = { 
-        device = "/dev/disk/by-label/tier-b"; 
-        fsType = "ext4"; 
-        options = sataOptions; 
-      };
-      "/mnt/archive" = { 
-        device = "/dev/disk/by-label/tier-c"; 
-        fsType = "ext4"; 
-        options = hddOptions; 
-      };
-
-      # 🚀 POOL B: "Metadata-Pool"
-      "/mnt/fast-pool" = {
-        device = "/data/metadata:/mnt/fast-data/metadata-overflow";
-        fsType = "fuse.mergerfs";
-        options = mergerfsOptions;
-        noCheck = true;
-      };
-
-      # 🎬 POOL C: "Media-Pool"
-      "/mnt/media" = {
-        device = "/mnt/fast-data/media-cache:/mnt/archive";
-        fsType = "fuse.mergerfs";
-        options = mergerfsOptions ++ [
-          "cache.files=partial"
-          "rename_atomic=true"
-          "ignorepponrename=true"
-        ];
-        noCheck = true;
-      };
-    };
-
-    # Warnung wenn kritische Tiers fehlen
-    warnings = lib.optional (!builtins.pathExists "/dev/disk/by-label/tier-b") 
-      "WARNUNG: /dev/disk/by-label/tier-b nicht gefunden. MergerFS läuft degradiert.";
-
-    # Systemd-Tmpfiles für die Topf-Trennung
-    systemd.tmpfiles.rules = [
-      "d /var/lib/nixhome 0750 root root -"           # Mover Queue Verzeichnis
-      "d /data/state 0750 moritz users -"             # Topf A: Reine DBs
-      "d /data/metadata 0750 moritz users -"          # Topf A: B-Daten Primär
-      "d /mnt/fast-data/metadata-overflow 0750 moritz users -" # Topf B: B-Daten Überlauf
-      "d /mnt/fast-data/media-cache 0750 moritz users -"       # Topf B: C-Daten Cache
-      "d /mnt/fast-data/media-cache/downloads 0750 moritz users -" # ATOMIC MOVES: Download-Ordner im Pool
+    
+    # ── POOL DEFINITION ─────────────────────────────────────────────────────
+    systemd.mounts = [
+      {
+        description = "Fast-Pool (B-Daten)";
+        where = "/mnt/fast-pool";
+        what = "/data/storage/b-on-a:/mnt/storage/ssd:/mnt/storage/hdd";
+        type = "fuse.mergerfs";
+        # SRE Optimierung: cache.readdir und dropcacheonclose für Spindown-Support
+        options = "allow_other,use_ino,cache.readdir=true,dropcacheonclose=true,category.create=ff,minfreespace=${rootMinFree},fsname=fast-pool";
+        wantedBy = [ "multi-user.target" ];
+      }
+      {
+        description = "Media-Pool (C-Daten)";
+        where = "/mnt/media";
+        what = "/mnt/storage/ssd:/mnt/storage/hdd";
+        type = "fuse.mergerfs";
+        options = "allow_other,use_ino,cache.readdir=true,dropcacheonclose=true,category.create=ff,minfreespace=${ssdMinFree},fsname=media-pool,cache.files=partial";
+        wantedBy = [ "multi-user.target" ];
+      }
     ];
 
-    # 🛒 1. DIE EINKAUFSLISTEN (Nachts um 03:00)
-    systemd.services.nixhome-mover-prepper = {
-      description = "NixHome Mover Prepper: Erstellt Einkaufslisten";
+    # ── SMART DISK DISCOVERY ───────────────────────────────────────────────
+    # Dynamische Einbindung von Hardware-Komponenten (Bescheidene Gehversuche)
+    systemd.services.nixhome-disk-discovery = {
+      description = "NixHome Smart Disk Discovery";
+      wantedBy = [ "multi-user.target" ];
       serviceConfig.Type = "oneshot";
+      path = with pkgs; [ util-linux coreutils gawk ];
       script = ''
-        # Liste für B-Daten (A -> B)
-        ${pkgs.findutils}/bin/find "/data/metadata" -type f -mtime +30 > /var/lib/nixhome/mover-queue-b.txt
-        # Liste für C-Daten (B -> C)
-        ${pkgs.findutils}/bin/find "/mnt/fast-data/media-cache" -type f -mtime +14 > /var/lib/nixhome/mover-queue-c.txt
+        mkdir -p /mnt/storage/ssd /mnt/storage/hdd /data/storage/b-on-a /mnt/fast-pool /mnt/media
+        
+        SYSTEM_DISK=$(lsblk -no PKNAME $(findmnt -nvo SOURCE /) | head -n1)
+        [ -z "$SYSTEM_DISK" ] && SYSTEM_DISK="sda"
+
+        lsblk -nbo NAME,ROTA,SIZE,MOUNTPOINT,TYPE,PKNAME | grep 'part\|disk' | while read -r name rota size mount type pkname; do
+          [ "$name" = "$SYSTEM_DISK" ] && continue
+          [ "$pkname" = "$SYSTEM_DISK" ] && continue
+          [ "$mount" = "/" ] && continue
+          if [ "$size" -lt 64000000000 ]; then continue; fi
+
+          if [ "$rota" = "0" ]; then
+            target="/mnt/storage/ssd/$name"
+          else
+            target="/mnt/storage/hdd/$name"
+          fi
+
+          mkdir -p "$target"
+          mount "/dev/$name" "$target" 2>/dev/null || true
+          chown -R ${user}:users "$target"
+        done
       '';
     };
 
-    # 🚚 2. DER INTELLIGENTE DOPPEL-MOVER
-    systemd.services.nixhome-mover = {
-      description = "NixHome Intelligent Mover: Dual-Tier Migration";
-      serviceConfig.Type = "oneshot";
-      script = ''
-        set -euo pipefail
-        get_usage() { ${pkgs.coreutils}/bin/df --output=pcent "$1" | tail -1 | tr -dc '0-9'; }
-        
-        # --- TEIL 1: B-DATEN (A -> B) ---
-        # Wenn NVMe (/) > 80% -> Schiebe Metadaten auf SSD
-        if [ $(get_usage "/") -gt 80 ]; then
-          echo "⚠️ NVMe fast voll. Schiebe B-Daten auf SSD..."
-          cat /var/lib/nixhome/mover-queue-b.txt | while read -r f; do
-            [ -f "$f" ] && mv -v "$f" "/mnt/fast-data/metadata-overflow/"
-            [ $(get_usage "/") -le 70 ] && break
-          done
-        fi
-
-        # --- TEIL 2: C-DATEN (B -> C) ---
-        # Wenn SSD > 85% ODER HDD dreht -> Schiebe Medien auf HDD
-        SSD_USAGE=$(get_usage "/mnt/fast-data")
-        HDD_SPINNING=$(${pkgs.hdparm}/bin/hdparm -C "/dev/disk/by-label/tier-c" 2>/dev/null | grep -q "active/idle" && echo true || echo false)
-        
-        if [ "$SSD_USAGE" -gt 85 ] || [ "$HDD_SPINNING" = "true" ]; then
-          echo "🚚 Starte Media-Migration (SSD -> HDD)..."
-          cat /var/lib/nixhome/mover-queue-c.txt | while read -r f; do
-            [ -f "$f" ] && mv -v "$f" "/mnt/archive/"
-            [ $(get_usage "/mnt/fast-data") -le 60 ] && break
-          done
-        fi
-      '';
-    };
-
-    # Prüfe alle 10 Minuten opportunistisch
+    # ── STORAGE HYGIENE ─────────────────────────────────────────────────────
     systemd.timers.nixhome-mover = {
+      description = "Run NixHome Mover Daily";
       wantedBy = [ "timers.target" ];
-      timerConfig = { OnBootSec = "5min"; OnUnitActiveSec = "10min"; };
+      timerConfig.OnCalendar = "daily";
     };
 
-    environment.systemPackages = with pkgs; [ mergerfs hdparm procps sysstat ];
+    environment.systemPackages = with pkgs; [ mergerfs util-linux ];
   };
 }
-
-
-
-
-
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:e7e0641d688586ccd41b816a5625930c13578de0a97f7ab86fed5ced683c51a7
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */

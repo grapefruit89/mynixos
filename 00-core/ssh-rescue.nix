@@ -53,8 +53,8 @@ in
     description = "SSH & Avahi Recovery Window (15min after boot)";
     documentation = [ "https://github.com/grapefruit89/mynixos/blob/main/00-core/ssh-rescue.nix" ];
     
-    # Lifecycle-Management
-    wantedBy = [ "multi-user.target" ];
+    # Lifecycle-Management (Im Bastelmodus deaktiviert)
+    wantedBy = lib.mkIf (!config.my.configs.bastelmodus) [ "multi-user.target" ];
     after = [ "sshd.service" "network-online.target" ];
     wants = [ "network-online.target" ];
     
@@ -71,9 +71,11 @@ in
       
       echo "🔓 SSH & Avahi Recovery Window startet (${toString recoveryWindowSeconds}s)"
       
-      # 1. Öffne Notfall-Ports via nftables
-      ${pkgs.nftables}/bin/nft add rule inet filter input tcp dport 2222 accept comment "Recovery SSH"
-      ${pkgs.nftables}/bin/nft add rule inet filter input udp dport 5353 accept comment "Recovery Avahi"
+      # 1. Öffne Notfall-Ports via nftables (nur wenn Firewall aktiv)
+      if ${pkgs.nftables}/bin/nft list table inet nixos-fw >/dev/null 2>&1; then
+        ${pkgs.nftables}/bin/nft add rule inet nixos-fw input tcp dport 2222 accept comment \"Recovery SSH\"
+        ${pkgs.nftables}/bin/nft add rule inet nixos-fw input udp dport 5353 accept comment \"Recovery Avahi\"
+      fi
 
       # 2. Provisorische Config für den Rettungs-SSHD
       TEMP_CONFIG=$(mktemp)
@@ -95,14 +97,9 @@ EOF
       # Log-Meldung
       ${pkgs.util-linux}/bin/logger -t ssh-recovery "Password auth ENABLED on Port 2222 (PID $RECOVERY_PID)"
       
-      # Countdown auf TTY1
-      (
-        for i in $(${pkgs.coreutils}/bin/seq ${toString recoveryWindowSeconds} -1 1); do
-          echo -ne "\r\033[K\033[1;33m⚠️  SSH Recovery: $i s verbleibend... (Port 2222 PASSWORT + Avahi)\033[0m " > /dev/tty1
-          ${pkgs.coreutils}/bin/sleep 1
-        done
-        echo -e "\n\033[1;32m🔒 SSH Recovery Fenster geschlossen.\033[0m" > /dev/tty1
-      ) &
+      # Einmaliger Hinweis auf TTY1 (weniger aufdringlich als Countdown)
+      echo -e "\n\033[1;33m⚠️  SSH Recovery Window AKTIV (Port 2222 + Avahi) für ${toString (recoveryWindowSeconds / 60)} min\033[0m" > /dev/tty1
+      echo -e "   ssh -p 2222 ${user}@$(hostname).local\n" > /dev/tty1
       
       # 4. Warten
       ${pkgs.coreutils}/bin/sleep ${toString recoveryWindowSeconds}
@@ -112,10 +109,13 @@ EOF
       rm -f "$TEMP_CONFIG"
       
       # Lösche die temporären nftables Regeln
-      ${pkgs.nftables}/bin/nft delete rule inet filter input tcp dport 2222 || true
+      if ${pkgs.nftables}/bin/nft list table inet nixos-fw >/dev/null 2>&1; then
+        ${pkgs.nftables}/bin/nft delete rule inet nixos-fw input tcp dport 2222 || true
+      fi
       
       ${pkgs.util-linux}/bin/logger -t ssh-recovery "Password auth DISABLED after recovery window"
       echo "🔒 SSH Recovery Window geschlossen"
+      echo -e "\033[1;32m🔒 SSH Recovery Fenster geschlossen.\033[0m" > /dev/tty1
     '';
   };
   
@@ -130,7 +130,7 @@ EOF
     script = ''
       echo "⚠️  NOTFALL-MODUS: SSH Recovery manuell aktiviert auf Port 2222"
       
-      ${pkgs.nftables}/bin/nft add rule inet filter input tcp dport 2222 accept comment "Manual Recovery SSH"
+      ${pkgs.nftables}/bin/nft add rule inet nixos-fw input tcp dport 2222 accept comment \"Manual Recovery SSH\"
       
       TEMP_CONFIG=$(mktemp)
       cat > "$TEMP_CONFIG" <<EOF
@@ -146,7 +146,7 @@ EOF
       sleep 900
       kill $RECOVERY_PID || true
       rm -f "$TEMP_CONFIG"
-      ${pkgs.nftables}/bin/nft delete rule inet filter input tcp dport 2222 || true
+      ${pkgs.nftables}/bin/nft delete rule inet nixos-fw input tcp dport 2222 || true
     '';
   };
   

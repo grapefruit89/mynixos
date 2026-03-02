@@ -30,6 +30,7 @@
     uptimeKuma  = 10001;
     ddnsUpdater = 10002;
     pocketId    = 10010;
+    olivetin    = 10030;
     landingZoneUI = 10022;
     homepage    = 10082;
     netdata     = 10999;
@@ -55,6 +56,7 @@
     
     homeassistant  = 28123;
     paperless      = 20981;
+    karakeep       = 20300;
   };
 }
 

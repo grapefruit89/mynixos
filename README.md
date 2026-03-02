@@ -40,7 +40,7 @@ Das Herzstück dieses Repos ist unsere strukturierte Bibliothek. Hier erfährst 
 
 *   [🏗️ **01 Architektur & Hardware**](./bibliothek/01_Architektur.md) – Hardware-Specs, GPU-Beschleunigung und HDD-Spindown Strategie.
 *   [🛠️ **02 Betrieb & Workflow**](./bibliothek/02_Betrieb.md) – Der tägliche Umgang, Aliase (`nsw`, `ntest`), das Dashboard (MOTD) und Wartung.
-*   [🛡️ **03 Services & Sicherheit**](./bibliothek/03_Services_Sicherheit.md) – Das 10k/20k Port-Register, Traefik-Setup und Sicherheits-Leitplanken.
+*   [🛡️ **03 Services & Sicherheit**](./bibliothek/03_Services_Sicherheit.md) – Das 10k/20k Port-Register, Caddy-Setup und Sicherheits-Leitplanken.
 *   [💡 **04 Roadmap & Zukunft**](./bibliothek/04-ROADMAP.md) – Geplante Features wie Fastfetch-MOTD und automatisierte Backups.
 
 ---
@@ -70,7 +70,7 @@ The core of our knowledge sharing is the structured library. Explore the details
 
 *   [🏗️ **01 Architecture & Hardware**](./bibliothek/01_Architektur.md) – Hardware specs, GPU power, and HDD spindown strategy.
 *   [🛠️ **02 Operations & Workflow**](./bibliothek/02_Betrieb.md) – Daily operation guide, aliases (`nsw`, `ntest`), the dashboard (MOTD), and maintenance.
-*   [🛡️ **03 Services & Security**](./bibliothek/03_Services_Sicherheit.md) – The 10k/20k Port Registry, Traefik setup, and security guardrails.
+*   [🛡️ **03 Services & Security**](./bibliothek/03_Services_Sicherheit.md) – The 10k/20k Port Registry, Caddy setup, and security guardrails.
 *   [💡 **04 Backlog & Ideas**](./bibliothek/04-ROADMAP.md) – Future plans like Fastfetch-MOTD and automated backups.
 5. [🏠 **Home-Manager Guide**](./bibliothek/05_Home_Manager.md)
 6. [💎 **Inspirationen & Best Practices**](./bibliothek/Inspirationen_aus_der_Reposammlung.md)

@@ -73,7 +73,7 @@ in
     serviceConfig = {
       Type = "oneshot";
       # Nur starten, wenn das lokale Backup erfolgreich war
-      ExecStart = "${pkgs.rclone}/bin/rclone sync ${localRepo} cloud-backup:nixhome-vault --limit-rate 5M";
+      ExecStart = "${pkgs.rclone}/bin/rclone sync ${localRepo} cloud-backup:nixhome-vault --bwlimit 5M";
     };
   };
 

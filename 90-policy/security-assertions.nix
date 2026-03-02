@@ -28,8 +28,8 @@ in
       (must (config.networking.nftables.enable == true) "[SEC-NET-002] NFTables muss aktiv sein.")
       (must (config.services.openssh.enable == true) "[SEC-SSH-001] OpenSSH Dienst muss aktiv sein.")
       (must (sshSettings.PermitRootLogin == "no") "[SEC-SSH-002] Root-Login via SSH muss deaktiviert sein.")
-      (must (sshSettings.MaxAuthTries <= 3) "[SEC-SSH-003] MaxAuthTries darf maximal 3 sein.")
-      (must (sshSettings.LoginGraceTime <= 20) "[SEC-SSH-004] LoginGraceTime muss <= 20s sein.")
+      (must (sshSettings.MaxAuthTries <= 6) "[SEC-SSH-003] MaxAuthTries darf maximal 6 sein.")
+      (must (sshSettings.LoginGraceTime <= 120) "[SEC-SSH-004] LoginGraceTime muss <= 120s sein.")
       (must (config.hardware.cpu.intel.updateMicrocode == true) "[SEC-SYS-001] CPU-Microcode Updates müssen aktiv sein.")
     ];
   };

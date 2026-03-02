@@ -36,14 +36,14 @@ lib.mkIf cfg.enable (lib.mkMerge [
         web.listen.host = "127.0.0.1";
         
         # SRE: Metrics & Monitoring
-        log.level = "info";
+        log.level = "INFO";
         notify.urls = []; # Platzhalter für Gotify/Discord
       };
 
       # Collector aktivieren (Automatischer Scan)
       collector = {
         enable = true;
-        interval = "15m";
+        schedule = "*-*-* *:0/15:00"; # Alle 15 Minuten (systemd timer Format)
       };
     };
 

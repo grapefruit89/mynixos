@@ -34,7 +34,7 @@ Das System ist auf Effizienz und Medien-Performance getrimmt.
 Die Konfiguration ist in drei logische Ebenen unterteilt, um Ordnung und Portabilität zu gewährleisten:
 
 1.  **00-core (Core):** Das Fundament. Enthält Bootloader, Netzwerk-Basis, User-Management und die zentrale Feature-Registry.
-2.  **10-infrastructure:** Plattform-Dienste wie Traefik (Reverse Proxy), Tailscale (VPN) und Wireguard.
+2.  **10-infrastructure:** Plattform-Dienste wie Caddy (Reverse Proxy), Tailscale (VPN) und Wireguard.
 3.  **20-services:** Die eigentlichen Anwendungen (Media-Stack, Vaultwarden, n8n, etc.).
 
 ## 3. Speicher-Strategie

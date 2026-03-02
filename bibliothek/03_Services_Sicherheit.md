@@ -23,9 +23,9 @@ Alle Ports werden zentral in `00-core/ports.nix` verwaltet. Wir nutzen das **10k
 - **10xxx:** Infrastruktur-Dienste.
 - **20xxx:** Anwendungs-Services.
 
-| Dienst | Port | Zugriff via Traefik |
+| Dienst | Port | Zugriff via Caddy |
 | :--- | :--- | :--- |
-| Traefik (HTTPS) | 443 | - |
+| Caddy (HTTPS) | 443 | - |
 | SSH (gehärtet) | 53844 | Nein (Direkt) |
 | **Infrastruktur** | | |
 | AdGuard Home | 10000 | adguard.${domain} |
@@ -47,12 +47,13 @@ Alle Ports werden zentral in `00-core/ports.nix` verwaltet. Wir nutzen das **10k
 | Cockpit | 10090 | admin.${domain} |
 | Paperless-ngx | 20981 | docs.${domain} |
 
-## 2. Reverse Proxy (Traefik)
+## 2. Reverse Proxy (Caddy)
 
-Traefik fungiert als Sicherheits-Gateway:
-*   **ACME/LetsEncrypt:** Automatische Zertifikate via Cloudflare DNS-01 Challenge.
-*   **Middlewares:** Strikte Security-Headers, Rate-Limiting und IP-Whitelisting für interne Dienste.
-*   **Authentifizierung:** Vorbereitet für Forward-Auth via Pocket-ID.
+Caddy fungiert als Sicherheits-Gateway:
+*   **Automatic HTTPS:** Automatische Zertifikate (LetsEncrypt/ZeroSSL) via Cloudflare DNS-01 Challenge.
+*   **Snippets:** Zentrale Security-Headers und SSO-Integration (Pocket-ID).
+*   **Performance:** H2C Support und effizientes Proxying.
+*   **Bypasses:** Lokale sslip.io/mDNS Bypasses für Notfall-Zugriff.
 
 ## 3. Sicherheits-Leitplanken
 

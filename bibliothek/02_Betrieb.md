@@ -46,7 +46,7 @@ Für maximale Effizienz wurden folgende Befehle für den User `moritz` eingerich
 Beim Login via SSH (oder lokal) begrüßt dich ein dynamisches Dashboard. Es zeigt:
 *   Hostname und IP-Adressen (LAN & Tailscale).
 *   Systemlast, Disk-Usage und RAM-Verbrauch.
-*   **Service-Status:** Den aktuellen Zustand von Traefik, SSH, Tailscale und Jellyfin.
+*   **Service-Status:** Den aktuellen Zustand von Caddy, SSH, Tailscale und Jellyfin.
 *   Eine Erinnerung an die wichtigsten Aliase.
 
 ## 4. Feature-Registry (`00-core/configs.nix`)

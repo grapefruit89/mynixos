@@ -38,7 +38,7 @@ Ich habe die Reposammlung unter `/home/moritz/documents/reposammlung/` (ca. 150M
 ## 3. 📊 Visualisierung & Monitoring (Ryan4yin)
 [Ryan4yin](https://github.com/ryan4yin/nix-config) hat ein beeindruckendes Dashboard-Setup.
 
-*   **Grafana + Prometheus:** Deklarative Dashboards, die direkt über Nix-Code definiert werden. Er überwacht alles von CPU-Temperaturen bis hin zu Traefik-Anfragen.
+*   **Grafana + Prometheus:** Deklarative Dashboards, die direkt über Nix-Code definiert werden. Er überwacht alles von CPU-Temperaturen bis hin zu Caddy-Anfragen.
 *   **Export-Struktur:** Er nutzt spezialisierte Exporter für SMART-Werte, was unser `Scrutiny`-Vorhaben perfekt ergänzt.
 
 ## 4. 🏠 User-Umfeld & Portabilität (Mitchellh)

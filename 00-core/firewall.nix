@@ -3,24 +3,16 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-00-CORE-008
- *   title: "Firewall"
+ *   title: "Firewall (nftables Pro)"
  *   layer: 00
- * architecture:
- *   req_refs: [REQ-CORE]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Modern nftables configuration with clean separation of zones.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/networking/nftables.nix
  * ---
  */
 { lib, config, ... }:
 let
-  # source-id: CFG.identity.bastelmodus
   bastelmodus = config.my.configs.bastelmodus;
-
-  # source-id: CFG.ports.ssh
   sshPort = config.my.ports.ssh;
-
-  # source-id: CFG.network.lanCidrs
   lanCidrs = config.my.configs.network.lanCidrs;
   tailnetCidrs = config.my.configs.network.tailnetCidrs;
 
@@ -28,53 +20,38 @@ let
   tailnet = lib.concatStringsSep ", " tailnetCidrs;
 in
 {
-  # source-id: CFG.firewall.enabled
+  # ── NFTABLES BACKEND ──────────────────────────────────────────────────────
+  networking.nftables.enable = true;
   networking.firewall.enable = !bastelmodus;
 
-  # Trust tailscale0 interface
+  # Tailscale wird als internes Interface voll vertraut
   networking.firewall.trustedInterfaces = [ "tailscale0" ];
 
-  # source-id: CFG.firewall.backend
-  networking.nftables.enable = true;
-
-  # source-id: CFG.ports.edgeHttps / CFG.ports.ssh
+  # ── GLOBAL PORTS (Public) ────────────────────────────────────────────────
   networking.firewall.allowedTCPPorts = lib.mkForce [ 
-    config.my.ports.edgeHttps 80 
+    config.my.ports.edgeHttps 
+    80 
     sshPort 
+    22 
   ];
 
-  # source-id: CFG.firewall.globalUdp
-  networking.firewall.allowedUDPPorts = lib.mkForce [ 5353 ];
-
-  # source-id: CFG.network.lanCidrs
+  # ── INTERNAL RULES (Restricted) ─────────────────────────────────────────
   networking.firewall.extraInputRules = lib.mkForce ''
-    # DNS nur intern
+    # DNS-Auflösung nur für interne Clients erlauben
     ip saddr { ${rfc1918}, ${tailnet} } tcp dport 53 accept
     ip saddr { ${rfc1918}, ${tailnet} } udp dport 53 accept
 
-    # mDNS nur aus RFC1918-LAN
+    # mDNS (Local Discovery) nur im physischen LAN erlauben
     ip saddr { ${rfc1918} } udp dport 5353 accept
+    
+    # 🕵️ SRE Monitoring: Erlaube ICMP (Ping) für Health-Checks
+    ip protocol icmp accept
   '';
+
+  # Optimierung: Verhindert Log-Spam durch verworfene Pakete
+  networking.firewall.logRefusedConnections = false;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:e30c2eb7c8f9768286a8a40d595b62a76fc8ab714bad191566cd5ea66a89dd85
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */

@@ -29,8 +29,8 @@ lib.mkMerge [
       enable = true;
       config = {
         LISTEN_ADDR = "127.0.0.1:${toString config.my.ports.miniflux}";
-        CREATE_ADMIN = 0;
       };
+      adminCredentialsFile = config.sops.secrets.miniflux_admin_password.path;
     };
   }
 ]

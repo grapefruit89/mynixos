@@ -3,13 +3,10 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-00-CORE-016
- *   title: "Network"
+ *   title: "Network (SRE Optimized)"
  *   layer: 00
- * architecture:
- *   req_refs: [REQ-CORE]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: systemd-networkd config with DNS hardening and TCP BBR tuning.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/networking/systemd-networkd.nix
  * ---
  */
 { config, lib, pkgs, ... }:
@@ -26,30 +23,27 @@ in
   
   # Globale networkd Einstellungen
   systemd.network.config.networkConfig.IPv6PrivacyExtensions = "kernel";
-  systemd.network.config.networkConfig.ManageTemporaryAddress = true;
 
   systemd.network.networks."10-lan" = lib.mkIf cfg.enable {
     matchConfig.Name = "en*";
     networkConfig = {
       DHCP = "yes";
       IPv6AcceptRA = true;
-      IPForward = "yes";
-      IPMasquerade = "no";
-      MulticastDNS = "yes";
-      LLMNR = "yes";
+      IPv4Forwarding = true;
+      IPv6Forwarding = true;
+      MulticastDNS = "yes"; 
+      LLMNR = "no";
     };
     linkConfig = {
       RequiredForOnline = "yes";
-      Unmanaged = "no";
     };
-    address = [ "10.254.0.1/24" ];
   };
 
   # ── DNS & RESOLVED EXHAUSTION ─────────────────────────────────────────────
   services.resolved = lib.mkIf cfg.enable {
     enable = true;
-    dnssec = "allow-downgrade";
-    domains = [ "~." ]; # Global resolver
+    dnssec = lib.mkForce "allow-downgrade";
+    domains = [ "~." ]; 
     fallbackDns = [ "1.1.1.1" "8.8.8.8" ];
     extraConfig = ''
       DNSOverTLS=yes
@@ -58,49 +52,27 @@ in
     '';
   };
 
+  # ── PERFORMANCE TUNING (TCP BBR) ──────────────────────────────────────────
+  # 🚀 Aktiviert modernste Staukontrolle für stabilen Ingress/Egress.
+  boot.kernel.sysctl = lib.mkIf cfg.enable {
+    "net.core.default_qdisc" = "fq";
+    "net.ipv4.tcp_congestion_control" = "bbr";
+    "net.core.netdev_max_backlog" = 10000;
+    "net.ipv4.tcp_slow_start_after_idle" = 0;
+  };
+
   # ── AVAHI (mDNS) ──────────────────────────────────────────────────────────
   services.avahi = lib.mkIf cfg.enable {
     enable = true;
     nssmdns4 = true;
-    ipv4 = true;
-    ipv6 = true;
     publish = {
       enable = true;
       addresses = true;
       workstation = true;
-      userServices = true;
     };
-    extraServiceFiles.ssh = "${pkgs.avahi}/etc/avahi/services/ssh.service";
-  };
-
-  # ── PERFORMANCE (TCP BBR & Buffers) ──────────────────────────────────────
-  boot.kernel.sysctl = lib.mkIf cfg.enable {
-    "net.core.default_qdisc" = "fq";
-    "net.ipv4.tcp_congestion_control" = "bbr";
-    "net.core.rmem_max" = 33554432;
-    "net.core.wmem_max" = 33554432;
-    "net.ipv4.tcp_rmem" = "4096 87380 33554432";
-    "net.ipv4.tcp_wmem" = "4096 65536 33554432";
-    "net.core.netdev_max_backlog" = 10000; # Erhöht für SRE-Last
-    "net.ipv4.tcp_slow_start_after_idle" = 0;
-    "net.ipv4.tcp_mtu_probing" = 1;
   };
 }
-
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:bb8136a1151c014de4d8b2f9a68da73e1608d2ec697514ff7f13bbdc3253ca07
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */
