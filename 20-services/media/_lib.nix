@@ -5,7 +5,7 @@
  *   id: NIXH-20-SRV-023
  *   title: "_lib"
  *   layer: 20
- * summary: Media service helper library with standardized Nixarr-style paths and SRE hardening.
+ * summary: Media service helper library with Nixarr-style VPN Confinement support.
  * ---
  */
 { lib, pkgs }:
@@ -15,8 +15,9 @@
 , defaultStateDir
 , supportsUserGroup ? true
 , defaultUser ? name
-, defaultGroup ? "media" # 🚀 SRE Standard: Alle Media-Dienste in Gruppe 'media'
+, defaultGroup ? "media"
 , statePathSuffix ? null
+, useVpn ? false # 🚀 NEU: Schalter für VPN Confinement
 }:
 { config, ... }:
 let
@@ -33,11 +34,21 @@ let
                else if name == "jellyseerr" then 5055
                else port;
 
-  # Tier A: State/DBs immer auf NVMe
   stateValue =
     if statePathSuffix == null
     then "/data/state/${name}"
     else "/data/state/${name}/${statePathSuffix}";
+
+  # ── VPN CONFINEMENT LOGIK (Nixarr Style) ──────────────────────────────────
+  # Wenn aktiv, wird der Dienst an den 'media-vault' Namespace gebunden.
+  vpnConfig = lib.optionalAttrs useVpn {
+    requires = [ "wireguard-vault.service" ];
+    after = [ "wireguard-vault.service" ];
+    serviceConfig = {
+      NetworkNamespacePath = "/var/run/netns/media-vault";
+      RestrictAddressFamilies = lib.mkForce [ "AF_INET" "AF_INET6" "AF_UNIX" "AF_NETLINK" ];
+    };
+  };
 
   serviceBase = myLib.mkService {
     inherit config;
@@ -45,7 +56,7 @@ let
     port = nativePort;
     useSSO = true;
     description = "${name} Media Service";
-    netns = cfg.netns;
+    netns = if useVpn then "media-vault" else null;
   };
 in
 {
@@ -55,9 +66,7 @@ in
     user = lib.mkOption { type = lib.types.str; default = defaultUser; };
     group = lib.mkOption { type = lib.types.str; default = defaultGroup; };
     netns = lib.mkOption { type = lib.types.nullOr lib.types.str; default = common.netns; };
-    expose = {
-      enable = lib.mkOption { type = lib.types.bool; default = true; };
-    };
+    expose.enable = lib.mkOption { type = lib.types.bool; default = true; };
   };
 
   config = lib.mkIf cfg.enable (lib.mkMerge [
@@ -74,21 +83,31 @@ in
         cacheDir = "/mnt/fast-pool/cache/jellyfin";
       };
 
-      systemd.services.${name}.serviceConfig = {
-        ProtectSystem = lib.mkForce "full";
-        # 🚀 STANDARD ZUGRIFFSPFADE (ABC-Tiering)
-        ReadWritePaths = [ 
-          cfg.stateDir 
-          "/mnt/media" 
-          "/mnt/fast-pool/downloads" 
-          "/mnt/fast-pool/metadata" 
-          "/mnt/fast-pool/cache" 
-        ];
-        
-        # Performance: Cover-Arts auf SSD (Tier B) statt HDD (Tier C)
-        BindPaths = lib.mkIf (name == "sonarr" || name == "radarr" || name == "readarr" || name == "prowlarr") [
-          "/mnt/fast-pool/metadata/${name}:/var/lib/${name}/MediaCover"
-        ];
+      systemd.services.${name} = lib.mkMerge [
+        vpnConfig
+        {
+          serviceConfig = {
+            ProtectSystem = lib.mkForce "full";
+            ReadWritePaths = [ 
+              cfg.stateDir 
+              "/mnt/media" 
+              "/mnt/fast-pool/downloads" 
+              "/mnt/fast-pool/metadata" 
+              "/mnt/fast-pool/cache" 
+            ];
+            BindPaths = lib.mkIf (name == "sonarr" || name == "radarr" || name == "readarr" || name == "prowlarr") [
+              "/mnt/fast-pool/metadata/${name}:/var/lib/${name}/MediaCover"
+            ];
+          };
+        }
+      ];
+
+      # Caddy Reverse Proxy Anpassung für Namespaces
+      services.caddy.virtualHosts."${name}.${config.my.configs.identity.domain}" = lib.mkIf useVpn {
+        extraConfig = lib.mkForce ''
+          import sso_auth
+          reverse_proxy 10.200.1.2:${toString nativePort}
+        '';
       };
 
       systemd.tmpfiles.rules = [
