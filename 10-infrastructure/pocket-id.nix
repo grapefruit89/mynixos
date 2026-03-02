@@ -21,7 +21,7 @@ in
     settings = {
       issuer = "https://auth.${domain}";
       title = "m7c5 Login";
-      public_registration = false; # SRE: Sicherheit zuerst
+      public_registration = true; # SRE: Temporär aktiv für Ersteinrichtung
     };
   };
 

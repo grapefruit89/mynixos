@@ -5,107 +5,49 @@
  *   id: NIXH-00-CORE-006
  *   title: "Configs (SRE Master Source)"
  *   layer: 00
- * summary: Central source of truth for global identity and hardware toggles with traceability.
+ * summary: Central source of truth for global identity, hardware toggles and SRE quotas.
  * ---
  */
 { lib, config, ... }:
 {
   imports = [ ../10-infrastructure/vpn-live-config.nix ];
 
-  # ── BASTELMODUS ──────────────────────────────────────────────────────────
-  # source-id: CFG.identity.bastelmodus
-  options.my.configs.bastelmodus = lib.mkOption {
-    type = lib.types.bool;
-    default = false;
-    description = "Master switch for insecure debug mode.";
-  };
+  options.my.configs = {
+    # ── BASTELMODUS ──────────────────────────────────────────────────────────
+    bastelmodus = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Master switch for insecure debug mode.";
+    };
 
-  # ── IDENTITY (Master Sources) ───────────────────────────────────────────
-  # source-id: CFG.identity.domain
-  options.my.configs.identity.domain = lib.mkOption {
-    type = lib.types.str;
-    default = "m7c5.de";
-    description = "Primary domain for the homelab stack.";
-  };
+    # ── IDENTITY ───────────────────────────────────────────────────────────
+    identity = {
+      domain = lib.mkOption { type = lib.types.str; default = "m7c5.de"; };
+      email = lib.mkOption { type = lib.types.str; default = "moritzbaumeister@gmail.com"; };
+      user = lib.mkOption { type = lib.types.str; default = "moritz"; };
+    };
 
-  # source-id: CFG.identity.email
-  options.my.configs.identity.email = lib.mkOption {
-    type = lib.types.str;
-    default = "moritzbaumeister@gmail.com";
-    description = "Admin contact for ACME and alerts.";
-  };
+    # ── LOCALES ────────────────────────────────────────────────────────────
+    locale = {
+      timezone = lib.mkOption { type = lib.types.str; default = "Europe/Berlin"; };
+      default = lib.mkOption { type = lib.types.str; default = "de_DE.UTF-8"; };
+      ocrLanguage = lib.mkOption { type = lib.types.str; default = "deu+eng"; };
+    };
 
-  # source-id: CFG.identity.user
-  options.my.configs.identity.user = lib.mkOption {
-    type = lib.types.str;
-    default = "moritz";
-    description = "Primary administrative user.";
-  };
+    # ── HARDWARE QUOTAS (SSoT for Resource Guarding) ──────────────────────
+    # Diese Werte werden von Layer 10/20 Modulen für MemoryMax genutzt.
+    resourceLimits = {
+      maxAppRamMB = lib.mkOption { type = lib.types.int; default = 2048; };
+      maxDatabaseRamMB = lib.mkOption { type = lib.types.int; default = 512; };
+      maxMediaRamMB = lib.mkOption { type = lib.types.int; default = 1536; };
+    };
 
-  # ── LOCALES & TIME (Master Sources) ───────────────────────────────────
-  # source-id: CFG.locale.timezone
-  options.my.configs.locale.timezone = lib.mkOption {
-    type = lib.types.str;
-    default = "Europe/Berlin";
-    description = "Global system timezone.";
-  };
-
-  # source-id: CFG.locale.default
-  options.my.configs.locale.default = lib.mkOption {
-    type = lib.types.str;
-    default = "de_DE.UTF-8";
-    description = "Global default system locale.";
-  };
-
-  # source-id: CFG.locale.ocrLanguage
-  options.my.configs.locale.ocrLanguage = lib.mkOption {
-    type = lib.types.str;
-    default = "deu+eng";
-    description = "Standard languages for OCR processing (e.g., Paperless).";
-  };
-
-  # ── HARDWARE (Master Sources) ───────────────────────────────────────────
-  # source-id: CFG.hardware.ramGB
-  options.my.configs.hardware.ramGB = lib.mkOption {
-    type = lib.types.int;
-    default = 16;
-    description = "Installed RAM in GB.";
-  };
-
-  # source-id: CFG.hardware.intelGpu
-  options.my.configs.hardware.intelGpu = lib.mkOption {
-    type = lib.types.bool;
-    default = true;
-    description = "Enable Intel GPU optimizations (UHD 630).";
-  };
-
-  # source-id: CFG.hardware.zigbeeStickIP
-  options.my.configs.hardware.zigbeeStickIP = lib.mkOption {
-    type = lib.types.str;
-    default = "192.168.2.200"; 
-    description = "IP address of the SLZB-06 Ethernet Zigbee stick.";
-  };
-
-  # ── NETWORK (Master Sources) ────────────────────────────────────────────
-  # source-id: CFG.network.lanCidrs
-  options.my.configs.network.lanCidrs = lib.mkOption {
-    type = lib.types.listOf lib.types.str;
-    default = [ "10.0.0.0/8" "172.16.0.0/12" "192.168.0.0/16" ];
-    description = "Trusted local networks (RFC1918).";
-  };
-
-  # source-id: CFG.network.tailnetCidrs
-  options.my.configs.network.tailnetCidrs = lib.mkOption {
-    type = lib.types.listOf lib.types.str;
-    default = [ "100.64.0.0/10" ];
-    description = "Tailscale CGNAT range.";
-  };
-
-  # source-id: CFG.server.lanIP
-  options.my.configs.server.lanIP = lib.mkOption {
-    type = lib.types.str;
-    default = "192.168.2.73";
-    description = "Server's primary LAN IP.";
+    # ── GLOBAL PATHS (Nixarr Standard) ────────────────────────────────────
+    paths = {
+      storagePool = lib.mkOption { type = lib.types.str; default = "/mnt/fast-pool"; };
+      mediaLibrary = lib.mkOption { type = lib.types.str; default = "/mnt/media"; };
+      stateDir = lib.mkOption { type = lib.types.str; default = "/data/state"; };
+    };
   };
 
   # ── ALARMS & SAFETY ──────────────────────────────────────────────────────
