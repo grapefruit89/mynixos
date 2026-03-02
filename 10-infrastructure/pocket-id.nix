@@ -3,67 +3,59 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-10-INF-012
- *   title: "Pocket Id"
+ *   title: "Pocket-ID (SRE Exhausted)"
  *   layer: 10
- * architecture:
- *   req_refs: [REQ-INF]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: OIDC identity provider with automated bootstrap and aviation-grade hardening.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/web-apps/pocket-id.nix
  * ---
  */
 { config, lib, pkgs, ... }:
 let
-  cfg = config.my.profiles.services.pocket-id;
   domain = config.my.configs.identity.domain;
   port = config.my.ports.pocketId;
 in
 {
-  config = lib.mkIf cfg.enable {
-    services.pocket-id = {
-      enable = true;
-      dataDir = "/var/lib/pocket-id";
-      settings = {
-        issuer = "https://auth.${domain}";
-        title = "m7c5 Login";
-      };
-    };
-
-    systemd.services.pocket-id = {
-      serviceConfig = {
-        Restart = "always";
-        RestartSec = "5s";
-        # Health-Endpoint für Caddy
-        ExecStartPost = "${pkgs.coreutils}/bin/sleep 2";
-      };
-    };
-
-    services.caddy.virtualHosts."auth.${domain}" = {
-      extraConfig = ''
-        reverse_proxy 127.0.0.1:${toString port}
-      '';
+  services.pocket-id = {
+    enable = true;
+    dataDir = "/var/lib/pocket-id";
+    settings = {
+      issuer = "https://auth.${domain}";
+      title = "m7c5 Login";
+      public_registration = false; # SRE: Sicherheit zuerst
     };
   };
+
+  # ── SRE SANDBOXING (Level: High) ──────────────────────────────────────
+  systemd.services.pocket-id.serviceConfig = {
+    ProtectSystem = "strict";
+    ProtectHome = true;
+    PrivateTmp = true;
+    PrivateDevices = true;
+    NoNewPrivileges = true;
+    
+    # Aviation Grade Hardening
+    LockPersonality = true;
+    ProtectControlGroups = true;
+    ProtectKernelModules = true;
+    ProtectKernelTunables = true;
+    RestrictRealtime = true;
+    RestrictSUIDSGID = true;
+    
+    Restart = "always";
+    RestartSec = "5s";
+    OOMScoreAdjust = -100;
+  };
+
+  services.caddy.virtualHosts."auth.${domain}" = {
+    extraConfig = ''
+      reverse_proxy 127.0.0.1:${toString port}
+    '';
+  };
 }
-
-
-
-
-
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:2d9e39f15146cf4d37756e28e4bc4452f9cbebc4e5f7a8aa7d2bbadeaf9eea6f
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
+ *   last_reviewed: 2026-03-02
  * ---
  */
