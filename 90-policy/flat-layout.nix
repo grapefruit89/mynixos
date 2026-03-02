@@ -3,23 +3,26 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-90-POL-FLAT
- *   title: "Flat Layout Enforcement"
+ *   title: "Radical Flat Layout Enforcement"
  *   layer: 90
- * summary: Strict enforcement of zero-depth directory structure in layer-folders.
+ * summary: Strict enforcement of zero-depth directory structure in ALL layer-folders (00-90).
  * ---
  */
 { lib, ... }:
 let
-  # Verzeichnisse, die auf Flachheit geprüft werden
   layersToCheck = [
     ../00-core
     ../10-infrastructure
-    ../20-services
-    ../30-analysis
+    ../20-automation
+    ../30-media
+    ../40-knowledge
+    ../50-iot
+    ../60-comms
+    ../70-tools
+    ../80-analyse
     ../90-policy
   ];
 
-  # Funktion: Prüft ob ein Verzeichnis Unterordner enthält
   hasSubdirs = dir: 
     let
       contents = builtins.readDir dir;
@@ -27,10 +30,7 @@ let
     in
       (builtins.length (builtins.attrNames dirs)) > 0;
 
-  # Liste der Verzeichnisse mit illegalen Unterordnern
   offendingLayers = lib.filter (dir: hasSubdirs dir) layersToCheck;
-  
-  # Formatierung für Fehlermeldung
   formatOffenders = dirs: lib.concatStringsSep ", " (map (d: builtins.baseNameOf d) dirs);
 
 in {
@@ -38,14 +38,10 @@ in {
     {
       assertion = (builtins.length offendingLayers) == 0;
       message = ''
-        🛑 NIXHOME STRUCTURE VIOLATION: Subdirectories are strictly forbidden in Layer-Folders!
+        🛑 NIXHOME STRUCTURE VIOLATION: Subdirectories are strictly forbidden!
         Illegal subdirectories found in: ${formatOffenders offendingLayers}
-        Please flatten these directories to depth 0 to comply with Aviation Grade standards.
+        Flatten these directories to depth 0 immediately.
       '';
     }
   ];
 }
-/**
- * technical_integrity:
- *   eof_marker: NIXHOME_VALID_EOF
- */

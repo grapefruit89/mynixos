@@ -52,14 +52,14 @@
     # ./00-core/shell.nix # Replaced by shell-premium.nix
     ./00-core/fail2ban.nix
     ./00-core/ai-tools.nix
-    ./20-services/automation.nix
+    ./20-automation/automation.nix
     ./00-core/home-manager.nix
 
     # 10 — Infrastructure
     ./10-infrastructure/tailscale.nix
     ./10-infrastructure/caddy.nix
     ./10-infrastructure/adguardhome.nix
-    ./10-infrastructure/netdata.nix
+    ./80-analyse/service-netdata.nix
     ./10-infrastructure/cloudflared-tunnel.nix
     ./10-infrastructure/valkey.nix
     ./10-infrastructure/postgresql.nix
@@ -75,20 +75,20 @@
     ./10-infrastructure/olivetin.nix
 
     # 20 — Services
-    ./20-services/service-media-default.nix
-    ./20-services/service-media-media-stack.nix
-    ./20-services/service-app-audiobookshelf.nix
-    ./20-services/service-app-vaultwarden.nix
-    ./20-services/service-app-paperless.nix
-    ./20-services/service-app-miniflux.nix
-    ./20-services/service-app-n8n.nix
-    ./20-services/service-app-scrutiny.nix
-    ./20-services/service-app-filebrowser.nix
-    ./20-services/service-app-ai-agents.nix
-    ./20-services/service-app-home-assistant.nix
-    ./20-services/service-app-zigbee-stack.nix
-    ./20-services/service-app-karakeep.nix
-    ./20-services/service-app-matrix-conduit.nix
+    ./30-media/service-media-default.nix
+    ./30-media/service-media-media-stack.nix
+    ./40-knowledge/service-app-audiobookshelf.nix
+    ./70-tools/service-app-vaultwarden.nix
+    ./40-knowledge/service-app-paperless.nix
+    ./40-knowledge/service-app-miniflux.nix
+    ./20-automation/service-app-n8n.nix
+    ./80-analyse/service-scrutiny.nix
+    ./70-tools/service-app-filebrowser.nix
+    ./20-automation/service-app-ai-agents.nix
+    ./50-iot/service-app-home-assistant.nix
+    ./50-iot/service-app-zigbee-stack.nix
+    ./50-iot/service-app-karakeep.nix
+    ./60-comms/service-app-matrix-conduit.nix
 
     # 90 — Policy
     ./90-policy/security-assertions.nix # <-- Aktiviert
