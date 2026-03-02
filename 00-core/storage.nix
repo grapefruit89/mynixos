@@ -3,15 +3,16 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-00-CORE-027
- *   title: "Storage (ABC-Tiering & Nixarr-Paths)"
+ *   title: "Storage (SRE Architecture)"
  *   layer: 00
- * summary: mergerfs pool management with standardized Nixarr folder structure.
+ * summary: mergerfs pool management with standardized Nixarr folder structure and ABC-tiering.
  * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/misc/mergerfs.nix
  * ---
  */
 { config, lib, pkgs, ... }:
 let
   cfg = config.my.profiles.services.storage-pool;
+  # sink: CFG.identity.user
   user = config.my.configs.identity.user;
   
   rootMinFree = "20G";
@@ -20,7 +21,7 @@ in
 {
   config = lib.mkIf cfg.enable {
     
-    # ── POOL DEFINITION ─────────────────────────────────────────────────────
+    # ── POOL DEFINITION (ABC-Tiering) ───────────────────────────────────────
     systemd.mounts = [
       {
         description = "Fast-Pool (Tier B - SSD)";
@@ -40,20 +41,20 @@ in
       }
     ];
 
-    # ── SMART DISK DISCOVERY & NIXARR STRUCTURE ───────────────────────────
+    # ── DISK DISCOVERY & NIXARR LOGIC ──────────────────────────────────────
     systemd.services.nixhome-disk-discovery = {
-      description = "NixHome Smart Disk Discovery & Nixarr Structure";
+      description = "NixHome Smart Disk Discovery & Nixarr Path Enforcement";
       wantedBy = [ "multi-user.target" ];
       serviceConfig.Type = "oneshot";
       path = with pkgs; [ util-linux coreutils gawk ];
       script = ''
-        # Basis-Verzeichnisse
+        # Standardpfade sicherstellen
         mkdir -p /mnt/storage/ssd /mnt/storage/hdd /data/storage/b-on-a /mnt/fast-pool /mnt/media
         
         SYSTEM_DISK=$(lsblk -no PKNAME $(findmnt -nvo SOURCE /) | head -n1)
         [ -z "$SYSTEM_DISK" ] && SYSTEM_DISK="sda"
 
-        # Disks finden und mounten
+        # Hardware-Mapping
         lsblk -nbo NAME,ROTA,SIZE,MOUNTPOINT,TYPE,PKNAME | grep 'part\|disk' | while read -r name rota size mount type pkname; do
           [ "$name" = "$SYSTEM_DISK" ] && continue
           [ "$pkname" = "$SYSTEM_DISK" ] && continue
@@ -70,24 +71,27 @@ in
           mount "/dev/$name" "$target" 2>/dev/null || true
         done
 
-        # 🚀 NIXARR-STYLE ORDNERSTRUKTUR (ABC-Mapped)
-        # Tier B (SSD): Aktive Downloads
-        mkdir -p /mnt/fast-pool/downloads/torrents /mnt/fast-pool/downloads/usenet /mnt/fast-pool/downloads/incomplete
+        # 🚀 NIXARR-STYLE STRUCTURE (Standardized)
+        # Tier B: Aktive Downloads
+        mkdir -p /mnt/fast-pool/downloads/{torrents,usenet,incomplete}
+        # Tier C: Bibliotheken
+        mkdir -p /mnt/media/{movies,tv,music,books,podcasts,documents}
         
-        # Tier C (HDD): Bibliotheken
-        mkdir -p /mnt/media/movies /mnt/media/tv /mnt/media/music /mnt/media/books /mnt/media/podcasts
-        
-        # 🔒 BERECHTIGUNGEN (SRE Standard)
-        # Alle Medien-Ordner gehören der Gruppe 'media' mit Schreibrechten (g+w)
+        # 🔒 SRE PERMISSIONS (GID 169)
         chown -R root:media /mnt/fast-pool/downloads /mnt/media
         chmod -R 775 /mnt/fast-pool/downloads /mnt/media
-        
-        # Sicherstellen, dass neue Dateien in diesen Ordnern auch der Gruppe gehören (Setgid)
         find /mnt/fast-pool/downloads /mnt/media -type d -exec chmod g+s {} +
       '';
     };
 
-    # ── STORAGE HYGIENE (Mover) ─────────────────────────────────────────────
+    # ── SMART MOVER ────────────────────────────────────────────────────────
+    systemd.services.nixhome-mover = {
+      description = "NixHome Tiered Smart Mover";
+      serviceConfig.Type = "oneshot";
+      path = with pkgs; [ bash findutils coreutils gawk ];
+      script = "/etc/nixos/00-core/scripts/nixhome-mover.sh";
+    };
+
     systemd.timers.nixhome-mover = {
       description = "Run NixHome Mover Daily";
       wantedBy = [ "timers.target" ];

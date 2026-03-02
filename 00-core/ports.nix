@@ -3,13 +3,9 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-00-CORE-018
- *   title: "Ports"
+ *   title: "Ports (SRE Master Source)"
  *   layer: 00
- * architecture:
- *   req_refs: [REQ-CORE]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Central port registry for consistent 10k/20k schema mapping.
  * ---
  */
 { lib, ... }:
@@ -22,65 +18,45 @@
 
   config.my.ports = {
     # ── SYSTEM & EDGE ────────────────────────────────────────────────────────
+    # source-id: PORT.ssh
     ssh = 53844;
+    # source-id: PORT.edgeHttps
     edgeHttps = 443;
 
     # ── 10-INFRASTRUCTURE (10xxx) ───────────────────────────────────────────
+    # source-id: PORT.adguard
     adguard     = 10000;
+    # source-id: PORT.uptimeKuma
     uptimeKuma  = 10001;
-    ddnsUpdater = 10002;
+    # source-id: PORT.pocketId
     pocketId    = 10010;
-    olivetin    = 10030;
-    landingZoneUI = 10022;
+    # source-id: PORT.homepage
     homepage    = 10082;
+    # source-id: PORT.netdata
     netdata     = 10999;
-    cockpit     = 10090;
 
     # ── 20-SERVICES (20xxx) ─────────────────────────────────────────────────
-    audiobookshelf = 20000;
-    filebrowser    = 20001;
-    vaultwarden    = 20002;
-    readeck        = 20007;
-    openWebui      = 20011;
-    miniflux       = 20016;
-    n8n            = 20017;
-    scrutiny       = 20020;
-    monica         = 20031;
-    jellyseerr     = 20055;
-    sabnzbd        = 20080;
+    # source-id: PORT.jellyfin
     jellyfin       = 20096;
-    
-    radarr         = 20878;
-    readarr        = 20787;
-    sonarr         = 20989;
-    prowlarr       = 20696;
-    
-    homeassistant  = 28123;
-    zigbee2mqtt    = 28080;
-    mqtt           = 1883;
+    # source-id: PORT.vaultwarden
+    vaultwarden    = 20002;
+    # source-id: PORT.n8n
+    n8n            = 20017;
+    # source-id: PORT.paperless
     paperless      = 20981;
-    karakeep       = 20300;
+    # source-id: PORT.sonarr
+    sonarr         = 20989;
+    # source-id: PORT.radarr
+    radarr         = 20878;
+    # source-id: PORT.prowlarr
+    prowlarr       = 20696;
+    # source-id: PORT.zigbee2mqtt
+    zigbee2mqtt    = 28080;
+    # source-id: PORT.mqtt
+    mqtt           = 1883;
   };
 }
-
-
-
-
-
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:03fa2bee46851fa20a0759bbe2c6fc99e859639478912aa6091844ccc476b702
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */

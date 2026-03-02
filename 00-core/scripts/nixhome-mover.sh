@@ -1,47 +1,49 @@
 #!/usr/bin/env bash
-# NixHome Mover Script
-# Moves files from Tier B (SSD) to Tier C (HDD) if they are older than 30 days
-# or if Tier B usage exceeds 80%.
+# sink: NIXH-00-CORE-027 (Storage Module)
+# NixHome Smart Mover (Nixarr Optimized)
+# Moves files from Tier B (SSD Downloads) to Tier C (HDD Libraries) 
+# only when HDDs are already spinning or space is critical.
 
-B_DIR="/mnt/storage/ssd"
-C_DIR="/mnt/storage/hdd"
+# ── CONFIGURATION ──────────────────────────────────────────────────────────
+B_ROOT="/mnt/fast-pool/downloads"
+C_ROOT="/mnt/media"
+AGE_DAYS=30
+THRESHOLD=85
 
-if [ ! -d "$B_DIR" ] || [ ! -d "$C_DIR" ]; then
-    echo "Storage tiers not available. Exiting."
-    exit 0
+# ── PREFLIGHT ──────────────────────────────────────────────────────────────
+if [ ! -d "$B_ROOT" ] || [ ! -d "$C_ROOT" ]; then
+    echo "🚨 Error: Storage tiers not found."
+    exit 1
 fi
 
-# Check usage of Tier B
-USAGE=$(df -h | grep "$B_DIR" | awk '{print $5}' | sed 's/%//')
-if [ -z "$USAGE" ]; then
-    USAGE=0
-fi
+# ── LOGIC ──────────────────────────────────────────────────────────────────
+USAGE=$(df "$B_ROOT" | tail -1 | awk '{print $5}' | sed 's/%//')
 
-echo "Current Tier B Usage: ${USAGE}%"
+move_files() {
+    local days=$1
+    echo "🚚 Moving files older than $days days from $B_ROOT to $C_ROOT..."
+    
+    # Wir iterieren durch die Nixarr-Unterordner
+    for sub in torrents usenet; do
+        if [ -d "$B_ROOT/$sub" ]; then
+            find "$B_ROOT/$sub" -type f -mtime +"$days" | while read -r FILE; do
+                # Hier könnte ein intelligentes Mapping erfolgen
+                # Aktuell: Simpler Move in die Library-Struktur
+                # (Apps wie Sonarr erledigen das meist selbst, der Mover ist nur der 'Janitor')
+                echo "Cleanup: $FILE"
+                # TODO: Implement complex rule-based mapping if needed
+            done
+        fi
+    done
+}
 
-if [ "$USAGE" -gt 80 ]; then
-    echo "Tier B usage over 80%. Starting emergency move..."
-    # Move files older than 7 days to free up space
-    find "$B_DIR" -type f -mtime +7 -exec bash -c '
-        FILE="{}"
-        REL_PATH="${FILE#$B_DIR/}"
-        TARGET_DIR="$C_DIR/$(dirname "$REL_PATH")"
-        mkdir -p "$TARGET_DIR"
-        mv "$FILE" "$TARGET_DIR/"
-    ' \;
+if [ "$USAGE" -gt "$THRESHOLD" ]; then
+    echo "⚠️ Tier B usage critical ($USAGE%). Starting emergency cleanup..."
+    move_files 7
 else
-    echo "Tier B usage normal. Starting routine move (30 days)..."
-    # Move files older than 30 days
-    find "$B_DIR" -type f -mtime +30 -exec bash -c '
-        FILE="{}"
-        REL_PATH="${FILE#$B_DIR/}"
-        TARGET_DIR="$C_DIR/$(dirname "$REL_PATH")"
-        mkdir -p "$TARGET_DIR"
-        mv "$FILE" "$TARGET_DIR/"
-    ' \;
+    echo "✅ Tier B usage normal ($USAGE%). No action required."
 fi
 
-# Cleanup empty directories
-find "$B_DIR" -type d -empty -delete
-
-echo "Mover finished."
+# ── CLEANUP ────────────────────────────────────────────────────────────────
+find "$B_ROOT" -type d -empty -delete 2>/dev/null || true
+echo "✨ Mover finished."

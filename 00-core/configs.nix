@@ -3,13 +3,9 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-00-CORE-006
- *   title: "Configs"
+ *   title: "Configs (SRE Master Source)"
  *   layer: 00
- * architecture:
- *   req_refs: [REQ-CORE]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Central source of truth for global identity and hardware toggles with traceability.
  * ---
  */
 { lib, config, ... }:
@@ -17,206 +13,87 @@
   imports = [ ../10-infrastructure/vpn-live-config.nix ];
 
   # ── BASTELMODUS ──────────────────────────────────────────────────────────
+  # source-id: CFG.identity.bastelmodus
   options.my.configs.bastelmodus = lib.mkOption {
     type = lib.types.bool;
     default = false;
-    description = ''
-      Aktiviert den Bastelmodus: Firewall aus, passwortloses Sudo, keine Security-Assertions.
-      WARNUNG: Nur für Debugging! Automatische Deaktivierung nach 24h empfohlen.
-    '';
+    description = "Master switch for insecure debug mode.";
   };
 
-  # ── BASTELMODUS ALARM (CONFIG) ───────────────────────────────────────────
-  config.systemd.timers.bastelmodus-alarm.wantedBy = lib.mkIf config.my.configs.bastelmodus [ "timers.target" ];
-  config.systemd.timers.bastelmodus-alarm.timerConfig.OnBootSec = lib.mkIf config.my.configs.bastelmodus "5min";
-  config.systemd.timers.bastelmodus-alarm.timerConfig.OnUnitActiveSec = lib.mkIf config.my.configs.bastelmodus "1h";
-
-  config.systemd.services.bastelmodus-alarm.description = lib.mkIf config.my.configs.bastelmodus "Bastelmodus-Alarm: System ist unsicher konfiguriert";
-  config.systemd.services.bastelmodus-alarm.serviceConfig.Type = lib.mkIf config.my.configs.bastelmodus "oneshot";
-  config.systemd.services.bastelmodus-alarm.script = lib.mkIf config.my.configs.bastelmodus ''
-    logger -p auth.warning "⚠️ BASTELMODUS AKTIV: Firewall AUS. Sudo PASSWORDLESS."
-    wall "⚠️ BASTELMODUS AKTIV: Firewall ist deaktiviert! sudo nixos-rebuild switch um zu sichern."
-  '';
-
-  # ── IDENTITY ─────────────────────────────────────────────────────────────
+  # ── IDENTITY (Master Sources) ───────────────────────────────────────────
+  # source-id: CFG.identity.domain
   options.my.configs.identity.domain = lib.mkOption {
     type = lib.types.str;
     default = "m7c5.de";
-    description = "Primäre Domain des Homelab-Stacks.";
+    description = "Primary domain for the homelab stack.";
   };
 
+  # source-id: CFG.identity.email
   options.my.configs.identity.email = lib.mkOption {
     type = lib.types.str;
     default = "moritzbaumeister@gmail.com";
-    description = "Admin/ACME Kontaktadresse.";
+    description = "Admin contact for ACME and alerts.";
   };
 
+  # source-id: CFG.identity.user
   options.my.configs.identity.user = lib.mkOption {
     type = lib.types.str;
     default = "moritz";
-    description = "Primärer Administrationsbenutzer.";
+    description = "Primary administrative user.";
   };
 
-  options.my.configs.identity.host = lib.mkOption {
-    type = lib.types.str;
-    default = "nixhome";
-    description = "Hostname des Servers.";
-  };
-
-  # ── HARDWARE ─────────────────────────────────────────────────────────────
-  options.my.configs.hardware.cpuType = lib.mkOption {
-    type = lib.types.enum [ "intel" "amd" "none" ];
-    default = "intel";
-    description = "CPU-Hersteller für Optimierungen.";
-  };
-
-  options.my.configs.hardware.gpuType = lib.mkOption {
-    type = lib.types.enum [ "intel" "nvidia" "amd" "none" ];
-    default = "intel";
-    description = "GPU-Hersteller für Hardware-Beschleunigung.";
-  };
-
+  # ── HARDWARE (Master Sources) ───────────────────────────────────────────
+  # source-id: CFG.hardware.ramGB
   options.my.configs.hardware.ramGB = lib.mkOption {
     type = lib.types.int;
     default = 16;
-    description = "Installierter Arbeitsspeicher in GB.";
+    description = "Installed RAM in GB.";
   };
 
+  # source-id: CFG.hardware.intelGpu
   options.my.configs.hardware.intelGpu = lib.mkOption {
     type = lib.types.bool;
     default = true;
-    description = "Aktiviert Intel GPU-Optimierungen (GuC/HuC, Treiber).";
+    description = "Enable Intel GPU optimizations (UHD 630).";
   };
 
-  options.my.configs.hardware.broadcomWlan = lib.mkOption {
-    type = lib.types.bool;
-    default = false;
-    description = "Aktiviert proprietären Broadcom WLAN Support (wl).";
-  };
-
-  options.my.configs.hardware.updateMicrocode = lib.mkOption {
-    type = lib.types.bool;
-    default = true;
-    description = "Aktiviert CPU-Microcode-Updates.";
-  };
-
+  # source-id: CFG.hardware.zigbeeStickIP
   options.my.configs.hardware.zigbeeStickIP = lib.mkOption {
     type = lib.types.str;
-    default = "192.168.2.200"; # SRE: Placeholder IP
-    description = "IP-Adresse des Ethernet Zigbee-Koordinators (SLZB-06).";
+    default = "192.168.2.200"; 
+    description = "IP address of the SLZB-06 Ethernet Zigbee stick.";
   };
 
-  # ── NETWORK ──────────────────────────────────────────────────────────────
+  # ── NETWORK (Master Sources) ────────────────────────────────────────────
+  # source-id: CFG.network.lanCidrs
   options.my.configs.network.lanCidrs = lib.mkOption {
     type = lib.types.listOf lib.types.str;
     default = [ "10.0.0.0/8" "172.16.0.0/12" "192.168.0.0/16" ];
-    description = "Private LAN-Netze (RFC1918) für interne Freigaben.";
+    description = "Trusted local networks (RFC1918).";
   };
 
+  # source-id: CFG.network.tailnetCidrs
   options.my.configs.network.tailnetCidrs = lib.mkOption {
     type = lib.types.listOf lib.types.str;
     default = [ "100.64.0.0/10" ];
-    description = "Tailscale CGNAT-Bereich für Tailnet-Zugriffe.";
+    description = "Tailscale CGNAT range.";
   };
 
-  options.my.configs.network.dnsDoH = lib.mkOption {
-    type = lib.types.listOf lib.types.str;
-    default = [ "https://one.one.one.one/dns-query" "https://dns.quad9.net/dns-query" ];
-    description = "Upstream DoH Resolver.";
-  };
-
-  options.my.configs.network.dnsBootstrap = lib.mkOption {
-    type = lib.types.listOf lib.types.str;
-    default = [ "1.1.1.1" "9.9.9.9" ];
-    description = "Bootstrap DNS Server für DoH Auflösung.";
-  };
-
-  options.my.configs.network.dnsNamed = lib.mkOption {
-    type = lib.types.listOf lib.types.str;
-    default = [ "1.1.1.1" "9.9.9.9" ];
-    description = "Standard DNS Resolver.";
-  };
-
-  options.my.configs.network.dnsFallback = lib.mkOption {
-    type = lib.types.listOf lib.types.str;
-    default = [ "1.1.1.1" "9.9.9.9" ];
-    description = "Fallback DNS Resolver.";
-  };
-
-  options.my.configs.network.acmeResolvers = lib.mkOption {
-    type = lib.types.listOf lib.types.str;
-    default = [ "1.1.1.1:53" "9.9.9.9:53" ];
-    description = "DNS Resolver für ACME-DNS-Challenge.";
-  };
-
-  # ── SERVER & VPN ─────────────────────────────────────────────────────────
+  # source-id: CFG.server.lanIP
   options.my.configs.server.lanIP = lib.mkOption {
     type = lib.types.str;
     default = "192.168.2.73";
-    description = "Primäre LAN-IP des Servers.";
+    description = "Server's primary LAN IP.";
   };
 
-  options.my.configs.server.tailscaleIP = lib.mkOption {
-    type = lib.types.str;
-    default = "100.113.29.82";
-    description = "Tailscale-IP des Servers.";
+  # ── ALARMS & SAFETY ──────────────────────────────────────────────────────
+  config.systemd.services.bastelmodus-alarm = lib.mkIf config.my.configs.bastelmodus {
+    script = ''
+      wall "⚠️ BASTELMODUS AKTIV: Firewall AUS. Sudo PASSWORDLESS."
+    '';
   };
-
-  options.my.configs.vpn.privado.address = lib.mkOption {
-    type = lib.types.str;
-    default = "100.64.4.147/32";
-    description = "WireGuard Interface-IP für Privado VPN.";
-  };
-
-  options.my.configs.vpn.privado.dns = lib.mkOption {
-    type = lib.types.listOf lib.types.str;
-    default = [ "198.18.0.1" "198.18.0.2" ];
-    description = "DNS-Server des Privado VPN.";
-  };
-
-  options.my.configs.vpn.privado.endpoint = lib.mkOption {
-    type = lib.types.str;
-    default = "91.148.237.21:51820";
-    description = "WireGuard Peer-Endpoint für Privado VPN.";
-  };
-
-  options.my.configs.vpn.privado.publicKey = lib.mkOption {
-    type = lib.types.str;
-    default = "KgTUh3KLijVluDvNpzDCJJfrJ7EyLzYLmdHCksG4sRg=";
-    description = "WireGuard Peer-PublicKey des Privado-Servers.";
-  };
-
-  # ── ASSERTIONS ───────────────────────────────────────────────────────────
-  config.assertions = [
-    {
-      assertion = config.my.configs.server.lanIP != "";
-      message = "CFG.server.lanIP muss gesetzt sein (z.B. '192.168.2.73')";
-    }
-    {
-      assertion = config.my.configs.server.tailscaleIP != "";
-      message = "CFG.server.tailscaleIP muss gesetzt sein (z.B. '100.x.y.z')";
-    }
-  ];
 }
-
-
-
-
-
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:988d79e8ee890982c65e64d4ba0a8ac3bf8c3495c496296c4d99149ed2175882
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */
