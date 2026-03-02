@@ -32,14 +32,16 @@ in
 
   # ── INTERACTIVE SHELL INIT ──────────────────────────────────────────────
   programs.bash.interactiveShellInit = ''
-    if [[ $- == *i* ]]; then
+    # ⚠️ OBACHT: Nur ausführen, wenn wir in einer interaktiven Shell UND an einem Terminal sind.
+    # Verhindert, dass TTY-Logins oder automatisierte Skripte (scp/rsync) hängen bleiben.
+    if [[ $- == *i* ]] && [[ -t 1 ]]; then
       IP=$(hostname -I | awk '{print $1}')
-      # sink: CFG.identity.user
       echo -e "\e[1;32mWelcome back, ${config.my.configs.identity.user}!\e[0m"
       echo -e "\e[1;34mSystem IP:\e[0m $IP"
       
-      # Status der kritischen SRE-Dienste anzeigen
-      if systemctl is-active --quiet sshd-recovery.service; then
+      # 🛡️ DEFENSIVE CHECK: Prüfe Recovery-Window ohne zu blockieren
+      # Wir nutzen einen kurzen Timeout, falls systemd gerade ausgelastet ist.
+      if timeout 0.2 systemctl is-active --quiet sshd-recovery.service 2>/dev/null; then
          echo -e "\e[1;31m🚨 RECOVERY WINDOW ACTIVE (Port 2222)\e[0m"
       fi
     fi
