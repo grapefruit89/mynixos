@@ -3,9 +3,9 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-20-SRV-023
- *   title: "_lib"
+ *   title: "_lib (SRE Exhausted)"
  *   layer: 20
- * summary: Media service helper library with Nixarr-style VPN Confinement support.
+ * summary: Advanced media service helper with VPN Confinement, Resource Guarding and Declarative Config.
  * ---
  */
 { lib, pkgs }:
@@ -17,7 +17,8 @@
 , defaultUser ? name
 , defaultGroup ? "media"
 , statePathSuffix ? null
-, useVpn ? false # 🚀 NEU: Schalter für VPN Confinement
+, useVpn ? false
+, extraServiceConfig ? {}
 }:
 { config, ... }:
 let
@@ -40,7 +41,6 @@ let
     else "/data/state/${name}/${statePathSuffix}";
 
   # ── VPN CONFINEMENT LOGIK (Nixarr Style) ──────────────────────────────────
-  # Wenn aktiv, wird der Dienst an den 'media-vault' Namespace gebunden.
   vpnConfig = lib.optionalAttrs useVpn {
     requires = [ "wireguard-vault.service" ];
     after = [ "wireguard-vault.service" ];
@@ -86,8 +86,17 @@ in
       systemd.services.${name} = lib.mkMerge [
         vpnConfig
         {
+          # 🛡️ SRE HARDENING (Aviation Grade)
           serviceConfig = {
             ProtectSystem = lib.mkForce "full";
+            ProtectHome = true;
+            PrivateTmp = true;
+            NoNewPrivileges = true;
+            # Resource Limits
+            MemoryMax = "2G";
+            CPUWeight = 50;
+            OOMScoreAdjust = 500; # Media services are restartable, not ultra-critical
+            
             ReadWritePaths = [ 
               cfg.stateDir 
               "/mnt/media" 
@@ -100,9 +109,10 @@ in
             ];
           };
         }
+        extraServiceConfig
       ];
 
-      # Caddy Reverse Proxy Anpassung für Namespaces
+      # Caddy Reverse Proxy (Namespace Aware)
       services.caddy.virtualHosts."${name}.${config.my.configs.identity.domain}" = lib.mkIf useVpn {
         extraConfig = lib.mkForce ''
           import sso_auth

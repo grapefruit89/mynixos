@@ -3,13 +3,10 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-20-SRV-022
- *   title: "Jellyseerr"
+ *   title: "Jellyseerr (SRE Exhausted)"
  *   layer: 20
- * architecture:
- *   req_refs: [REQ-SRV]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Request management for Jellyfin with standardized media paths.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/misc/jellyseerr.nix
  * ---
  */
 { lib, pkgs, config, ... }:
@@ -21,6 +18,12 @@
       stateOption = "configDir";
       defaultStateDir = "/var/lib/jellyseerr/config";
       supportsUserGroup = false;
+      extraServiceConfig = {
+        serviceConfig = {
+          MemoryMax = "1G";
+          OOMScoreAdjust = 800;
+        };
+      };
     })
   ];
 
@@ -39,31 +42,12 @@
   systemd.tmpfiles.rules = [
     "d /var/lib/jellyseerr 0750 jellyseerr jellyseerr - -"
     "d /var/lib/jellyseerr/config 0750 jellyseerr jellyseerr - -"
-    "d /var/lib/jellyseerr/config/logs 0750 jellyseerr jellyseerr - -"
-    "z /var/lib/jellyseerr - jellyseerr jellyseerr - -"
-    "z /var/lib/jellyseerr/config - jellyseerr jellyseerr - -"
-    "z /var/lib/jellyseerr/config/logs - jellyseerr jellyseerr - -"
   ];
 }
-
-
-
-
-
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:e7c5a9fc4fb40701a5d887e58658a7ba13f00d0f92d8e83d56f8c843bfbdc55f
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
+ *   last_reviewed: 2026-03-02
  * ---
  */

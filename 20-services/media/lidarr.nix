@@ -3,38 +3,33 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-20-SRV-024
- *   title: "Lidarr"
+ *   title: "Lidarr (SRE Exhausted)"
  *   layer: 20
- * architecture:
- *   req_refs: [REQ-SRV]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Music management safely locked inside a network namespace with resource guarding.
  * ---
  */
-{ ... }:
+{ lib, pkgs, config, ... }:
 {
-  # Platzhalter – noch nicht implementiert
+  imports = [
+    ((import ./_lib.nix { inherit lib pkgs; }) {
+      name = "lidarr";
+      port = config.my.ports.lidarr or 8686;
+      stateOption = "dataDir";
+      defaultStateDir = "/var/lib/lidarr";
+      useVpn = true;
+      extraServiceConfig = {
+        serviceConfig = {
+          MemoryMax = "1G";
+          Environment = [ "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false" ];
+        };
+      };
+    })
+  ];
 }
-
-
-
-
-
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:6df5f2053b755ed34236406ce2726dc2e86f3a39298c66bff5c9c2924e220905
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
+ *   last_reviewed: 2026-03-02
  * ---
  */

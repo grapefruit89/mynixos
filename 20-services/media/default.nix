@@ -21,9 +21,11 @@
     ./jellyseerr.nix
     ./sonarr.nix
     ./radarr.nix
+    ./lidarr.nix
     ./readarr.nix
     ./prowlarr.nix
     ./sabnzbd.nix
+    ./recyclarr.nix
   ];
 }
 

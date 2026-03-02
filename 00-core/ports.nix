@@ -52,6 +52,8 @@
     sonarr         = 20989;
     # source-id: PORT.radarr
     radarr         = 20878;
+    # source-id: PORT.lidarr
+    lidarr         = 20686;
     # source-id: PORT.prowlarr
     prowlarr       = 20696;
     # source-id: PORT.zigbee2mqtt
