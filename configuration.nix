@@ -72,23 +72,23 @@
     ./10-infrastructure/landing-zone-ui.nix
     ./10-infrastructure/pocket-id.nix
     ./10-infrastructure/dns-automation.nix
-    ./10-infrastructure/olivetin.nix
+    ./20-automation/service-app-olivetin.nix
 
     # 20 — Services
     ./30-media/service-media-default.nix
     ./30-media/service-media-media-stack.nix
-    ./40-knowledge/service-app-audiobookshelf.nix
-    ./70-tools/service-app-vaultwarden.nix
+    ./30-media/service-app-audiobookshelf.nix
+    ./50-apps/service-app-vaultwarden.nix
     ./40-knowledge/service-app-paperless.nix
     ./40-knowledge/service-app-miniflux.nix
     ./20-automation/service-app-n8n.nix
     ./80-analyse/service-scrutiny.nix
-    ./70-tools/service-app-filebrowser.nix
+    ./50-apps/service-app-filebrowser.nix
     ./20-automation/service-app-ai-agents.nix
-    ./50-iot/service-app-home-assistant.nix
-    ./50-iot/service-app-zigbee-stack.nix
-    ./50-iot/service-app-karakeep.nix
-    ./60-comms/service-app-matrix-conduit.nix
+    ./20-automation/service-app-home-assistant.nix
+    ./20-automation/service-app-zigbee-stack.nix
+    ./20-automation/service-app-karakeep.nix
+    ./50-apps/service-app-matrix-conduit.nix
 
     # 90 — Policy
     ./90-policy/security-assertions.nix # <-- Aktiviert

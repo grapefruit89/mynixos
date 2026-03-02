@@ -3,9 +3,9 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-90-POL-FLAT
- *   title: "Radical Flat Layout Enforcement"
+ *   title: "Consolidated Flat Layout Enforcement"
  *   layer: 90
- * summary: Strict enforcement of zero-depth directory structure in ALL layer-folders (00-90).
+ * summary: Strict enforcement of zero-depth directory structure in logical layer-folders.
  * ---
  */
 { lib, ... }:
@@ -16,9 +16,7 @@ let
     ../20-automation
     ../30-media
     ../40-knowledge
-    ../50-iot
-    ../60-comms
-    ../70-tools
+    ../50-apps
     ../80-analyse
     ../90-policy
   ];
@@ -40,7 +38,7 @@ in {
       message = ''
         🛑 NIXHOME STRUCTURE VIOLATION: Subdirectories are strictly forbidden!
         Illegal subdirectories found in: ${formatOffenders offendingLayers}
-        Flatten these directories to depth 0 immediately.
+        Please keep all layers (00-90) completely flat.
       '';
     }
   ];
