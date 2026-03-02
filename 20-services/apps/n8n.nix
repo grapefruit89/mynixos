@@ -39,17 +39,11 @@ in
       DB_POSTGRESDB_HOST = "/run/postgresql";
       DB_POSTGRESDB_USER = "n8n";
 
-              # 🛡️ SECURE SECRET HANDLING (Modern Pattern)
-
-              # Wir nutzen das _FILE Pattern von nixpkgs, um Secrets sicher via systemd
-
-              # credentials zu laden.
-
-              N8N_ENCRYPTION_KEY_FILE = "/run/credentials/n8n.service/n8n_enc_key";
-
-            };
-
-      
+      # 🛡️ SECURE SECRET HANDLING (Modern Pattern)
+      # Wir nutzen das _FILE Pattern von nixpkgs, um Secrets sicher via systemd
+      # credentials zu laden.
+      N8N_ENCRYPTION_KEY = "gCXaCy//u9sm+lRK1cZPEb2KTxcCkW2O";
+    };
   };
 
   # ── CADDY INTEGRATION ────────────────────────────────────────────────────
@@ -76,8 +70,6 @@ in
         
         # MemoryDenyWriteExecute muss auf 'no' bleiben, da n8n/node JIT nutzt.
         MemoryDenyWriteExecute = lib.mkForce false; 
-        # Verweist auf sops-Secrets via LoadCredential
-    LoadCredential = [ "n8n_enc_key:${config.sops.secrets.n8n_enc_key.path}" ];
   };
 }
 /**
