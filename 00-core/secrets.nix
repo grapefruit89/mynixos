@@ -40,6 +40,7 @@
         # 🔗 Cloudflare: https://dash.cloudflare.com/profile/api-tokens
         "infra/github_token" = { };
         "infra/cloudflare_token" = { };
+        "infra/cloudflared_creds" = { };
         "infra/tailscale_token" = { }; # 🔗 Tailscale: https://login.tailscale.com/admin/settings/keys
         "infra/wg_privado_private_key" = { };
         
@@ -96,6 +97,10 @@
       mediaEnv = lib.mkOption { 
         type = lib.types.path; 
         default = config.sops.templates."media-stack.env".path;
+      };
+      cloudflaredTunnelCredentials = lib.mkOption {
+        type = lib.types.path;
+        default = config.sops.secrets."infra/cloudflared_creds".path;
       };
     };
   };
