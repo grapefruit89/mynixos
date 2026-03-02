@@ -106,7 +106,7 @@
       };
       zigbeeStickIP = lib.mkOption {
         type    = lib.types.str;
-        default = "192.168.2.200";
+        default = "192.168.2.46";
         description = "IP des SLZB-06 Zigbee Koordinators.";
       };
       ramGB = lib.mkOption {
