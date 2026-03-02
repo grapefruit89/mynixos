@@ -3,13 +3,10 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-10-INF-009
- *   title: "Homepage"
+ *   title: "Homepage Dashboard"
  *   layer: 10
- * architecture:
- *   req_refs: [REQ-INF]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Highly customizable application dashboard, fully declarative.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/misc/homepage-dashboard.nix
  * ---
  */
 { config, pkgs, lib, ... }:
@@ -18,9 +15,15 @@ let
   host = dnsMap.dnsMapping.dashboard or "nixhome.${dnsMap.baseDomain}";
 in
 {
+  # 🚀 HOMEPAGE EXHAUSTION
   services.homepage-dashboard = {
     enable = true;
+    
+    # 🔐 SECRETS
+    # Nutzt Umgebungsvariablen für API-Keys in Widgets
     environmentFile = config.my.secrets.files.sharedEnv;
+
+    # 🛠️ SERVICES (Deklarativ via Nix)
     services = [
       {
         "Media" = [
@@ -49,40 +52,33 @@ in
         ];
       }
     ];
-    settings.title = "nixhome dashboard";
+
+    settings = {
+      title = "nixhome dashboard";
+      # SRE: Performance & Privacy
+      layout = {
+        Media = { style = "grid"; columns = 3; };
+        Tools = { style = "grid"; columns = 3; };
+      };
+    };
   };
 
+  # ── CADDY INTEGRATION ────────────────────────────────────────────────────
   services.caddy.virtualHosts."${host}" = {
     extraConfig = ''
+      # Tailscale darf ohne SSO drauf (Admin-Convenience)
       @tailscale remote_ip 100.64.0.0/10
       handle @tailscale {
         reverse_proxy 127.0.0.1:8082
       }
 
+      # Externer Zugriff via Pocket-ID geschützt
       import sso_auth
       reverse_proxy 127.0.0.1:8082
     '';
   };
 }
-
-
-
-
-
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:04b68836487b849302919e06f0c77927f16cf0af9c847c7d92a47a24fb472cd0
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */

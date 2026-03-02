@@ -3,38 +3,45 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-10-INF-016
- *   title: "Uptime Kuma"
+ *   title: "Uptime Kuma (SRE Hardened)"
  *   layer: 10
- * architecture:
- *   req_refs: [REQ-INF]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Self-hosted monitoring tool, tightly sandboxed.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/monitoring/uptime-kuma.nix
  * ---
  */
-{ ... }:
+{ config, lib, ... }:
+let
+  port = config.my.ports.uptimeKuma;
+in
 {
-  services.uptime-kuma.enable = true;
+  # 🚀 UPTIME KUMA EXHAUSTION
+  services.uptime-kuma = {
+    enable = true;
+    # SSoT: Port über Zentrale Registry
+    settings.PORT = toString port;
+  };
+
+  # ── CADDY INTEGRATION ────────────────────────────────────────────────────
+  services.caddy.virtualHosts."status.${config.my.configs.identity.domain}" = {
+    extraConfig = ''
+      import sso_auth
+      reverse_proxy 127.0.0.1:${toString port}
+    '';
+  };
+
+  # ── SRE SANDBOXING ───────────────────────────────────────────────────────
+  systemd.services.uptime-kuma.serviceConfig = {
+    ProtectSystem = "strict";
+    ProtectHome = true;
+    PrivateTmp = true;
+    PrivateDevices = true;
+    NoNewPrivileges = true;
+    # Uptime Kuma braucht nur Netzwerk-Zugriff für Pings
+    CapabilityBoundingSet = [ "CAP_NET_RAW" ];
+    AmbientCapabilities = [ "CAP_NET_RAW" ];
+  };
 }
-
-
-
-
-
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:bf2f708bc786e3b79914c8de8cc2bf441ea2b2e67364c41c15f6e0895f89076e
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */

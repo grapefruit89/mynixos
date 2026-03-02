@@ -3,13 +3,10 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-10-INF-011
- *   title: "Netdata"
+ *   title: "Netdata (SRE Hardened)"
  *   layer: 10
- * architecture:
- *   req_refs: [REQ-INF]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Real-time performance monitoring with dbengine storage and strict sandboxing.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/monitoring/netdata.nix
  * ---
  */
 { config, lib, ... }:
@@ -31,7 +28,7 @@ lib.mkMerge [
     services.netdata = {
       enable = true;
       
-      # VOLL-DEKLARATIVE CONFIG (Netdata Node Config)
+      # VOLL-DEKLARATIVE CONFIG
       config = {
         global = {
           "memory mode" = "dbengine";
@@ -50,23 +47,13 @@ lib.mkMerge [
     # systemd Hardening
     systemd.services.netdata.serviceConfig = {
       ProtectSystem = lib.mkForce "full";
+      # SRE: Nur absolut notwendige Capabilities
       CapabilityBoundingSet = [ "CAP_DAC_READ_SEARCH" "CAP_SYS_PTRACE" "CAP_NET_RAW" ];
-      OOMScoreAdjust = 1000; # Netdata darf im Extremfall zuerst sterben
+      OOMScoreAdjust = 1000; # Monitoring darf im Notfall zuerst sterben
     };
   }
 ]
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:6b95d4e02fb3bf1e69dfeeb6bfeefaa383991cca76ccb4d96e22eb0b2a09461f
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */

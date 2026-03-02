@@ -3,19 +3,16 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-10-INF-017
- *   title: "Valkey"
+ *   title: "Valkey (SRE Optimized)"
  *   layer: 10
- * architecture:
- *   req_refs: [REQ-INF]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: High-performance Valkey (Redis) with memory caps and strict sandboxing.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/databases/redis.nix
  * ---
  */
 { pkgs, lib, ... }:
 {
   services.redis = {
-    package = pkgs.valkey;
+    package = pkgs.valkey; # SSoT: Valkey statt Redis
 
     servers.valkey = {
       enable = true;
@@ -23,40 +20,31 @@
       port = 6379;
       openFirewall = false;
       
+      # ── MEMORY MANAGEMENT (SRE Standard) ──────────────────────────────────
       settings = {
         maxmemory = "512mb";
-        maxmemory-policy = "allkeys-lru";
-        save = [ "60 100" ];
+        maxmemory-policy = "allkeys-lru"; # Wirft am längsten ungenutzte Keys raus
+        save = [ "900 1" "300 10" "60 10000" ]; # Kluge Snapshots
       };
     };
   };
 
+  # ── SRE SANDBOXING (Level: Extreme) ──────────────────────────────────────
   systemd.services.redis-valkey.serviceConfig = {
-    ProtectSystem = lib.mkForce "strict";
-    ReadWritePaths = [ "/var/lib/redis-valkey" ];
+    ProtectSystem = "strict";
+    ProtectHome = true;
+    PrivateTmp = true;
+    PrivateDevices = true;
+    NoNewPrivileges = true;
     MemoryDenyWriteExecute = true;
     RestrictAddressFamilies = [ "AF_INET" "AF_UNIX" ];
+    SystemCallFilter = [ "@system-service" "~@privileged" ];
+    ReadWritePaths = [ "/var/lib/redis-valkey" ];
+    # Valkey ist wichtig für Cache-Performance
+    OOMScoreAdjust = -500;
   };
 }
-
-
-
-
-
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:61ffbd5fb3bc17f8cff821148fd18b166d33555b66253535ae34cc1792f8a386
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */

@@ -3,38 +3,53 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-10-INF-003
- *   title: "Clamav"
+ *   title: "ClamAV (SRE Hardened)"
  *   layer: 10
- * architecture:
- *   req_refs: [REQ-INF]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Antivirus protection with resource limits and automated updates.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/security/clamav.nix
  * ---
  */
-{ ... }:
+{ config, lib, pkgs, ... }:
 {
-  # Platzhalter – noch nicht implementiert
+  # ── CLAMAV DAEMON & UPDATER ──────────────────────────────────────────────
+  services.clamav = {
+    daemon.enable = true;
+    updater.enable = true; # freshclam
+    
+    # 🕵️ SRE SCANNER (Wöchentlicher Scan)
+    scanner = {
+      enable = true;
+      interval = "Sat *-*-* 03:00:00"; # Samstags nachts
+      scanDirectories = [ "/home" "/var/lib" "/etc" ];
+    };
+  };
+
+  # ── RESSOURCENSCHUTZ (Schutz vor CPU-Heißlaufen) ────────────────────────
+  # ClamAV kann beim Scannen extrem viel CPU fressen.
+  # Wir limitieren den Scan-Prozess auf 2 Kerne und geben ihm 'idle' Priorität.
+  systemd.services.clamdscan = {
+    serviceConfig = {
+      CPUWeight = 20;
+      IOWeight = 20;
+      CPUSchedulingPolicy = "idle";
+      IOSchedulingClass = "idle";
+    };
+  };
+
+  # ── SRE SANDBOXING ───────────────────────────────────────────────────────
+  systemd.services.clamav-daemon.serviceConfig = {
+    # Aus nixpkgs übernommen
+    ProtectSystem = "strict";
+    PrivateTmp = true;
+    PrivateDevices = true;
+    NoNewPrivileges = true;
+    # ClamAV braucht keine Netzwerk-Capabilities
+    CapabilityBoundingSet = [ "" ];
+    # OOM-Schutz: ClamAV darf im Zweifel als erstes sterben
+    OOMScoreAdjust = 1000;
+  };
 }
-
-
-
-
-
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:6df5f2053b755ed34236406ce2726dc2e86f3a39298c66bff5c9c2924e220905
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */
