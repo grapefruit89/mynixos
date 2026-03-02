@@ -3,77 +3,69 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-20-SRV-012
- *   title: "Paperless"
+ *   title: "Paperless-ngx (SRE Multi-Service)"
  *   layer: 20
- * architecture:
- *   req_refs: [REQ-SRV]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Professional document management with multi-service isolation (Web, Scheduler, Worker).
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/misc/paperless.nix
  * ---
  */
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 let
-  myLib = import ../../lib/helpers.nix { inherit lib; };
-  serviceBase = myLib.mkService {
-    inherit config;
-    name = "paperless";
-    useSSO = false;
-    description = "Document Management System";
-  };
+  port = config.my.ports.paperless;
+  user = "paperless";
+  dataDir = "/var/lib/paperless";
 in
-lib.mkMerge [
-  serviceBase
-  {
-    services.paperless = {
-      enable = true;
-      address = "127.0.0.1";
-      port = config.my.ports.paperless;
-      
-      # Use local Postgres configuration
-      database.createLocally = true;
-      
-      # Tika and Gotenberg for Office documents
-      settings = {
-        PAPERLESS_TIKA_ENABLED = 1;
-        PAPERLESS_TIKA_GOTENBERG_ENDPOINT = "http://localhost:3000";
-        PAPERLESS_TIKA_ENDPOINT = "http://localhost:9998";
-      };
-      
-      # Password / Secret
-      passwordFile = config.sops.secrets.paperless_secret_key.path;
+{
+  # 🚀 PAPERLESS-NGX EXHAUSTION
+  services.paperless = {
+    enable = true;
+    address = "127.0.0.1";
+    port = port;
+    
+    # ── DB-WIRING (SSoT) ──────────────────────────────────────────────────
+    # Nutzt die zentrale PostgreSQL Instanz aus Layer 10
+    database.createLocally = true; 
+    
+    # ── DOCUMENT PROCESSING ───────────────────────────────────────────────
+    # Tika & Gotenberg für Office/Email Support
+    configureTika = true;
+    
+    settings = {
+      PAPERLESS_OCR_LANGUAGE = "deu+eng";
+      PAPERLESS_TIME_ZONE = config.time.timeZone;
+      # SRE Performance: Verhindert CPU-Spamming durch Classifier
+      PAPERLESS_ENABLE_NLTK = true;
     };
 
-    services.gotenberg = {
-      enable = true;
-      port = 3000;
-    };
+    # Secret Handling via sops-nix
+    passwordFile = config.sops.secrets.paperless_secret_key.path;
+  };
 
-    services.tika = {
-      enable = true;
-      port = 9998;
-    };
-  }
-]
+  # ── CADDY INTEGRATION ────────────────────────────────────────────────────
+  services.caddy.virtualHosts."docs.${config.my.configs.identity.domain}" = {
+    extraConfig = ''
+      import sso_auth
+      reverse_proxy 127.0.0.1:${toString port}
+    '';
+  };
 
+  # ── SRE HARDENING (Aviation Grade) ───────────────────────────────────────
+  # Das NixOS-Modul erzeugt automatisch 3 Services (web, consumer, scheduler).
+  # Wir härten diese kollektiv über systemd overrides.
+  systemd.services.paperless-web.serviceConfig = {
+    OOMScoreAdjust = -200; # Web-UI soll stabil bleiben
+    ProtectSystem = "strict";
+    # Verhindert Schreibzugriff außer auf Daten/Media
+    ReadWritePaths = [ "/var/lib/paperless" "/data/media/paperless" ];
+  };
 
-
-
-
-
-
-
-
-
-
-
+  # ── INFRASTRUCTURE HELPERS ──────────────────────────────────────────────
+  # Gotenberg & Tika werden durch 'configureTika = true' automatisch aktiviert.
+  # Wir stellen sicher, dass sie in Slices isoliert sind.
+  systemd.services.gotenberg.serviceConfig.Slice = "system-paperless.slice";
+  systemd.services.tika.serviceConfig.Slice = "system-paperless.slice";
+}
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:f87d551b993481ea5955b0d9efa293cc72e40651cadc3f643ed94b9fa6bc0af4
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */

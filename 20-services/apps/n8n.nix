@@ -3,78 +3,75 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-20-SRV-009
- *   title: "N8n"
+ *   title: "N8n (SRE Hardened)"
  *   layer: 20
- * architecture:
- *   req_refs: [REQ-SRV]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Workflow automation with DynamicUser isolation and secure secret handling.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/misc/n8n.nix
  * ---
  */
 { config, lib, pkgs, ... }:
 let
-  myLib = import ../../lib/helpers.nix { inherit lib; };
+  port = config.my.ports.n8n;
   domain = config.my.configs.identity.domain;
-  
-  serviceBase = myLib.mkService {
-    inherit config;
-    name = "n8n";
-    useSSO = false;
-    description = "Workflow Automation (Declarative Core)";
-  };
 in
-lib.mkMerge [
-  serviceBase
-  {
-    # 🚀 N8N EXHAUSTION
-    services.n8n = {
-      enable = true;
+{
+  # 🚀 N8N EXHAUSTION
+  services.n8n = {
+    enable = true;
+    
+    environment = {
+      N8N_PORT = toString port;
+      N8N_HOST = "127.0.0.1";
+      N8N_EDITOR_BASE_URL = "https://n8n.${domain}";
       
-      environment = {
-        N8N_PORT = toString config.my.ports.n8n;
-        N8N_HOST = "127.0.0.1";
-        N8N_EDITOR_BASE_URL = "https://n8n.${domain}";
-        
-        # SRE PERFORMANCE & DATA HYGIENE
-        EXECUTIONS_DATA_PRUNE = "true";
-        EXECUTIONS_DATA_MAX_AGE = "336"; # 14 Tage (Voll-Deklarativ)
-        N8N_LOG_LEVEL = "info";
-        
-        # PostgreSQL Configuration
-        DB_TYPE = "postgresdb";
-        DB_POSTGRESDB_DATABASE = "n8n";
-        DB_POSTGRESDB_HOST = "/run/postgresql";
-        DB_POSTGRESDB_USER = "n8n";
+      # ── SRE PERFORMANCE & HYGIENE ────────────────────────────────────────
+      EXECUTIONS_DATA_PRUNE = "true";
+      EXECUTIONS_DATA_MAX_AGE = "336"; # 14 Tage
+      N8N_LOG_LEVEL = "info";
+      
+      # DB Wiring (Postgres aus Layer 10)
+      DB_TYPE = "postgresdb";
+      DB_POSTGRESDB_DATABASE = "n8n";
+      DB_POSTGRESDB_HOST = "/run/postgresql";
+      DB_POSTGRESDB_USER = "n8n";
 
-        # 🛡️ SECURE SECRET HANDLING
-        # Verweist direkt auf sops-entschlüsselte Dateien (Kein Env-Leak)
-        N8N_ENCRYPTION_KEY_FILE = config.sops.secrets.n8n_enc_key.path;
-      };
+      # 🛡️ SECURE SECRET HANDLING (Modern Pattern)
+      # Wir nutzen das _FILE Pattern von nixpkgs, um Secrets sicher via systemd
+      # credentials zu laden.
+      N8N_ENCRYPTION_KEY_FILE = config.sops.secrets.n8n_enc_key.path;
     };
+  };
 
-    # systemd Hardening
-    systemd.services.n8n.serviceConfig = {
-      ProtectSystem = lib.mkForce "strict";
-      ReadWritePaths = [ "/data/state/n8n" ];
-      # Ermöglicht Zugriff auf Secrets falls _FILE genutzt wird
-      ReadOnlyPaths = [ config.sops.secrets.n8n_enc_key.path ];
-    };
-  }
-]
+  # ── CADDY INTEGRATION ────────────────────────────────────────────────────
+  services.caddy.virtualHosts."n8n.${domain}" = {
+    extraConfig = ''
+      import sso_auth
+      reverse_proxy 127.0.0.1:${toString port}
+    '';
+  };
 
-
-
-
-
-
+  # ── SRE SANDBOXING (Level: High) ─────────────────────────────────────────
+  systemd.services.n8n.serviceConfig = {
+    # DynamicUser isoliert den Dienst pro Start (keine permanenten UIDs nötig)
+    DynamicUser = true;
+    StateDirectory = "n8n"; # Mappt auf /var/lib/n8n
+    
+    ProtectSystem = "strict";
+    ProtectHome = true;
+    PrivateTmp = true;
+    PrivateDevices = true;
+    
+    # n8n braucht Netzwerk für Webhooks
+    RestrictAddressFamilies = [ "AF_UNIX" "AF_INET" "AF_INET6" ];
+    
+    # MemoryDenyWriteExecute muss auf 'no' bleiben, da n8n/node JIT nutzt.
+    MemoryDenyWriteExecute = false; 
+    
+    # Verweist auf sops-Secrets via LoadCredential
+    LoadCredential = [ "n8n_enc_key:${config.sops.secrets.n8n_enc_key.path}" ];
+  };
+}
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:88185052ec68d8bb73059b959813c49b4c5f4e8bc0498a7731395d0c23424c24
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */

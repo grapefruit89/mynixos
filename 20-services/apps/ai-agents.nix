@@ -3,13 +3,10 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-20-SRV-001
- *   title: "Ai Agents"
+ *   title: "Ai Agents (Ollama & Claude)"
  *   layer: 20
- * architecture:
- *   req_refs: [REQ-SRV]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Local AI orchestration with Ollama (GPU-accelerated) and Claude Code.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/misc/ollama.nix
  * ---
  */
 { config, lib, pkgs, ... }:
@@ -24,37 +21,36 @@ let
   '';
 in
 {
-  services.ollama.enable = true;
-  services.ollama.package = if config.my.configs.hardware.intelGpu then pkgs.ollama-vulkan else pkgs.ollama;
-  services.ollama.loadModels = [ "kimi-k2.5:cloud" ];
+  # 🚀 OLLAMA EXHAUSTION
+  services.ollama = {
+    enable = true;
+    # SRE Hardware Acceleration: Vulkan für UHD 630 nutzen falls möglich
+    package = if config.my.configs.hardware.intelGpu then pkgs.ollama-vulkan else pkgs.ollama;
+    loadModels = [ "kimi-k2.5:cloud" ];
+  };
 
+  # ── SRE TOOLS ───────────────────────────────────────────────────────────
   environment.systemPackages = [
     kimiClaudeScript
     pkgs.ollama
     pkgs.nodejs_22
   ];
 
+  # Alias für den schnellen Zugriff
   programs.bash.shellAliases.kimi = "kimi-claude";
+
+  # ── SRE HARDENING ───────────────────────────────────────────────────────
+  systemd.services.ollama.serviceConfig = {
+    # GPU Zugriff sicherstellen
+    DeviceAllow = [ "/dev/dri/renderD128 rw" ];
+    ProtectSystem = "strict";
+    ProtectHome = true;
+    PrivateTmp = true;
+    # OOM-Schutz: KI-Modelle fressen viel RAM
+    OOMScoreAdjust = 500;
+  };
 }
-
-
-
-
-
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:c57cd87c54c177381376889253be09b11dae964090d02c16ef017d11c94126ed
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */

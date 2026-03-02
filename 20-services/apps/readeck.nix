@@ -3,56 +3,59 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-20-SRV-013
- *   title: "Readeck"
+ *   title: "Readeck (SRE Hardened)"
  *   layer: 20
- * architecture:
- *   req_refs: [REQ-SRV]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Self-hosted 'read-it-later' service, tightly sandboxed with DynamicUser.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/web-apps/readeck.nix
  * ---
  */
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 let
-  myLib = import ../../lib/helpers.nix { inherit lib; };
-  serviceBase = myLib.mkService {
-    inherit config;
-    name = "readeck";
-    useSSO = true;
-    description = "Read Later Service";
-  };
+  port = config.my.ports.readeck;
+  domain = config.my.configs.identity.domain;
 in
-lib.mkMerge [
-  serviceBase
-  {
-    services.readeck = {
-      enable = true;
-      settings = {
-        host = "127.0.0.1";
-        port = config.my.ports.readeck;
-      };
+{
+  # 🚀 READECK EXHAUSTION
+  services.readeck = {
+    enable = true;
+    
+    # ── DEKLARATIVE CONFIG ─────────────────────────────────────────────────
+    settings = {
+      server.host = "127.0.0.1";
+      server.port = port;
+      # SRE: Performance & Logging
+      log.level = "info";
     };
-  }
-]
 
+    # Secret Handling (Secret Key)
+    environmentFile = config.sops.secrets.readeck_env.path;
+  };
 
+  # ── CADDY INTEGRATION ────────────────────────────────────────────────────
+  services.caddy.virtualHosts."read.${domain}" = {
+    extraConfig = ''
+      import sso_auth
+      reverse_proxy 127.0.0.1:${toString port}
+    '';
+  };
 
-
-
-
-
-
-
-
-
-
+  # ── SRE SANDBOXING (Level: High) ─────────────────────────────────────────
+  systemd.services.readeck.serviceConfig = {
+    # Aus nixpkgs übernommen: Maximale Isolation
+    DynamicUser = true;
+    ProtectSystem = "full";
+    ProtectHome = true;
+    PrivateTmp = true;
+    PrivateDevices = true;
+    
+    # System-Call Filter
+    SystemCallFilter = [ "@system-service" "~@privileged" ];
+    
+    # OOM-Schutz
+    OOMScoreAdjust = 300;
+  };
+}
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:620211cff2e064ec52e56845395fcb8dd3446b8663904a6d3c4e1ee9c808305a
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */

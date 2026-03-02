@@ -3,66 +3,54 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-20-SRV-004
- *   title: "Filebrowser"
+ *   title: "Filebrowser (SRE Hardened)"
  *   layer: 20
- * architecture:
- *   req_refs: [REQ-SRV]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Web-based file manager with strict path restrictions and sandboxing.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/misc/filebrowser.nix
  * ---
  */
 { config, lib, ... }:
 let
-  myLib = import ../../lib/helpers.nix { inherit lib; };
-  cfg = config.my.profiles.services.filebrowser;
-  serviceBase = myLib.mkService {
-    inherit config;
-    name = "filebrowser";
-    useSSO = false;
-    description = "Web File Manager";
-  };
+  port = config.my.ports.filebrowser;
+  domain = config.my.configs.identity.domain;
 in
-lib.mkIf cfg.enable (lib.mkMerge [
-  serviceBase
-  {
-    services.filebrowser = {
-      enable = true;
-      settings = {
-        port = config.my.ports.filebrowser;
-        address = "127.0.0.1";
-        root = "/mnt/storage";
-      };
+{
+  # 🚀 FILEBROWSER EXHAUSTION
+  services.filebrowser = {
+    enable = true;
+    settings = {
+      port = port;
+      address = "127.0.0.1";
+      root = "/mnt/storage"; # SSoT: Einstiegspunkt in den Pool
     };
+  };
 
-    systemd.services.filebrowser.serviceConfig = {
-      ProtectSystem = lib.mkForce "strict";
-      ReadWritePaths = [ 
-        "/var/lib/filebrowser"
-        "/mnt/storage" 
-      ];
-    };
-  }
-])
+  # ── CADDY INTEGRATION ────────────────────────────────────────────────────
+  services.caddy.virtualHosts."files.${domain}" = {
+    extraConfig = ''
+      import sso_auth
+      reverse_proxy 127.0.0.1:${toString port}
+    '';
+  };
 
-
-
-
-
-
-
-
-
-
-
-
+  # ── SRE SANDBOXING (Level: High) ─────────────────────────────────────────
+  systemd.services.filebrowser.serviceConfig = {
+    ProtectSystem = "strict";
+    ProtectHome = true;
+    PrivateTmp = true;
+    PrivateDevices = true;
+    
+    # Schreibzugriff nur auf DB und den Storage-Pool
+    ReadWritePaths = [ 
+      "/var/lib/filebrowser"
+      "/mnt/storage" 
+    ];
+    
+    NoNewPrivileges = true;
+    SystemCallFilter = [ "@system-service" "~@privileged" ];
+  };
+}
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:c097a6357400e76ba2d99285ff293a7e0c35673aeaff6c1f0ba9db64a392fe3e
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */

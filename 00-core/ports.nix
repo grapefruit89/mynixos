@@ -41,6 +41,7 @@
     filebrowser    = 20001;
     vaultwarden    = 20002;
     readeck        = 20007;
+    openWebui      = 20011;
     miniflux       = 20016;
     n8n            = 20017;
     scrutiny       = 20020;

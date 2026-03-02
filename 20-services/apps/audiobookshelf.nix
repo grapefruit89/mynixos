@@ -3,54 +3,52 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-20-SRV-002
- *   title: "Audiobookshelf"
+ *   title: "Audiobookshelf (SRE Hardened)"
  *   layer: 20
- * architecture:
- *   req_refs: [REQ-SRV]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Purposed-built audiobook and podcast server with strict sandboxing.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/web-apps/audiobookshelf.nix
  * ---
  */
 { config, lib, ... }:
 let
-  myLib = import ../../lib/helpers.nix { inherit lib; };
-  serviceBase = myLib.mkService {
-    inherit config;
-    name = "audiobookshelf";
-    useSSO = true;
-    description = "Audiobook Server";
-  };
+  port = config.my.ports.audiobookshelf;
+  domain = config.my.configs.identity.domain;
 in
-lib.mkMerge [
-  serviceBase
-  {
-    services.audiobookshelf = {
-      enable = true;
-      host = "127.0.0.1";
-      port = config.my.ports.audiobookshelf;
-    };
-  }
-]
+{
+  # 🚀 AUDIOBOOKSHELF EXHAUSTION
+  services.audiobookshelf = {
+    enable = true;
+    host = "127.0.0.1";
+    port = port;
+  };
 
+  # ── CADDY INTEGRATION ────────────────────────────────────────────────────
+  services.caddy.virtualHosts."abs.${domain}" = {
+    extraConfig = ''
+      import sso_auth
+      reverse_proxy 127.0.0.1:${toString port}
+    '';
+  };
 
-
-
-
-
-
-
-
-
-
-
+  # ── SRE SANDBOXING (Level: High) ─────────────────────────────────────────
+  systemd.services.audiobookshelf.serviceConfig = {
+    # Isoliert den Dienst und schützt die restliche Medien-Bibliothek vor unbefugtem Schreibzugriff.
+    ProtectSystem = "strict";
+    ProtectHome = true;
+    PrivateTmp = true;
+    PrivateDevices = true;
+    
+    # Schreibzugriff nur auf Daten und den eigentlichen Medien-Pfad
+    ReadWritePaths = [ "/var/lib/audiobookshelf" "/data/media/audiobooks" ];
+    
+    NoNewPrivileges = true;
+    SystemCallFilter = [ "@system-service" "~@privileged" ];
+    
+    # OOM-Schutz: Medien-Server sind wichtig
+    OOMScoreAdjust = -100;
+  };
+}
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:dda164980f5bcd4b1d91cfdb21d6f143afac1259826c22815fb2529413ffcd84
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */

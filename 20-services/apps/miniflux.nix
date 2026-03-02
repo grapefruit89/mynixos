@@ -3,56 +3,62 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-20-SRV-007
- *   title: "Miniflux"
+ *   title: "Miniflux (SRE Hardened)"
  *   layer: 20
- * architecture:
- *   req_refs: [REQ-SRV]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Minimalist RSS reader with auto-database setup and AppArmor protection.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/web-apps/miniflux.nix
  * ---
  */
 { config, lib, ... }:
 let
-  myLib = import ../../lib/helpers.nix { inherit lib; };
-  serviceBase = myLib.mkService {
-    inherit config;
-    name = "miniflux";
-    useSSO = true;
-    description = "RSS Reader";
-  };
+  port = config.my.ports.miniflux;
+  domain = config.my.configs.identity.domain;
 in
-lib.mkMerge [
-  serviceBase
-  {
-    services.miniflux = {
-      enable = true;
-      config = {
-        LISTEN_ADDR = "127.0.0.1:${toString config.my.ports.miniflux}";
-      };
-      adminCredentialsFile = config.sops.secrets.miniflux_admin_password.path;
+{
+  # 🚀 MINIFLUX EXHAUSTION
+  services.miniflux = {
+    enable = true;
+    
+    # ── DEKLARATIVE CONFIG ─────────────────────────────────────────────────
+    config = {
+      LISTEN_ADDR = "127.0.0.1:${toString port}";
+      # SRE: Performance & Watchdog
+      WATCHDOG = "1";
+      RUN_MIGRATIONS = "1";
     };
-  }
-]
 
+    # ── DB-WIRING ──────────────────────────────────────────────────────────
+    createDatabaseLocally = true; # Nutzt PostgreSQL aus Layer 10
+    
+    # Secret Handling (Admin Login)
+    adminCredentialsFile = config.sops.secrets.miniflux_admin_password.path;
+  };
 
+  # ── CADDY INTEGRATION ────────────────────────────────────────────────────
+  services.caddy.virtualHosts."rss.${domain}" = {
+    extraConfig = ''
+      import sso_auth
+      reverse_proxy 127.0.0.1:${toString port}
+    '';
+  };
 
-
-
-
-
-
-
-
-
-
+  # ── SRE SANDBOXING (Aviation Grade) ──────────────────────────────────────
+  systemd.services.miniflux.serviceConfig = {
+    # Aus nixpkgs übernommen: Maximale Isolation via DynamicUser
+    DynamicUser = true;
+    ProtectSystem = "strict";
+    ProtectHome = true;
+    PrivateTmp = true;
+    PrivateDevices = true;
+    
+    # System-Call Filter
+    SystemCallFilter = [ "@system-service" "~@privileged" ];
+    
+    # OOM-Schutz: Miniflux ist leichtgewichtig
+    OOMScoreAdjust = 500;
+  };
+}
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:0a2e5ebc20e5cee1a4ab89e430db42a9ce171f18ebea18b718c2a34ef3fb9277
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */

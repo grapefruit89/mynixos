@@ -2,72 +2,67 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: NIXH-20-SRV-014
- *   title: "Scrutiny"
+ *   id: NIXH-20-SRV-020
+ *   title: "Scrutiny (SRE Hardened)"
  *   layer: 20
- * architecture:
- *   req_refs: [REQ-SRV]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Hard drive S.M.A.R.T monitoring with automated collection.
+ * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/monitoring/scrutiny.nix
  * ---
  */
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 let
-  myLib = import ../../lib/helpers.nix { inherit lib; };
-  cfg = config.my.profiles.services.scrutiny;
-  serviceBase = myLib.mkService {
-    inherit config;
-    name = "scrutiny";
-    useSSO = true;
-    description = "Hard Drive Monitoring (Exhausted)";
-  };
+  port = config.my.ports.scrutiny;
+  domain = config.my.configs.identity.domain;
 in
-lib.mkIf cfg.enable (lib.mkMerge [
-  serviceBase
-  {
-    # 🚀 SCRUTINY EXHAUSTION
-    services.scrutiny = {
-      enable = true;
+{
+  # 🚀 SCRUTINY EXHAUSTION
+  services.scrutiny = {
+    enable = true;
+    
+    # ── DEKLARATIVE CONFIG ─────────────────────────────────────────────────
+    settings = {
+      web.listen.port = port;
+      web.listen.host = "127.0.0.1";
       
-      # VOLL-DEKLARATIVE EINSTELLUNGEN
-      settings = {
-        web.listen.port = config.my.ports.scrutiny;
-        web.listen.host = "127.0.0.1";
-        
-        # SRE: Metrics & Monitoring
-        log.level = "INFO";
-        notify.urls = []; # Platzhalter für Gotify/Discord
-      };
-
-      # Collector aktivieren (Automatischer Scan)
-      collector = {
-        enable = true;
-        schedule = "*-*-* *:0/15:00"; # Alle 15 Minuten (systemd timer Format)
-      };
+      # SRE: Performance & Database
+      log.level = "INFO";
     };
 
-    # systemd Hardening (SRE High-Trust)
-    systemd.services.scrutiny.serviceConfig = {
-      DeviceAllow = [ "/dev/sda rw" "/dev/sdb rw" "/dev/nvme0n1 rw" ];
-      CapabilityBoundingSet = [ "CAP_SYS_RAWIO" "CAP_SYS_ADMIN" ];
-      ProtectSystem = lib.mkForce "strict";
-      ReadWritePaths = [ "/var/lib/scrutiny" ];
+    # Nutzt InfluxDB für Trends (Standardmäßig aktiviert)
+    influxdb.enable = true;
+    
+    # 🕵️ COLLECTOR (Automatischer Scan der Disks)
+    collector = {
+      enable = true;
+      schedule = "daily";
     };
-  }
-])
+  };
 
+  # ── CADDY INTEGRATION ────────────────────────────────────────────────────
+  services.caddy.virtualHosts."scrutiny.${domain}" = {
+    extraConfig = ''
+      import sso_auth
+      reverse_proxy 127.0.0.1:${toString port}
+    '';
+  };
 
+  # ── SRE SANDBOXING ───────────────────────────────────────────────────────
+  systemd.services.scrutiny.serviceConfig = {
+    # Aus nixpkgs übernommen: Isolation via DynamicUser
+    DynamicUser = true;
+    ProtectSystem = "strict";
+    ProtectHome = true;
+    PrivateTmp = true;
+    PrivateDevices = true;
+    
+    # OOM-Schutz
+    OOMScoreAdjust = 800;
+  };
 
-
-
+  # 🛡️ SMARTD Integration
+  services.smartd.enable = true;
+}
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:0760bf641528484a69ff1135ec5efbb9361d48c4e2048e04e11afed51ca1686e
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */
