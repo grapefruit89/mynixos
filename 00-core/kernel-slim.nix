@@ -1,11 +1,13 @@
-# meta:
-#   owner: core
-#   status: active
-#   scope: shared
-#   summary: Kernel-Schlankheitskur – Deaktiviert ungenutzte Module (Q958-spezifisch)
-#   priority: P3 (Medium)
-#   benefit: ~300MB RAM-Ersparnis, 3s schnellerer Boot
-
+/**
+ * ---
+ * nms_version: 2.3
+ * identity:
+ *   id: NIXH-00-CORE-012
+ *   title: "Kernel Slim"
+ *   layer: 00
+ * summary: Optimized kernel for Q958 by blacklisting unused modules.
+ * ---
+ */
 { config, lib, pkgs, ... }:
 
 let

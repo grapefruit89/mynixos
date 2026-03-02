@@ -186,3 +186,12 @@ in
     users.groups.${cfg.group} = lib.mkDefault { };
   };
 }
+/**
+ * ---
+ * technical_integrity:
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-03-02
+ *   complexity_score: 3
+ * ---
+ */

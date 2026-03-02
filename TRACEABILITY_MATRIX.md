@@ -39,6 +39,8 @@
 | REQ-CORE | User Preferences | NIXH-00-CORE-032 | 00 | [x] PASS | `0e00f6d7` |
 | REQ-CORE | Users | NIXH-00-CORE-033 | 00 | [x] PASS | `07299115` |
 | REQ-CORE | Zram Swap | NIXH-00-CORE-034 | 00 | [x] PASS | `41fc1732` |
+| REQ-CORE | Auto Locale | NIXH-00-CORE-035 | 00 | [x] PASS | `NEW` |
+| REQ-CORE | Defaults | NIXH-00-SYS-DEFAULTS-001 | 00 | [x] PASS | `NEW` |
 | REQ-INF | Adguardhome | NIXH-10-INF-001 | 10 | [x] PASS | `f7a35ad6` |
 | REQ-INF | Caddy | NIXH-10-INF-002 | 10 | [x] PASS | `d2f76dc7` |
 | REQ-INF | Clamav | NIXH-10-INF-003 | 10 | [x] PASS | `6df5f205` |
@@ -92,6 +94,8 @@
 | REQ-SRV | Sonarr | NIXH-20-SRV-032 | 20 | [x] PASS | `38487898` |
 | REQ-SRV | Media Stack | NIXH-20-SRV-033 | 20 | [x] PASS | `9f37ec10` |
 | REQ-SRV | SERVICE_TEMPLATE | NIXH-20-SRV-034 | 20 | [x] PASS | `9bb18c57` |
+| REQ-SRV | Zigbee Stack | NIXH-20-SRV-035 | 20 | [x] PASS | `NEW` |
+| REQ-SRV | Matrix Conduit | NIXH-20-SRV-036 | 20 | [x] PASS | `NEW` |
 | REQ-POL | No Legacy | NIXH-90-POL-001 | 90 | [x] PASS | `c0cb856a` |
 | REQ-POL | Security Assertions | NIXH-90-POL-002 | 90 | [x] PASS | `d9c4dcc3` |
 | REQ-SYS-01 | System Entrypoint | NIXH-00-SYS-ROOT-001 | 00 | [x] PASS | `ab22b089` |

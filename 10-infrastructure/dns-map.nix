@@ -41,6 +41,7 @@ in
     miniflux       = "miniflux.${d}";
     monica         = "monica.${d}";
     readeck        = "readeck.${d}";
+    matrix         = "matrix.${d}";
 
     # ── INFRASTRUCTURE ─────────────────────────────────────────────────────
     auth           = "auth.${d}";

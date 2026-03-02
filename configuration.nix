@@ -88,6 +88,7 @@
     ./20-services/apps/home-assistant.nix
     ./20-services/apps/zigbee-stack.nix
     ./20-services/apps/karakeep.nix
+    ./20-services/apps/matrix-conduit.nix
 
     # 90 — Policy
     ./90-policy/security-assertions.nix # <-- Aktiviert

@@ -1,11 +1,18 @@
-# meta:
-#   owner: core
-#   status: active
-#   scope: shared
-#   summary: Boot-Partition Safeguard – Verhindert Overflow durch aggressive GC
-#   priority: P0 (Blocker)
-#   issue: Boot-Partition nur 96MB, füllt sich bei ~6 Generationen
-
+/**
+ * ---
+ * nms_version: 2.3
+ * identity:
+ *   id: NIXH-00-CORE-003
+ *   title: "Boot Safeguard"
+ *   layer: 00
+ * architecture:
+ *   req_refs: [REQ-CORE]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
+ *   status: audited
+ * summary: Prevent /boot overflow with aggressive GC and pre-build checks.
+ * ---
+ */
 { config, lib, pkgs, ... }:
 
 let

@@ -1,9 +1,13 @@
-# meta:
-#   owner: core
-#   status: active
-#   scope: shared
-#   summary: Shell-Workflow-Modul – Premium-Aliase + Fastfetch MOTD + Produktivitäts-Tools
-
+/**
+ * ---
+ * nms_version: 2.3
+ * identity:
+ *   id: NIXH-00-CORE-024
+ *   title: "Shell Premium"
+ *   layer: 00
+ * summary: Advanced shell workflow with fastfetch MOTD and productivity aliases.
+ * ---
+ */
 { config, lib, pkgs, ... }:
 
 let

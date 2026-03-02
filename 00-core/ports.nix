@@ -69,6 +69,9 @@
     # source-id: PORT.jellyseerr
     jellyseerr     = 25055;
     
+    # Matrix Server
+    matrix         = 20006;
+    
     # Missing Ports
     audiobookshelf = 20081;
     readeck        = 20005;

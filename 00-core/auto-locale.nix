@@ -1,11 +1,18 @@
-# meta:
-#   owner: core
-#   status: active
-#   scope: shared
-#   summary: Auto-Locale – Intelligente Länder-Erkennung via Geolocation
-#   priority: P4 (Nice-to-Have)
-#   benefit: Reduziert manuelle Konfiguration auf 1 Zeile
-
+/**
+ * ---
+ * nms_version: 2.3
+ * identity:
+ *   id: NIXH-00-CORE-035
+ *   title: "Auto Locale"
+ *   layer: 00
+ * architecture:
+ *   req_refs: [REQ-CORE]
+ *   upstream: [NIXH-00-SYS-ROOT-001]
+ *   downstream: []
+ *   status: audited
+ * summary: Intelligent country detection via IP geolocation for zero-touch locale setup.
+ * ---
+ */
 { config, lib, pkgs, ... }:
 
 let
@@ -410,3 +417,12 @@ in
 #   my.locale.profile = "DE";
 #
 # ══════════════════════════════════════════════════════════════════════════
+/**
+ * ---
+ * technical_integrity:
+ *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-03-02
+ *   complexity_score: 2
+ * ---
+ */

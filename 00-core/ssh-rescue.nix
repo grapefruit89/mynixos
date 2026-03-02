@@ -1,11 +1,13 @@
-# meta:
-#   owner: core
-#   status: active
-#   scope: shared
-#   summary: SSH Recovery Window – 5min Passwort-Login nach Boot (Notfall-Zugang)
-#   priority: P1 (Critical)
-#   issue: SSH-Key Verlust führt zu permanentem Lockout
-
+/**
+ * ---
+ * nms_version: 2.3
+ * identity:
+ *   id: NIXH-00-CORE-026
+ *   title: "SSH Rescue"
+ *   layer: 00
+ * summary: Temporary 5-minute SSH window with password auth for emergency recovery.
+ * ---
+ */
 { config, lib, pkgs, ... }:
 
 let
