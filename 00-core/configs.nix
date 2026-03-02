@@ -23,6 +23,7 @@
     # ── IDENTITY ───────────────────────────────────────────────────────────
     identity = {
       domain = lib.mkOption { type = lib.types.str; default = "m7c5.de"; };
+      subdomain = lib.mkOption { type = lib.types.str; default = "nix"; }; # 🛡️ Sicherheits-Prefix
       email = lib.mkOption { type = lib.types.str; default = "moritzbaumeister@gmail.com"; };
       user = lib.mkOption { type = lib.types.str; default = "moritz"; };
     };

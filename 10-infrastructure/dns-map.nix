@@ -3,57 +3,42 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-10-INF-008
- *   title: "Dns Map"
+ *   title: "Dns Map (Dynamic SRE)"
  *   layer: 10
- * architecture:
- *   req_refs: [REQ-INF]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Centralized DNS mapping with dynamic subdomain support.
  * ---
  */
+let
+  baseDomain = "m7c5.de";
+  sub = "nix"; # 🛡️ SRE Standard Subdomain
+  fullDomain = "${sub}.${baseDomain}";
+in
 {
   useNixSubdomain = true;
   dnsMapping = {
-    jellyfin = "jellyfin.nix.m7c5.de";
-    sonarr = "sonarr.nix.m7c5.de";
-    radarr = "radarr.nix.m7c5.de";
-    prowlarr = "prowlarr.nix.m7c5.de";
-    readarr = "readarr.nix.m7c5.de";
-    vault = "vault.nix.m7c5.de";
-    auth = "auth.nix.m7c5.de";
-    miniflux = "miniflux.nix.m7c5.de";
-    monica = "monica.nix.m7c5.de";
-    audiobookshelf = "audiobookshelf.nix.m7c5.de";
-    paperless = "paperless.nix.m7c5.de";
-    n8n = "n8n.nix.m7c5.de";
-    scrutiny = "scrutiny.nix.m7c5.de";
-    filebrowser = "filebrowser.nix.m7c5.de";
-    sabnzbd = "nix-sabnzbd.m7c5.de";
-    dashboard = "nixhome.m7c5.de";
-    homeassistant = "home.nix.m7c5.de";
+    jellyfin = "jellyfin.${fullDomain}";
+    sonarr = "sonarr.${fullDomain}";
+    radarr = "radarr.${fullDomain}";
+    prowlarr = "prowlarr.${fullDomain}";
+    readarr = "readarr.${fullDomain}";
+    vault = "vault.${fullDomain}";
+    auth = "auth.${fullDomain}";
+    miniflux = "miniflux.${fullDomain}";
+    monica = "monica.${fullDomain}";
+    audiobookshelf = "audiobookshelf.${fullDomain}";
+    paperless = "paperless.${fullDomain}";
+    n8n = "n8n.${fullDomain}";
+    scrutiny = "scrutiny.${fullDomain}";
+    filebrowser = "filebrowser.${fullDomain}";
+    sabnzbd = "sabnzbd.${fullDomain}";
+    dashboard = "dash.${fullDomain}";
+    homeassistant = "home.${fullDomain}";
+    openwebui = "openwebui.${fullDomain}";
+    agentzero = "agentzero.${fullDomain}";
   };
-  baseDomain = "m7c5.de";
+  baseDomain = baseDomain;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:7a0360ab96b0f724f974ef8e24d52078d0adf5a19bd1a45f69d5e92238b06a3f
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */
