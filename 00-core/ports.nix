@@ -34,6 +34,8 @@
     homepage    = 10082;
     # source-id: PORT.netdata
     netdata     = 10999;
+    # source-id: PORT.valkey
+    valkey      = 6379;
 
     # ── 20-SERVICES (20xxx) ─────────────────────────────────────────────────
     # source-id: PORT.jellyfin
@@ -44,6 +46,8 @@
     n8n            = 20017;
     # source-id: PORT.paperless
     paperless      = 20981;
+    # source-id: PORT.ollama
+    ollama         = 11434;
     # source-id: PORT.sonarr
     sonarr         = 20989;
     # source-id: PORT.radarr

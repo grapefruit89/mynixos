@@ -16,6 +16,7 @@ let
   dnsScript = "/etc/nixos/00-core/scripts/dns-optimizer.sh";
   cfScript = "/etc/nixos/00-core/scripts/validate-cloudflare-key.sh";
   moverScript = "/etc/nixos/00-core/scripts/nixhome-mover.sh";
+  sopsScript = "/etc/nixos/00-core/scripts/add-sops-secret.sh";
 in
 {
   # 🚀 OLIVETIN EXHAUSTION
@@ -24,12 +25,21 @@ in
     # SRE: Pakete für die Shell-Aktionen bereitstellen
     path = with pkgs; [ 
       bash openssl jq coreutils gnused systemd 
-      nixos-rebuild nix-output-monitor curl
+      nixos-rebuild nix-output-monitor curl sops
     ];
     
     settings = {
       ListenAddressSingleHTTPFrontend = "127.0.0.1:${toString port}";
       actions = [
+        {
+          title = "SOPS: Neues Secret speichern";
+          shell = "sudo ${sopsScript} '{{ secret_key }}' '{{ secret_value }}'";
+          icon = "&#128272;";
+          arguments = [
+            { name = "secret_key"; type = "ascii"; description = "Name in secrets.yaml (z.B. neu_api_key)"; }
+            { name = "secret_value"; type = "ascii"; description = "Der geheime Wert"; }
+          ];
+        }
         {
           title = "System Update (nixos-rebuild switch)";
           shell = "sudo nixos-rebuild switch";
@@ -103,6 +113,7 @@ in
         { command = "${pkgs.nix}/bin/nix-store"; options = [ "NOPASSWD" ]; }
         { command = "/run/current-system/sw/bin/systemctl"; options = [ "NOPASSWD" ]; }
         { command = "${mtlsScript}"; options = [ "NOPASSWD" ]; }
+        { command = "${sopsScript}"; options = [ "NOPASSWD" ]; }
         { command = "${moverScript}"; options = [ "NOPASSWD" ]; }
         { command = "${pkgs.openssl}/bin/openssl"; options = [ "NOPASSWD" ]; }
       ];

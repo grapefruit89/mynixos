@@ -23,7 +23,7 @@ in
     
     # ── AI WIRING (Ollama Integration) ────────────────────────────────────
     environment = {
-      OLLAMA_API_BASE_URL = "http://127.0.0.1:11434";
+      OLLAMA_API_BASE_URL = "http://127.0.0.1:${toString config.my.ports.ollama}";
       # SRE: Privacy & Performance
       SCARF_NO_ANALYTICS = "True";
       DO_NOT_TRACK = "True";

@@ -39,7 +39,7 @@ in
       PAPERLESS_THREADS_PER_WORKER = 1;
       
       # Redis Integration (SSoT: Nutzt Valkey aus Layer 10)
-      PAPERLESS_REDIS = "redis://127.0.0.1:6379";
+      PAPERLESS_REDIS = "redis://127.0.0.1:${toString config.my.ports.valkey}";
     };
 
     passwordFile = config.sops.secrets.paperless_secret_key.path;

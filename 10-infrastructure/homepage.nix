@@ -88,12 +88,12 @@ in
       # Tailscale darf ohne SSO drauf (Admin-Convenience)
       @tailscale remote_ip 100.64.0.0/10
       handle @tailscale {
-        reverse_proxy 127.0.0.1:8082
+        reverse_proxy 127.0.0.1:${toString config.my.ports.homepage}
       }
 
       # Externer Zugriff via Pocket-ID geschützt
       import sso_auth
-      reverse_proxy 127.0.0.1:8082
+      reverse_proxy 127.0.0.1:${toString config.my.ports.homepage}
     '';
   };
 }

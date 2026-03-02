@@ -92,6 +92,13 @@ in
       nixhome.local, ${lanIP}, ${sslipHost}, rescue.local {
         log { output discard }
         tls internal
+        
+        # 🛡️ SRE HARDENING: OliveTin strictly LAN/VPN only
+        @blocked_olivetin {
+          not remote_ip ${trustedIPs}
+        }
+        respond @blocked_olivetin "Access denied: LAN/VPN only" 403
+
         handle {
           reverse_proxy localhost:${toString config.my.ports.olivetin}
         }
