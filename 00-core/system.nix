@@ -49,7 +49,7 @@
   programs.nix-ld.enable = true;
 
   environment.systemPackages = with pkgs; [
-    nodejs_22 alejandra git htop wget curl tree unzip file nix-output-monitor
+    nodejs_22 alejandra git htop wget curl tree unzip file nix-output-monitor rsync hdparm
   ];
 
   environment.sessionVariables = {

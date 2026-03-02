@@ -3,52 +3,35 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-00-CORE-001
- *   title: "Ai Tools"
+ *   title: "AI Tools (SRE Assisted)"
  *   layer: 00
- * architecture:
- *   req_refs: [REQ-CORE]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Optimized terminal environment for AI-assisted development and SRE tasks.
  * ---
  */
 { pkgs, ... }:
 {
+  # ── SRE TOOLBELT ────────────────────────────────────────────────────────
   environment.systemPackages = with pkgs; [
     aider-chat uv python3 blesh inshellisense fzf jq curl
   ];
 
+  # ── SHELL UI ENHANCEMENT ────────────────────────────────────────────────
   programs.bash.interactiveShellInit = ''
+    # Integriert blesh für Syntax-Highlighting und Auto-Suggestions
     if [[ -f ${pkgs.blesh}/share/blesh/ble.sh ]]; then
       source ${pkgs.blesh}/share/blesh/ble.sh
       bleopt edit_multi_line=0 2>/dev/null || true
     fi
 
+    # AI Integration Aliase
     if command -v inshellisense > /dev/null; then
-       alias gemini-hint='inshellisense bind gemini -- gemini'
+      alias gemini-hint='inshellisense bind gemini -- gemini'
+      # SRE: Automatisierte Architektur-Visualisierung
       alias p-graph='python3 /etc/nixos/scripts/generate-mermaid.py'
     fi
   '';
 }
-
-
-
-
-
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:0f5ab7eddd5aa72daf444ac41dd631f6cb661269274c33a0ac021751682bd0e8
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */
