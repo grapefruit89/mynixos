@@ -36,20 +36,20 @@ in
         bootstrap_dns = dnsBootstrap;
         fallback_dns = config.my.configs.network.dnsFallback;
         
-        # Performance Tuning
-        cache_size = 33554432;
-        cache_ttl_min = 300;
-        cache_ttl_max = 86400;
+        # 🚀 Ultra Performance Tuning (NixOS 25.11 / 16GB RAM)
+        cache_size = 67108864; # 64MB Cache (Verdoppelt für 16GB RAM)
+        cache_ttl_min = 600;   # 10 Minuten Minimum (Reduziert Upstream Last)
+        cache_ttl_max = 86400; # 24 Stunden Maximum
         cache_optimistic = true;
         fastest_addr = true;
         
-        # Privacy & Security
+        # Security & Privacy
         edns_cs_enabled = false;
         dnssec_enabled = true;
+        anonymize_client_ip = true; # SRE: Privacy First
       };
 
       # ── EXPERT BLOCKLISTS (Single Source of Truth) ────────────────────────
-      # Diese Listen decken 99% aller Werbung, Tracker und Malware ab.
       filtering = {
         protection_enabled = true;
         filtering_enabled = true;
@@ -86,8 +86,8 @@ in
     '';
   };
 
-  # ── SRE SANDBOXING ───────────────────────────────────────────────────────
-  systemd.services.AdGuardHome.serviceConfig = {
+  # ── SRE SANDBOXING (Aviation Grade) ──────────────────────────────────────
+  systemd.services.adguardhome.serviceConfig = { # SSoT: Korrekter Service Name
     ProtectSystem = "strict";
     ProtectHome = true;
     PrivateTmp = true;
@@ -95,15 +95,22 @@ in
     NoNewPrivileges = true;
     CapabilityBoundingSet = [ "CAP_NET_BIND_SERVICE" "CAP_NET_RAW" ];
     AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" "CAP_NET_RAW" ];
-    ReadWritePaths = [ "/var/lib/AdGuardHome" ];
+    ReadWritePaths = [ "/var/lib/adguardhome" ]; # SSoT: Lowercase Pfad prüfen
     LockPersonality = true;
     RestrictRealtime = true;
     RestrictSUIDSGID = true;
-    SystemCallFilter = [ "@system-service" ];
+    MemoryDenyWriteExecute = true; # SRE Hardening
+    ProtectControlGroups = true;
+    ProtectKernelModules = true;
+    ProtectKernelTunables = true;
+    SystemCallFilter = [ "@system-service" "~@privileged" "~@resources" ];
     OOMScoreAdjust = -200;
   };
 }
 /**
  * technical_integrity:
  *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-03-02
+ * ---
  */

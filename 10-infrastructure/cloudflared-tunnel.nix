@@ -3,7 +3,7 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-10-INF-004
- *   title: "Cloudflared Tunnel"
+ *   title: "Cloudflared Tunnel (SRE Exhausted)"
  *   layer: 10
  * architecture:
  *   req_refs: [REQ-INF]
@@ -51,13 +51,37 @@ in
       }
     ];
 
-    systemd.services."cloudflared-tunnel-${cfg.tunnelId}".preStart = ''
-      if [ ! -f "${creds}" ]; then
-        echo "FEHLER: Cloudflared-Credentials fehlen unter ${creds}"
-        echo "Lösung: sops -d /etc/nixos/secrets.yaml | jq -r '.[\"cloudflared_creds\"]' > ${creds}"
-        exit 1
-      fi
-    '';
+    systemd.services."cloudflared-tunnel-${cfg.tunnelId}" = {
+      preStart = ''
+        if [ ! -f "${creds}" ]; then
+          echo "FEHLER: Cloudflared-Credentials fehlen unter ${creds}"
+          echo "Lösung: sops -d /etc/nixos/secrets.yaml | jq -r '.[\"cloudflared_creds\"]' > ${creds}"
+          exit 1
+        fi
+      '';
+      
+      # ── SRE SANDBOXING (Level: High) ──────────────────────────────────────
+      serviceConfig = {
+        ProtectSystem = "strict";
+        ProtectHome = true;
+        PrivateTmp = true;
+        PrivateDevices = true;
+        NoNewPrivileges = true;
+        # Cloudflared braucht Netz-Caps für UDP (QUIC)
+        CapabilityBoundingSet = [ "CAP_NET_BIND_SERVICE" "CAP_NET_RAW" ];
+        AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" "CAP_NET_RAW" ];
+        
+        # Aviation Grade Hardening
+        ProtectControlGroups = true;
+        ProtectKernelModules = true;
+        ProtectKernelTunables = true;
+        RestrictRealtime = true;
+        RestrictSUIDSGID = true;
+        
+        # OOM-Schutz: Edge-Anbindung ist kritisch
+        OOMScoreAdjust = -500;
+      };
+    };
 
     services.cloudflared = {
       enable = true;
@@ -69,6 +93,9 @@ in
             originRequest = {
               noTLSVerify = true;
               originServerName = "${cfg.wildcardPrefix}.${cfg.domain}";
+              # Performance Tuning
+              http2Origin = true;
+              keepAliveConnections = 128;
             };
           };
         };
@@ -77,25 +104,10 @@ in
     };
   };
 }
-
-
-
-
-
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:eb34038a82b8ef8762e4bcbe1dc0b5584943d865fc3bd8f95f65a8f3036dc8b9
  *   eof_marker: NIXHOME_VALID_EOF
  * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
+ *   last_reviewed: 2026-03-02
  * ---
  */
