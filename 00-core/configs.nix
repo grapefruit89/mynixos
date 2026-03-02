@@ -22,6 +22,7 @@
 
     # ── IDENTITY ───────────────────────────────────────────────────────────
     identity = {
+      host = lib.mkOption { type = lib.types.str; default = "q958"; }; # 🛰️ Hostname
       domain = lib.mkOption { type = lib.types.str; default = "m7c5.de"; };
       subdomain = lib.mkOption { type = lib.types.str; default = "nix"; }; # 🛡️ Sicherheits-Prefix
       email = lib.mkOption { type = lib.types.str; default = "moritzbaumeister@gmail.com"; };

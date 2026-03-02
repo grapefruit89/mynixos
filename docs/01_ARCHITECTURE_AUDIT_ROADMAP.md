@@ -60,6 +60,10 @@ Um das System schlank und wartbar zu halten, wurden folgende Ansätze bewusst ve
 ### Phase 2: Infrastruktur & Zero-Trust (Nächste 2 Wochen)
 - [ ] **Break-Glass Zugang**: Tailscale-only Ingress ohne SSO-Pflicht für Notfälle.
 - [ ] **IP-Zentralisierung**: Umstellung von AdGuard auf dynamische Adress-Referenzen.
+- [ ] **Aviation Grade Cloud Backup**:
+    - [ ] Integration von Restic mit S3 (Backblaze B2 / AWS).
+    - [ ] Verschlüsselung via SOPS (Age).
+    - [ ] Health-Monitoring via Uptime Kuma (Push-Heartbeat).
 
 ### Phase 3: "Holy State" & Flakes
 - [ ] **Impermanence**: Umstellung von `/` auf `tmpfs`.
