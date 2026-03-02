@@ -5,7 +5,7 @@
  *   id: NIXH-10-INF-002
  *   title: "Caddy (SRE Ultra Edition)"
  *   layer: 10
- * summary: Tightly integrated edge proxy with Cloudflare Trust, Geoblocking and Zero-Downtime.
+ * summary: Tightly integrated edge proxy with Cloudflare Trust, Geoblocking (DE, AT, LT) and Zero-Downtime.
  * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/web-servers/caddy/default.nix
  * ---
  */
@@ -19,7 +19,6 @@ let
   trustedIPs = "127.0.0.1 100.64.0.0/10 ${lib.concatStringsSep " " config.my.configs.network.lanCidrs}";
 in
 {
-  # ── KERNEL OPTIMIERUNG (HTTP/3) ──────────────────────────────────────────
   boot.kernel.sysctl = {
     "net.core.rmem_max" = 2500000;
     "net.core.wmem_max" = 2500000;
@@ -28,7 +27,6 @@ in
   services.caddy = {
     enable = config.my.profiles.networking.reverseProxy == "caddy";
     
-    # ── LOGGING (RAM-Journal Optimized) ───────────────────────────────────
     logFormat = lib.mkForce ''
       level INFO
       format json {
@@ -37,19 +35,13 @@ in
     '';
 
     globalConfig = ''
-      # Admin Interface nur lokal
       admin localhost:2019
-
-      # ── CLOUDFARE TRUSTED PROXIES ─────────────────────────────────────────
-      # SRE: Damit Caddy die echte Client-IP sieht und nicht die von Cloudflare.
-      # (Benötigt für Geoblock und Fail2ban)
       servers {
         trusted_proxies static 173.245.48.0/20 103.21.244.0/22 103.22.200.0/22 103.31.4.0/22 141.101.64.0/18 108.162.192.0/18 190.93.240.0/20 188.114.96.0/20 197.234.240.0/22 198.41.128.0/17 162.158.0.0/15 104.16.0.0/13 104.24.0.0/14 172.64.0.0/13 131.0.72.0/22
       }
     '';
 
     extraConfig = ''
-      # 🛡️ Snippet: Security-Header (Infosec 2026)
       (security_headers) {
         header {
           X-Content-Type-Options nosniff
@@ -59,38 +51,34 @@ in
         }
       }
 
-      # 🌍 Snippet: Geoblock (Cloudflare Assisted)
-      # Blockiert alle Anfragen, die nicht aus DE kommen.
+      # 🌍 Snippet: Geoblock (SRE Standard)
       (geoblock) {
-        @not_de {
+        @blocked {
           header Cf-Ipcountry *
+          # Erlaubte Länder: DE (DE), AT (AT), Litauen (LT)
           not header Cf-Ipcountry DE
+          not header Cf-Ipcountry AT
+          not header Cf-Ipcountry LT
         }
-        # SRE: Ausnahme für lokale Netze
+        # SRE: Lokale IPs und Tailscale dürfen IMMER passieren
         @not_local {
           not remote_ip ${trustedIPs}
         }
-        respond @not_de @not_local "Access denied from your country" 403
+        respond @blocked @not_local "Access denied from your country" 403
       }
 
-      # 🔐 Snippet: SSO Auth (Pocket-ID)
       (sso_auth) {
-        # Geoblock zuerst prüfen
         import geoblock
-
         @needs_auth {
           not remote_ip ${trustedIPs}
         }
-        
         forward_auth @needs_auth localhost:${toString config.my.ports.pocketId} {
           uri /api/auth/verify
           copy_headers X-Forwarded-User
         }
-        
         import security_headers
       }
 
-      # --- LOKALER ZUGRIFF ---
       nixhome.local, ${lanIP}, ${sslipHost}, rescue.local {
         log { output discard }
         tls internal
@@ -102,10 +90,9 @@ in
     '';
   };
 
-  # ── SYSTEMD HARDENING ──────────────────────────────────────────────────
   systemd.services.caddy = {
     after = [ "adguardhome.service" "network-online.target" ];
-    stopIfChanged = false; # Zero-Downtime
+    stopIfChanged = false;
     serviceConfig = {
       AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" ];
       CapabilityBoundingSet = [ "CAP_NET_BIND_SERVICE" ];
