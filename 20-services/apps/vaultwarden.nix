@@ -3,71 +3,63 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-20-SRV-017
- *   title: "Vaultwarden (Aviation Grade)"
+ *   title: "Vaultwarden (SRE Exhausted)"
  *   layer: 20
- * summary: Tightly sandboxed password manager.
- * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/security/vaultwarden/default.nix
+ * summary: Tightly sandboxed password manager with Wake-on-Access (Socket Activation).
  * ---
  */
 { config, lib, ... }:
 let
-  myLib = import ../../lib/helpers.nix { inherit lib; };
-  serviceBase = myLib.mkService {
-    inherit config;
-    name = "vaultwarden";
-    useSSO = false;
-    description = "Password Manager (Aviation Grade Security)";
-  };
+  port = config.my.ports.vaultwarden;
 in
-lib.mkMerge [
-  serviceBase
-  {
-    services.vaultwarden = {
-      enable = true;
-      config = {
-        ROCKET_ADDRESS = "127.0.0.1";
-        ROCKET_PORT = config.my.ports.vaultwarden;
-        SIGNUPS_ALLOWED = false;
-        INVITATIONS_ALLOWED = true;
-        SHOW_PASSWORD_HINT = false;
-        DATABASE_MAX_CONNS = 10;
-      };
-      environmentFile = config.sops.secrets.vaultwarden_env.path;
+{
+  services.vaultwarden = {
+    enable = true;
+    config = {
+      ROCKET_ADDRESS = "127.0.0.1";
+      ROCKET_PORT = port;
+      SIGNUPS_ALLOWED = false;
+      INVITATIONS_ALLOWED = true;
+      SHOW_PASSWORD_HINT = false;
+      DATABASE_MAX_CONNS = 10;
     };
+    environmentFile = config.sops.secrets.vaultwarden_env.path;
+  };
 
-    # ── ULTIMATIVE ISOLATION (Extracted from nixpkgs & Security Best-Practices) ──
-    systemd.services.vaultwarden.serviceConfig = {
+  # ── WAKE-ON-ACCESS (Socket Activation) ──────────────────────────────────
+  systemd.sockets.vaultwarden = {
+    description = "Vaultwarden Socket (Wake-on-Access)";
+    wantedBy = [ "sockets.target" ];
+    listenStreams = [ (toString port) ];
+  };
+
+  # ── SRE SANDBOXING (Aviation Grade) ──────────────────────────────────────
+  systemd.services.vaultwarden = {
+    # Verhindert Autostart, wird erst durch Socket-Zugriff geweckt
+    wantedBy = lib.mkForce [ ]; 
+    requires = [ "vaultwarden.socket" ];
+    after = [ "vaultwarden.socket" ];
+
+    serviceConfig = {
       ProtectSystem = lib.mkForce "strict";
       ReadWritePaths = [ "/var/lib/vaultwarden" ];
-      
-      # Schutz vor Pufferüberläufen und Code-Injektion
       MemoryDenyWriteExecute = true;
-      
-      # Netzwerk-Beschränkung (Kein IPv6, kein Bluetooth, keine Roh-Sockets)
       RestrictAddressFamilies = [ "AF_INET" "AF_UNIX" ];
-      
-      # System-Call Filter (Der ultimative Schutz)
-      # Wir erlauben nur Standard-Service-Calls und verbieten Ressourcen-intensives Tuning.
       SystemCallFilter = [ "@system-service" "~@privileged" "~@resources" ];
-      
-      # Privilegien-Entzug
-      CapabilityBoundingSet = ""; # Absolute Null-Toleranz für Privilegien
+      CapabilityBoundingSet = "";
       NoNewPrivileges = true;
-      RestrictNamespaces = true;
-      RestrictRealtime = true;
-      RestrictSUIDSGID = true;
-      LockPersonality = true;
       PrivateDevices = true;
       PrivateTmp = true;
-      DevicePolicy = "closed";
-      
-      # Prozess-Sichtbarkeit einschränken
       ProtectProc = "invisible";
       ProcSubset = "pid";
+      OOMScoreAdjust = 200; # Darf im Leerlauf schlafen
     };
-  }
-]
+  };
+}
 /**
  * technical_integrity:
  *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-03-02
+ * ---
  */

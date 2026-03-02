@@ -3,9 +3,9 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-20-SRV-007
- *   title: "Miniflux (SRE Hardened)"
+ *   title: "Miniflux (SRE Exhausted)"
  *   layer: 20
- * summary: Minimalist RSS reader with auto-database setup and AppArmor protection.
+ * summary: Minimalist RSS reader with Wake-on-Access (Socket Activation).
  * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/web-apps/miniflux.nix
  * ---
  */
@@ -15,50 +15,46 @@ let
   domain = config.my.configs.identity.domain;
 in
 {
-  # 🚀 MINIFLUX EXHAUSTION
   services.miniflux = {
     enable = true;
-    
-    # ── DEKLARATIVE CONFIG ─────────────────────────────────────────────────
     config = {
-      LISTEN_ADDR = "127.0.0.1:${toString port}";
-      # SRE: Performance & Watchdog
+      # 🚀 Built-in Socket Activation support
+      LISTEN_ADDR = "fd://3";
       WATCHDOG = "1";
       RUN_MIGRATIONS = "1";
     };
-
-    # ── DB-WIRING ──────────────────────────────────────────────────────────
-    createDatabaseLocally = true; # Nutzt PostgreSQL aus Layer 10
-    
-    # Secret Handling (Admin Login)
+    createDatabaseLocally = true;
     adminCredentialsFile = config.sops.secrets.miniflux_admin_password.path;
   };
 
-  # ── CADDY INTEGRATION ────────────────────────────────────────────────────
-  services.caddy.virtualHosts."rss.${domain}" = {
-    extraConfig = ''
-      import sso_auth
-      reverse_proxy 127.0.0.1:${toString port}
-    '';
+  # ── WAKE-ON-ACCESS (Socket Activation) ──────────────────────────────────
+  systemd.sockets.miniflux = {
+    description = "Miniflux Socket (Wake-on-Access)";
+    wantedBy = [ "sockets.target" ];
+    listenStreams = [ (toString port) ];
   };
 
   # ── SRE SANDBOXING (Aviation Grade) ──────────────────────────────────────
-  systemd.services.miniflux.serviceConfig = {
-    # Aus nixpkgs übernommen: Maximale Isolation via DynamicUser
-    DynamicUser = true;
-    ProtectSystem = "strict";
-    ProtectHome = true;
-    PrivateTmp = true;
-    PrivateDevices = true;
+  systemd.services.miniflux = {
+    wantedBy = lib.mkForce [ ];
+    requires = [ "miniflux.socket" ];
+    after = [ "miniflux.socket" ];
     
-    # System-Call Filter
-    SystemCallFilter = [ "@system-service" "~@privileged" ];
-    
-    # OOM-Schutz: Miniflux ist leichtgewichtig
-    OOMScoreAdjust = 500;
+    serviceConfig = {
+      DynamicUser = true;
+      ProtectSystem = "strict";
+      ProtectHome = true;
+      PrivateTmp = true;
+      PrivateDevices = true;
+      SystemCallFilter = [ "@system-service" "~@privileged" ];
+      OOMScoreAdjust = 500;
+    };
   };
 }
 /**
  * technical_integrity:
  *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-03-02
+ * ---
  */

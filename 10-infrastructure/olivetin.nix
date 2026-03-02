@@ -3,9 +3,9 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-10-INF-010
- *   title: "OliveTin (SRE Control Panel)"
+ *   title: "OliveTin (SRE Exhausted)"
  *   layer: 10
- * summary: Web-based control panel for safe system operations with interactive SRE workflows.
+ * summary: Web-based control panel with Wake-on-Access (Socket Activation).
  * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/web-apps/olivetin.nix
  * ---
  */
@@ -22,7 +22,6 @@ in
   # 🚀 OLIVETIN EXHAUSTION
   services.olivetin = {
     enable = true;
-    # SRE: Pakete für die Shell-Aktionen bereitstellen
     path = with pkgs; [ 
       bash openssl jq coreutils gnused systemd 
       nixos-rebuild nix-output-monitor curl sops
@@ -55,11 +54,7 @@ in
           shell = "sudo ${mtlsScript} '{{ cert_name }}'";
           icon = "&#128274;"; 
           arguments = [
-            {
-              name = "cert_name";
-              type = "ascii";
-              description = "Name für das Zertifikat (z.B. handy-moritz)";
-            }
+            { name = "cert_name"; type = "ascii"; description = "Name für das Zertifikat (z.B. handy-moritz)"; }
           ];
         }
         {
@@ -67,27 +62,13 @@ in
           shell = "${cfScript} '{{ cf_token }}'";
           icon = "&#128273;";
           arguments = [
-            {
-              name = "cf_token";
-              type = "ascii";
-              description = "Cloudflare API Token einfügen (wird direkt gegen die API geprüft)";
-            }
+            { name = "cf_token"; type = "ascii"; description = "Cloudflare API Token einfügen"; }
           ];
         }
         {
           title = "Smart Mover: Status & HDD-Tiering prüfen";
           shell = "sudo ${moverScript} --status";
           icon = "&#128640;"; 
-        }
-        {
-          title = "mTLS: Download-Link anzeigen";
-          shell = "echo 'Zertifikate findest du hier: http://nixhome.local/certs/'";
-          icon = "&#128231;"; 
-        }
-        {
-          title = "DNS: Subdomain-Konflikte prüfen & optimieren";
-          shell = "${dnsScript}";
-          icon = "&#127760;"; 
         }
         {
           title = "Disk Space Check";
@@ -103,7 +84,20 @@ in
     };
   };
 
-  # 🛡️ SRE HARDENING: OliveTin darf nur bestimmte Befehle via Sudo ohne Passwort
+  # ── WAKE-ON-ACCESS (Socket Activation) ──────────────────────────────────
+  systemd.sockets.olivetin = {
+    description = "OliveTin Socket (Wake-on-Access)";
+    wantedBy = [ "sockets.target" ];
+    listenStreams = [ (toString port) ];
+  };
+
+  systemd.services.olivetin = {
+    wantedBy = lib.mkForce [ ];
+    requires = [ "olivetin.socket" ];
+    after = [ "olivetin.socket" ];
+  };
+
+  # 🛡️ SRE HARDENING
   security.sudo.extraRules = [
     {
       users = [ "olivetin" ];
@@ -123,4 +117,7 @@ in
 /**
  * technical_integrity:
  *   eof_marker: NIXHOME_VALID_EOF
+ * audit_trail:
+ *   last_reviewed: 2026-03-02
+ * ---
  */
