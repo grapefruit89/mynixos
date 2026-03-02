@@ -5,15 +5,13 @@
  *   id: NIXH-20-SRV-012
  *   title: "Paperless-ngx (SRE Multi-Service)"
  *   layer: 20
- * summary: Professional document management with multi-service isolation (Web, Scheduler, Worker).
+ * summary: Professional document management with standardized media paths.
  * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/misc/paperless.nix
  * ---
  */
 { config, lib, pkgs, ... }:
 let
   port = config.my.ports.paperless;
-  user = "paperless";
-  dataDir = "/var/lib/paperless";
 in
 {
   # 🚀 PAPERLESS-NGX EXHAUSTION
@@ -22,22 +20,20 @@ in
     address = "127.0.0.1";
     port = port;
     
-    # ── DB-WIRING (SSoT) ──────────────────────────────────────────────────
-    # Nutzt die zentrale PostgreSQL Instanz aus Layer 10
-    database.createLocally = true; 
+    # 🚀 ZUGRIFFSPFADE (Standardisiert)
+    dataDir = "/var/lib/paperless";
+    mediaDir = "/mnt/media/documents"; # Gemappt auf Tier C (HDD)
+    consumptionDir = "/mnt/fast-pool/downloads/paperless-consume"; # Gemappt auf Tier B (SSD)
     
-    # ── DOCUMENT PROCESSING ───────────────────────────────────────────────
-    # Tika & Gotenberg für Office/Email Support
+    database.createLocally = true; 
     configureTika = true;
     
     settings = {
       PAPERLESS_OCR_LANGUAGE = "deu+eng";
       PAPERLESS_TIME_ZONE = config.time.timeZone;
-      # SRE Performance: Verhindert CPU-Spamming durch Classifier
       PAPERLESS_ENABLE_NLTK = true;
     };
 
-    # Secret Handling via sops-nix
     passwordFile = config.sops.secrets.paperless_secret_key.path;
   };
 
@@ -49,19 +45,18 @@ in
     '';
   };
 
-  # ── SRE HARDENING (Aviation Grade) ───────────────────────────────────────
-  # Das NixOS-Modul erzeugt automatisch 3 Services (web, consumer, scheduler).
-  # Wir härten diese kollektiv über systemd overrides.
+  # ── SRE HARDENING ───────────────────────────────────────────────────────
   systemd.services.paperless-web.serviceConfig = {
-    OOMScoreAdjust = -200; # Web-UI soll stabil bleiben
+    OOMScoreAdjust = -200;
     ProtectSystem = "strict";
-    # Verhindert Schreibzugriff außer auf Daten/Media
-    ReadWritePaths = [ "/var/lib/paperless" "/data/media/paperless" ];
+    # Berechtigungen für standardisierte Pfade
+    ReadWritePaths = [ 
+      "/var/lib/paperless" 
+      "/mnt/media/documents" 
+      "/mnt/fast-pool/downloads/paperless-consume" 
+    ];
   };
 
-  # ── INFRASTRUCTURE HELPERS ──────────────────────────────────────────────
-  # Gotenberg & Tika werden durch 'configureTika = true' automatisch aktiviert.
-  # Wir stellen sicher, dass sie in Slices isoliert sind.
   systemd.services.gotenberg.serviceConfig.Slice = "system-paperless.slice";
   systemd.services.tika.serviceConfig.Slice = "system-paperless.slice";
 }

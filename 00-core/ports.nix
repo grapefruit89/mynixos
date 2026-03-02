@@ -56,6 +56,8 @@
     prowlarr       = 20696;
     
     homeassistant  = 28123;
+    zigbee2mqtt    = 28080;
+    mqtt           = 1883;
     paperless      = 20981;
     karakeep       = 20300;
   };

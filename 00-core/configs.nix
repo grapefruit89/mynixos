@@ -100,6 +100,12 @@
     description = "Aktiviert CPU-Microcode-Updates.";
   };
 
+  options.my.configs.hardware.zigbeeStickIP = lib.mkOption {
+    type = lib.types.str;
+    default = "192.168.2.200"; # SRE: Placeholder IP
+    description = "IP-Adresse des Ethernet Zigbee-Koordinators (SLZB-06).";
+  };
+
   # ── NETWORK ──────────────────────────────────────────────────────────────
   options.my.configs.network.lanCidrs = lib.mkOption {
     type = lib.types.listOf lib.types.str;

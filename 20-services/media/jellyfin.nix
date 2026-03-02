@@ -5,15 +5,14 @@
  *   id: NIXH-20-SRV-021
  *   title: "Jellyfin (Expert Edition)"
  *   layer: 20
- * summary: Hardware-accelerated media server with declarative encoding logic.
+ * summary: Hardware-accelerated media server with declarative encoding logic and Nixarr paths.
  * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/misc/jellyfin.nix
  * ---
  */
 { lib, pkgs, config, ... }:
 let
   cfg = config.my.media.jellyfin;
-  # 🚀 DEKLARATIVES ENCODING (Extrahiert aus nixpkgs Patterns)
-  # Dies brennt die optimalen Q958 (UHD 630) Settings direkt ins System.
+  # 🚀 DEKLARATIVES ENCODING
   encodingXml = pkgs.writeText "encoding.xml" ''
     <?xml version="1.0" encoding="utf-8"?>
     <EncodingOptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -48,32 +47,26 @@ in
   ];
 
   config = lib.mkIf cfg.enable {
-    users.users.jellyfin.extraGroups = [ "video" "render" ];
-    
     # ── HARDWARE OPTIMIERUNG ────────────────────────────────────────────────
     systemd.services.jellyfin = {
       environment = {
         OCL_ICD_VENDORS = "intel";
-        # Erzwingt den modernen iHD Treiber
         LIBVA_DRIVER_NAME = "iHD";
       };
 
-      # Injektion der encoding.xml beim Start (Single Source of Truth)
       preStart = ''
         mkdir -p /var/lib/jellyfin/config
         if [ ! -f /var/lib/jellyfin/config/encoding.xml ]; then
           cp ${encodingXml} /var/lib/jellyfin/config/encoding.xml
-          chown jellyfin:jellyfin /var/lib/jellyfin/config/encoding.xml
+          chown jellyfin:media /var/lib/jellyfin/config/encoding.xml
         fi
       '';
 
       # ── SRE SANDBOXING (Aviation Grade) ───────────────────────────────────
       serviceConfig = {
-        # Hardware-Zugriff präzise einschränken
         PrivateDevices = lib.mkForce false;
         DeviceAllow = [ "/dev/dri/renderD128 rw" ];
         
-        # Kernel & Process Isolation
         ProtectProc = "invisible";
         ProcSubset = "pid";
         RestrictNamespaces = true;
@@ -83,10 +76,15 @@ in
         LockPersonality = true;
         PrivateTmp = true;
         
-        # System-Call Filter
         SystemCallFilter = [ "@system-service" "~@privileged" ];
         
-        # Network Hardening (Nur interner Proxy-Traffic erlaubt)
+        # 🚀 ZUGRIFFSPFADE (Standardisiert)
+        ReadWritePaths = [ 
+          "/data/state/jellyfin" 
+          "/mnt/media" 
+          "/mnt/fast-pool/cache/jellyfin"
+        ];
+
         IPAddressDeny = [ "any" ];
         IPAddressAllow = [ "127.0.0.1/8" "::1/128" "10.0.0.0/8" "192.168.0.0/16" "100.64.0.0/10" ];
       };

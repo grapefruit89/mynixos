@@ -17,11 +17,16 @@ in
   # ── USER DEFINITION ──────────────────────────────────────────────────────
   users.users.${user} = {
     isNormalUser = true;
-    # Wheel für Sudo, Video/Render für GPU-Transcoding
-    extraGroups = [ "wheel" "video" "render" ];
+    # Wheel für Sudo, Video/Render für GPU-Transcoding, Media für Dateizugriff
+    extraGroups = [ "wheel" "video" "render" "media" ];
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJRDbyFjT4SEL8yxNwZuEBPORD82qlJJhdr2r4qz1vCX"
     ];
+  };
+
+  # ── GROUPS ───────────────────────────────────────────────────────────────
+  users.groups.media = {
+    gid = 169; # SRE: Feste GID für Portabilität (Nixarr Standard)
   };
 
   # ── SRE ENFORCEMENT ──────────────────────────────────────────────────────

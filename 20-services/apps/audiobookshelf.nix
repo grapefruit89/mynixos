@@ -5,7 +5,7 @@
  *   id: NIXH-20-SRV-002
  *   title: "Audiobookshelf (SRE Hardened)"
  *   layer: 20
- * summary: Purposed-built audiobook and podcast server with strict sandboxing.
+ * summary: Purposed-built audiobook and podcast server with standardized storage paths.
  * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/web-apps/audiobookshelf.nix
  * ---
  */
@@ -20,6 +20,7 @@ in
     enable = true;
     host = "127.0.0.1";
     port = port;
+    group = "media"; # SRE Standard Gruppe
   };
 
   # ── CADDY INTEGRATION ────────────────────────────────────────────────────
@@ -32,19 +33,21 @@ in
 
   # ── SRE SANDBOXING (Level: High) ─────────────────────────────────────────
   systemd.services.audiobookshelf.serviceConfig = {
-    # Isoliert den Dienst und schützt die restliche Medien-Bibliothek vor unbefugtem Schreibzugriff.
     ProtectSystem = "strict";
     ProtectHome = true;
     PrivateTmp = true;
     PrivateDevices = true;
     
-    # Schreibzugriff nur auf Daten und den eigentlichen Medien-Pfad
-    ReadWritePaths = [ "/var/lib/audiobookshelf" "/data/media/audiobooks" ];
+    # 🚀 ZUGRIFFSPFADE (Standardisiert)
+    ReadWritePaths = [ 
+      "/var/lib/audiobookshelf" 
+      "/mnt/media/books" 
+      "/mnt/media/podcasts" 
+    ];
     
     NoNewPrivileges = true;
     SystemCallFilter = [ "@system-service" "~@privileged" ];
     
-    # OOM-Schutz: Medien-Server sind wichtig
     OOMScoreAdjust = -100;
   };
 }

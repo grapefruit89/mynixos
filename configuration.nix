@@ -85,6 +85,7 @@
     ./20-services/apps/filebrowser.nix
     ./20-services/apps/ai-agents.nix
     ./20-services/apps/home-assistant.nix
+    ./20-services/apps/zigbee-stack.nix
     ./20-services/apps/karakeep.nix
 
     # 90 — Policy

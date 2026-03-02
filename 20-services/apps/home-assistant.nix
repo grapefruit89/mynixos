@@ -5,13 +5,14 @@
  *   id: NIXH-20-SRV-005
  *   title: "Home Assistant (Fully Declarative)"
  *   layer: 20
- * summary: Tightly integrated home automation with Nix-managed components and UI.
+ * summary: Tightly integrated home automation with MQTT and declarative UI.
  * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/home-automation/home-assistant.nix
  * ---
  */
 { config, lib, pkgs, ... }:
 let
   domain = config.my.configs.identity.domain;
+  portMQTT = config.my.ports.mqtt;
 in
 {
   # 🚀 HOME ASSISTANT EXHAUSTION
@@ -19,10 +20,10 @@ in
     enable = true;
     
     # ── DEKLARATIVE KOMPONENTEN ────────────────────────────────────────────
-    # Nix löst alle Python-Abhängigkeiten systemweit
     extraComponents = [
       "default_config" "met" "esphome" "prometheus" 
       "mobile_app" "sun" "radio_browser" "google_translate"
+      "mqtt" # 🚀 Aktiviert MQTT Integration
     ];
 
     # ── VOLL-DEKLARATIVE KONFIGURATION ──────────────────────────────────────
@@ -35,28 +36,47 @@ in
         internal_url = "http://localhost:8123";
       };
 
-      # SRE: Observability Integration (Prometheus)
+      # 🚀 MQTT INTEGRATION
+      mqtt = {
+        broker = "127.0.0.1";
+        port = portMQTT;
+      };
+
+      # SRE: Observability
       prometheus.namespace = "hass";
 
-      # Web-Server Hardening (Trusted Proxies für Caddy)
+      # Web-Server Hardening
       http = {
         use_x_forwarded_for = true;
         trusted_proxies = [ "127.0.0.1" "::1" "100.64.0.0/10" ];
       };
 
-      # UI Modus: YAML (Verhindert UI-Silos)
+      # 🚀 UI Modus: YAML (Best Practice für Reproduzierbarkeit)
       lovelace.mode = "yaml";
     };
 
     # ── DEKLARATIVE UI (Lovelace) ──────────────────────────────────────────
     lovelaceConfig = {
-      title = "NixHome Dashboard";
+      title = "NixHome Control Center";
       views = [{
         title = "Overview";
         icon = "mdi:home";
         cards = [
           { type = "weather-forecast"; entity = "weather.home"; }
-          { type = "entities"; entities = [ "sun.sun" ]; }
+          { 
+            type = "entities"; 
+            title = "System Status";
+            entities = [ "sun.sun" ]; 
+          }
+          {
+            type = "button";
+            name = "Zigbee Admin";
+            icon = "mdi:zigbee";
+            tap_action = {
+              action = "url";
+              url_path = "https://zigbee.${domain}";
+            };
+          }
         ];
       }];
     };
@@ -65,19 +85,16 @@ in
   # ── CADDY INTEGRATION ────────────────────────────────────────────────────
   services.caddy.virtualHosts."home.${domain}" = {
     extraConfig = ''
-      # Home Assistant braucht Websockets
       reverse_proxy localhost:8123
     '';
   };
 
   # ── SRE HARDENING ───────────────────────────────────────────────────────
   systemd.services.home-assistant.serviceConfig = {
-    # GPU Zugriff für Video-Processing (Kameras)
     DeviceAllow = [ "/dev/dri/renderD128 rw" ];
     ProtectSystem = "strict";
     ProtectHome = true;
     PrivateTmp = true;
-    # HA darf bei OOM vor Caddy/SSH sterben
     OOMScoreAdjust = 300; 
   };
 }

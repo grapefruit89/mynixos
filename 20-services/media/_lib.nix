@@ -5,11 +5,7 @@
  *   id: NIXH-20-SRV-023
  *   title: "_lib"
  *   layer: 20
- * architecture:
- *   req_refs: [REQ-SRV]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Media service helper library with standardized Nixarr-style paths and SRE hardening.
  * ---
  */
 { lib, pkgs }:
@@ -19,7 +15,7 @@
 , defaultStateDir
 , supportsUserGroup ? true
 , defaultUser ? name
-, defaultGroup ? name
+, defaultGroup ? "media" # 🚀 SRE Standard: Alle Media-Dienste in Gruppe 'media'
 , statePathSuffix ? null
 }:
 { config, ... }:
@@ -37,6 +33,7 @@ let
                else if name == "jellyseerr" then 5055
                else port;
 
+  # Tier A: State/DBs immer auf NVMe
   stateValue =
     if statePathSuffix == null
     then "/data/state/${name}"
@@ -79,38 +76,29 @@ in
 
       systemd.services.${name}.serviceConfig = {
         ProtectSystem = lib.mkForce "full";
-        ReadWritePaths = [ cfg.stateDir "/mnt/media" "/mnt/media/downloads" "/mnt/fast-pool/metadata" "/mnt/fast-pool/cache" ];
+        # 🚀 STANDARD ZUGRIFFSPFADE (ABC-Tiering)
+        ReadWritePaths = [ 
+          cfg.stateDir 
+          "/mnt/media" 
+          "/mnt/fast-pool/downloads" 
+          "/mnt/fast-pool/metadata" 
+          "/mnt/fast-pool/cache" 
+        ];
+        
+        # Performance: Cover-Arts auf SSD (Tier B) statt HDD (Tier C)
         BindPaths = lib.mkIf (name == "sonarr" || name == "radarr" || name == "readarr" || name == "prowlarr") [
           "/mnt/fast-pool/metadata/${name}:/var/lib/${name}/MediaCover"
         ];
       };
 
       systemd.tmpfiles.rules = [
-        "d /mnt/fast-pool/metadata/${name} 0750 ${cfg.user} ${cfg.group} -"
-        "d /mnt/fast-pool/cache/${name} 0750 ${cfg.user} ${cfg.group} -"
+        "d /mnt/fast-pool/metadata/${name} 0775 ${cfg.user} media -"
+        "d /mnt/fast-pool/cache/${name} 0775 ${cfg.user} media -"
       ];
     }
   ]);
 }
-
-
-
-
-
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:83a26843f6ec45bafec12c10b70d73d6b98e7c5421236f9dac943a0d087e8c9e
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */

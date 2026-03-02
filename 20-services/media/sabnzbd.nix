@@ -3,13 +3,9 @@
  * nms_version: 2.3
  * identity:
  *   id: NIXH-20-SRV-030
- *   title: "Sabnzbd"
+ *   title: "Sabnzbd (Nixarr VPN Confinement)"
  *   layer: 20
- * architecture:
- *   req_refs: [REQ-SRV]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
+ * summary: Usenet downloader safely locked inside a network namespace (VPN Confinement).
  * ---
  */
 { lib, pkgs, config, ... }:
@@ -21,36 +17,38 @@
       stateOption = "configFile";
       defaultStateDir = "/var/lib/sabnzbd";
       statePathSuffix = "sabnzbd.ini";
+      defaultGroup = "media";
     })
   ];
+  
   config = {
-    users.groups.sabnzbd.gid = lib.mkForce 194;
-    users.users.sabnzbd.uid = lib.mkForce 984;
-    systemd.services.sabnzbd = {
-      requires = lib.mkForce [ "wireguard-vault.service" ];
-      after = lib.mkForce [ "wireguard-vault.service" ];
+    # ── NIXARR VPN CONFINEMENT PATTERN ──────────────────────────────────────
+    # Wir sperren Sabnzbd physisch in den 'media-vault' Namespace ein.
+    # Es hat dadurch absolut keine Verbindung zum unverschlüsselten Host-Netzwerk.
+    systemd.services.sabnzbd = lib.mkIf config.services.wireguard.enable {
+      requires = [ "wireguard-vault.service" ];
+      after = [ "wireguard-vault.service" ];
+      
+      serviceConfig = {
+        # Bindet den Dienst an den Netzwerk-Namespace des VPNs
+        NetworkNamespacePath = "/var/run/netns/media-vault";
+        # Erlaubt Bindungen an Interfaces in diesem Namespace
+        RestrictAddressFamilies = lib.mkForce [ "AF_INET" "AF_INET6" "AF_UNIX" "AF_NETLINK" ];
+      };
+    };
+
+    # Reverse Proxy Integration muss für den Namespace angepasst werden, 
+    # falls Caddy nicht im Namespace ist. Für Caddy -> Sabnzbd Kommunikation 
+    # nutzen wir die veth IPs (10.200.1.2 im Namespace).
+    services.caddy.virtualHosts."sab.${config.my.configs.identity.domain}" = lib.mkIf config.services.wireguard.enable {
+      extraConfig = lib.mkForce ''
+        import sso_auth
+        reverse_proxy 10.200.1.2:${toString config.my.ports.sabnzbd}
+      '';
     };
   };
 }
-
-
-
-
-
-
-
-
-
-
-
-
 /**
- * ---
  * technical_integrity:
- *   checksum: sha256:c2df55cca651f1b79cac76ad14edf319137c42896271c35f4092b720c8fcc67e
  *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
  */
