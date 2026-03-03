@@ -1,3 +1,4 @@
+{ ... }:
 {
   imports = [
     ./service-app-couchdb.nix
@@ -6,6 +7,6 @@
     ./service-app-matrix-conduit.nix
     ./service-app-monica.nix
     ./service-app-vaultwarden.nix
-    ./SERVICE_TEMPLATE.nix
+    # ./SERVICE_TEMPLATE.nix # TEMPLATE ONLY
   ];
 }

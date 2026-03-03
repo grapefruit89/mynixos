@@ -1,3 +1,4 @@
+{ ... }:
 {
   imports = [
     ./adguardhome.nix
@@ -5,7 +6,7 @@
     ./cloudflared-tunnel.nix
     ./ddns-updater.nix
     ./dns-automation.nix
-    ./dns-map.nix
+    # ./dns-map.nix  # KEIN MODUL (wird direkt importiert)
     ./homepage.nix
     ./landing-zone-ui.nix
     ./pocket-id.nix

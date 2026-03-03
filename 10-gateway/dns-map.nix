@@ -1,22 +1,9 @@
 let
-  # 🚀 NMS v4.0 Metadaten (Data File)
-  nms = {
-    id = "NIXH-10-INF-008";
-    title = "Dns Map";
-    description = "Static DNS mapping data for consistent routing across services.";
-    layer = 10;
-    nixpkgs.category = "data/networking";
-    capabilities = [ "network/dns-map" ];
-    audit.last_reviewed = "2026-03-02";
-    audit.complexity = 1;
-  };
-
   baseDomain = "m7c5.de";
   sub = "nix";
   d = "${sub}.${baseDomain}";
 in
 {
-  _meta = nms;
   useNixSubdomain = true;
   baseDomain = baseDomain;
   sub = sub;
