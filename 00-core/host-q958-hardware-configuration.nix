@@ -1,6 +1,5 @@
 { config, lib, pkgs, modulesPath, ... }:
 let
-  # 🚀 NMS v4.0 Metadaten
   nms = {
     id = "NIXH-00-CORE-012";
     title = "Host Q958 Hardware Configuration";
@@ -17,20 +16,20 @@ in
     type = lib.types.attrs;
     default = nms;
     readOnly = true;
-    description = "NMS metadata for host-q958-hardware-configuration module";
+    description = "NMS metadata";
   };
 
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-intel" ];
-  boot.extraModulePackages = [ ];
-
-  fileSystems."/" = { device = "/dev/disk/by-uuid/8d1d5128-6413-4b5b-bd96-e55851ae5dc2"; fsType = "ext4"; };
-  fileSystems."/boot" = { device = "/dev/disk/by-uuid/B413-DB53"; fsType = "vfat"; options = [ "fmask=0077" "dmask=0077" ]; };
-
-  swapDevices = [ ];
-  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  config = {
+    boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "usbhid" "usb_storage" "sd_mod" ];
+    boot.initrd.kernelModules = [ ];
+    boot.kernelModules = [ "kvm-intel" ];
+    boot.extraModulePackages = [ ];
+    fileSystems."/" = { device = "/dev/disk/by-uuid/8d1d5128-6413-4b5b-bd96-e55851ae5dc2"; fsType = "ext4"; };
+    fileSystems."/boot" = { device = "/dev/disk/by-uuid/B413-DB53"; fsType = "vfat"; options = [ "fmask=0077" "dmask=0077" ]; };
+    swapDevices = [ ];
+    nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+    hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  };
 }

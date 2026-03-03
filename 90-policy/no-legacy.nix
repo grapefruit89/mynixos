@@ -1,10 +1,9 @@
 { config, lib, pkgs, ... }:
 let
-  # 🚀 NMS v4.0 Metadaten
   nms = {
     id = "NIXH-90-POL-001";
     title = "No Legacy";
-    description = "Blocks legacy services and insecure protocols to ensure a modern, hardened system.";
+    description = "Blocks legacy services and insecure protocols.";
     layer = 90;
     nixpkgs.category = "system/policy";
     capabilities = [ "policy/enforcement" "security/hardening" ];
@@ -18,7 +17,7 @@ in
     type = lib.types.attrs;
     default = nms;
     readOnly = true;
-    description = "NMS metadata for no-legacy module";
+    description = "NMS metadata";
   };
 
   config = {

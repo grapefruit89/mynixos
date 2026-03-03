@@ -1,6 +1,5 @@
 { config, pkgs, lib, ... }:
 let
-  # 🚀 NMS v4.0 Metadaten
   nms = {
     id = "NIXH-00-CORE-015";
     title = "MOTD & Shell UI";
@@ -11,7 +10,6 @@ let
     audit.last_reviewed = "2026-03-02";
     audit.complexity = 1;
   };
-
   domain = config.my.configs.identity.domain;
   host = config.my.configs.identity.host;
   firewallReminder = if config.networking.firewall.enable then "Firewall: ACTIVE" else "WARNING: Firewall is DISABLED.";
@@ -21,7 +19,7 @@ in
     type = lib.types.attrs;
     default = nms;
     readOnly = true;
-    description = "NMS metadata for motd module";
+    description = "NMS metadata";
   };
 
   config = {
@@ -31,7 +29,6 @@ in
       Standard Port: ${toString config.my.ports.ssh}
       Local Proxy: Caddy (Edge)
     '';
-
     programs.bash.interactiveShellInit = ''
       if [[ $- == *i* ]] && [[ -t 1 ]]; then
         IP=$(hostname -I | awk '{print $1}')

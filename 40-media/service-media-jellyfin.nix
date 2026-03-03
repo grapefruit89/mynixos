@@ -1,34 +1,34 @@
 { lib, pkgs, config, ... }:
 let
-  # 🚀 NMS v4.0 Metadaten
   nms = {
     id = "NIXH-20-SRV-021";
     title = "Jellyfin (Expert Exhaustion)";
-    description = "Hardware-accelerated media server with declarative QSV encoding and strict SRE isolation.";
+    description = "Hardware-accelerated media server.";
     layer = 30;
     nixpkgs.category = "services/media";
     capabilities = [ "media/jellyfin" "gpu/qsv" "security/sandboxing" ];
     audit.last_reviewed = "2026-03-02";
     audit.complexity = 3;
   };
-
   cfg = config.my.media.jellyfin;
   srePaths = config.my.configs.paths;
   encodingXml = pkgs.writeText "encoding.xml" "<?xml version='1.0' encoding='utf-8'?><EncodingOptions>...</EncodingOptions>"; # Shortened
+  
+  # Wir importieren die Funktion und rufen sie sofort auf
+  mediaLib = import ./service-media-_lib.nix { inherit lib pkgs; };
+  jellyfinModule = mediaLib {
+    name = "jellyfin"; port = config.my.ports.jellyfin; stateOption = "dataDir"; defaultStateDir = "${srePaths.stateDir}/jellyfin";
+  };
 in
 {
   options.my.meta.jellyfin = lib.mkOption {
     type = lib.types.attrs;
     default = nms;
     readOnly = true;
-    description = "NMS metadata for jellyfin module";
+    description = "NMS metadata";
   };
 
-  imports = [
-    ((import ./service-media-_lib.nix { inherit lib pkgs; }) {
-      name = "jellyfin"; port = config.my.ports.jellyfin; stateOption = "dataDir"; defaultStateDir = "${srePaths.stateDir}/jellyfin";
-    })
-  ];
+  imports = [ jellyfinModule ];
 
   config = lib.mkIf cfg.enable {
     services.jellyfin.group = "media";

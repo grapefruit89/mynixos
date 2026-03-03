@@ -1,17 +1,4 @@
-{ lib, pkgs }:
-let
-  # 🚀 NMS v4.0 Metadaten (Helper Library)
-  nms = {
-    id = "NIXH-20-SRV-023";
-    title = "_lib (SRE Exhausted v3)";
-    description = "Ultimate media service helper with maximized NixOS option exhaustion and ABC-tiering enforcement.";
-    layer = 30;
-    nixpkgs.category = "tools/admin";
-    capabilities = [ "media/helper" "architecture/abstraction" ];
-    audit.last_reviewed = "2026-03-02";
-    audit.complexity = 3;
-  };
-in
+{ lib, pkgs, ... }:
 { name, port, stateOption, defaultStateDir, supportsUserGroup ? true, defaultUser ? name, defaultGroup ? "media", statePathSuffix ? null, useVpn ? false, extraServiceConfig ? {} }:
 { config, ... }:
 let
@@ -25,9 +12,6 @@ let
   serviceBase = myLib.mkService { inherit config; name = name; port = nativePort; useSSO = true; description = "${name} Service (Exhausted)"; netns = if useVpn then "media-vault" else null; };
 in
 {
-  # Meta-Data Injection
-  _meta = nms;
-
   options.my.media.${name} = {
     enable = lib.mkEnableOption "the ${name} service";
     stateDir = lib.mkOption { type = lib.types.str; default = "${srePaths.stateDir}/${name}"; };
@@ -40,7 +24,7 @@ in
     {
       services.${name} = { enable = true; openFirewall = lib.mkForce false; ${stateOption} = stateValue; } // lib.optionalAttrs supportsUserGroup { user = cfg.user; group = cfg.group; } // lib.optionalAttrs (name == "jellyfin") { cacheDir = "/mnt/fast-pool/cache/jellyfin"; };
       systemd.services.${name} = lib.mkMerge [ vpnConfig { serviceConfig = { ProtectSystem = lib.mkForce "full"; ProtectHome = true; PrivateTmp = true; NoNewPrivileges = true; MemoryMax = "${toString sreConfig.resourceLimits.maxMediaRamMB}M"; CPUWeight = 50; OOMScoreAdjust = 500; ReadWritePaths = [ cfg.stateDir srePaths.mediaLibrary "${srePaths.storagePool}/downloads" "/mnt/fast-pool/cache" "/mnt/fast-pool/metadata" ]; BindPaths = lib.mkIf (name == "sonarr" || name == "radarr" || name == "readarr" || name == "prowlarr" || name == "lidarr") [ "/mnt/fast-pool/metadata/${name}:/var/lib/${name}/MediaCover" ]; }; } extraServiceConfig ];
-      services.caddy.virtualHosts."${name}.${sreConfig.identity.subdomain}.${sreConfig.identity.domain}" = lib.mkIf (useVpn || name != "jellyfin") { extraConfig = lib.mkForce "import sso_auth\nreverse_proxy ${if useVpn then '10.200.1.2' else '127.0.0.1'}:${toString nativePort}"; };
+      services.caddy.virtualHosts."${name}.${sreConfig.identity.subdomain}.${sreConfig.identity.domain}" = lib.mkIf (useVpn || name != "jellyfin") { extraConfig = lib.mkForce "import sso_auth\nreverse_proxy ${if useVpn then "10.200.1.2" else "127.0.0.1"}:${toString nativePort}"; };
       systemd.tmpfiles.rules = [ "d ${cfg.stateDir} 0750 ${cfg.user} media -" "d /mnt/fast-pool/metadata/${name} 0775 ${cfg.user} media -" "d /mnt/fast-pool/cache/${name} 0775 ${cfg.user} media -" ];
     }
   ]);

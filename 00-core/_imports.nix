@@ -17,6 +17,7 @@
     ./host-q958-hardware-profile.nix
     ./kernel-slim.nix
     ./lib-helpers.nix
+    ./lib-helpers-meta.nix
     ./locale.nix
     ./logging.nix
     ./motd.nix

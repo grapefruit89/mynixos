@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, config, ... }:
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {

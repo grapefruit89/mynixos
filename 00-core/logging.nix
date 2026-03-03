@@ -1,6 +1,5 @@
 { lib, ... }:
 let
-  # 🚀 NMS v4.0 Metadaten
   nms = {
     id = "NIXH-00-CORE-014";
     title = "Logging (SRE Monitor Mode)";
@@ -17,7 +16,7 @@ in
     type = lib.types.attrs;
     default = nms;
     readOnly = true;
-    description = "NMS metadata for logging module";
+    description = "NMS metadata";
   };
 
   config = {

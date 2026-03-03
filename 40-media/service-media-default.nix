@@ -1,6 +1,5 @@
 { lib, ... }:
 let
-  # 🚀 NMS v4.0 Metadaten
   nms = {
     id = "NIXH-20-SRV-020";
     title = "Default Media Services";
@@ -17,11 +16,12 @@ in
     type = lib.types.attrs;
     default = nms;
     readOnly = true;
-    description = "NMS metadata for service-media-default module";
+    description = "NMS metadata";
   };
 
   imports = [
-    ./service-media-services-common.nix
+    # Wir importieren hier nur echte Module. 
+    # Helper (_lib, _factory) werden von den Modulen selbst importiert.
     ./service-media-arr-wire.nix
     ./service-media-jellyfin.nix
     ./service-media-jellyseerr.nix

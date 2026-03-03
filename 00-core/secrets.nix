@@ -1,10 +1,9 @@
 { config, lib, pkgs, ... }:
 let
-  # 🚀 NMS v4.0 Metadaten
   nms = {
     id = "NIXH-00-CORE-022";
     title = "Secrets (SRE Flat Source)";
-    description = "Secure secret management using SOPS-nix with TPM integration and runtime environment templates.";
+    description = "Secure secret management using SOPS-nix with TPM integration.";
     layer = 00;
     nixpkgs.category = "system/security";
     capabilities = [ "security/secrets" "sops/nix" "tpm/integration" ];
@@ -17,7 +16,7 @@ in
     type = lib.types.attrs;
     default = nms;
     readOnly = true;
-    description = "NMS metadata for secrets module";
+    description = "NMS metadata";
   };
 
   options.my.secrets = {

@@ -4,7 +4,7 @@ let
   nms = {
     id = "NIXH-00-SYS-ROOT-001";
     title = "System Entrypoint";
-    description = "Consolidated system entrypoint using the 'Perfect Order' layer structure (Gateway, Infrastructure, Automation, Media, Knowledge, Apps, Monitoring, Policy).";
+    description = "Consolidated system entrypoint using the 'Perfect Order' layer structure.";
     layer = 00;
     nixpkgs.category = "system/settings";
     capabilities = [ "system/entrypoint" "architecture/hubs" "architecture/perfect-order" ];
@@ -33,10 +33,9 @@ in
     ./90-policy/_imports.nix
   ];
 
-  system.stateVersion = "25.11";
-  networking.hostName = "nixhome";
-
-  swapDevices = [
-    { device = "/var/lib/swapfile"; size = 4096; }
-  ];
+  config = {
+    system.stateVersion = "25.11";
+    networking.hostName = "nixhome";
+    swapDevices = [ { device = "/var/lib/swapfile"; size = 4096; } ];
+  };
 }

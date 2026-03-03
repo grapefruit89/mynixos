@@ -1,6 +1,5 @@
 { config, lib, pkgs, inputs, ... }:
 let
-  # 🚀 NMS v4.0 Metadaten
   nms = {
     id = "NIXH-00-CORE-010";
     title = "Home Manager (SRE Profile)";
@@ -11,7 +10,6 @@ let
     audit.last_reviewed = "2026-03-02";
     audit.complexity = 2;
   };
-
   user = config.my.configs.identity.user;
   envFile = config.my.secrets.files.sharedEnv;
 in
@@ -20,21 +18,23 @@ in
     type = lib.types.attrs;
     default = nms;
     readOnly = true;
-    description = "NMS metadata for home-manager module";
+    description = "NMS metadata";
   };
 
   imports = [ inputs.home-manager.nixosModules.home-manager ];
   
-  home-manager = {
-    useGlobalPkgs = true;
-    useUserPackages = true;
-    backupFileExtension = "hm-backup";
-    users.${user} = { ... }: {
-      imports = [ (./user-${user}-home.nix) ];
-      programs.bash.initExtra = ''
-        if [ -f "${envFile}" ]; then set -a; source "${envFile}"; set +a; fi
-      '';
-      programs.bash.shellAliases = { godmode = "gemini --yolo --include-directories /etc/nixos,/home/moritz"; };
+  config = {
+    home-manager = {
+      useGlobalPkgs = true;
+      useUserPackages = true;
+      backupFileExtension = "hm-backup";
+      users.${user} = { ... }: {
+        imports = [ (./user-${user}-home.nix) ];
+        programs.bash.initExtra = ''
+          if [ -f "${envFile}" ]; then set -a; source "${envFile}"; set +a; fi
+        '';
+        programs.bash.shellAliases = { godmode = "gemini --yolo --include-directories /etc/nixos,/home/moritz"; };
+      };
     };
   };
 }

@@ -13,7 +13,7 @@ let
   };
 in
 {
-  imports = [ ../10-infrastructure/vpn-live-config.nix ];
+  imports = [ ../20-infrastructure/vpn-live-config.nix ];
 
   options.my.meta.configs = lib.mkOption {
     type = lib.types.attrs;
