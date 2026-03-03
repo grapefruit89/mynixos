@@ -1,0 +1,36 @@
+{ config, lib, ... }:
+let
+  # 🚀 NMS v4.0 Metadaten
+  nms = {
+    id = "NIXH-20-SRV-025";
+    title = "Media Stack Activation";
+    description = "Central toggle for activating the entire media stack and its default profiles.";
+    layer = 30;
+    nixpkgs.category = "system/settings";
+    capabilities = [ "system/media-activation" ];
+    audit.last_reviewed = "2026-03-02";
+    audit.complexity = 1;
+  };
+in
+{
+  options.my.meta.service_media_media_stack = lib.mkOption {
+    type = lib.types.attrs;
+    default = nms;
+    readOnly = true;
+    description = "NMS metadata for service-media-media-stack module";
+  };
+
+  config = {
+    my.media = {
+      defaults.domain = config.my.configs.identity.domain;
+      defaults.netns = "media-vault";
+      jellyfin.enable = true;
+      sonarr.enable = true;
+      radarr.enable = true;
+      readarr.enable = true;
+      prowlarr.enable = true;
+      sabnzbd.enable = true;
+      jellyseerr.enable = true;
+    };
+  };
+}

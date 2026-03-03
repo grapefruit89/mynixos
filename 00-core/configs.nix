@@ -1,16 +1,26 @@
-/**
- * ---
- * nms_version: 2.3
- * identity:
- *   id: NIXH-00-CORE-006
- *   title: "Configs (SRE Master Source)"
- *   layer: 00
- * summary: Central source of truth for global identity, hardware toggles and SRE quotas.
- * ---
- */
 { lib, config, ... }:
+let
+  # 🚀 NMS v4.0 Metadaten (Aviation-Grade)
+  nms = {
+    id = "NIXH-00-CORE-006";
+    title = "Configs (SRE Master Source)";
+    description = "Central source of truth for global identity, hardware toggles and SRE quotas.";
+    layer = 00;
+    nixpkgs.category = "system/settings";
+    capabilities = [ "ssot/master" "sre/quotas" ];
+    audit.last_reviewed = "2026-03-02";
+    audit.complexity = 2;
+  };
+in
 {
   imports = [ ../10-infrastructure/vpn-live-config.nix ];
+
+  options.my.meta.configs = lib.mkOption {
+    type = lib.types.attrs;
+    default = nms;
+    readOnly = true;
+    description = "NMS metadata for configs module";
+  };
 
   options.my.configs = {
     # ── BASTELMODUS ──────────────────────────────────────────────────────────
@@ -145,7 +155,3 @@
     '';
   };
 }
-/**
- * technical_integrity:
- *   eof_marker: NIXHOME_VALID_EOF
- */

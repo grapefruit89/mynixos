@@ -1,31 +1,27 @@
-/**
- * ---
- * nms_version: 2.3
- * identity:
- *   id: NIXH-90-POL-003
- *   title: "Binary-Only Policy"
- *   layer: 90
- * summary: Enforces a strict download-only workflow by forbidding local compilation.
- * ---
- */
 { config, lib, ... }:
+let
+  # 🚀 NMS v4.0 Metadaten
+  nms = {
+    id = "NIXH-90-POL-003";
+    title = "Binary-Only Policy";
+    description = "Enforces a strict download-only workflow by forbidding local compilation to protect system resources.";
+    layer = 90;
+    nixpkgs.category = "system/policy";
+    capabilities = [ "policy/enforcement" "system/stability" ];
+    audit.last_reviewed = "2026-03-02";
+    audit.complexity = 1;
+  };
+in
 {
-  config = {
-    # ── HARD ENFORCEMENT ──────────────────────────────────────────────────
-    # Wir setzen max-jobs auf 0, um lokale Build-Slots komplett zu sperren.
-    nix.settings.max-jobs = lib.mkForce 0;
+  options.my.meta.binary_only = lib.mkOption {
+    type = lib.types.attrs;
+    default = nms;
+    readOnly = true;
+    description = "NMS metadata for binary-only module";
+  };
 
-    # ── ASSERTIONS ────────────────────────────────────────────────────────
-    assertions = [
-      {
-        # Sicherstellen, dass niemand das Verbot lokal umgeht
-        assertion = config.nix.settings.max-jobs == 0;
-        message = "🚫 [POLICY-VIOLATION] Lokales Kompilieren ist auf diesem System verboten! 'nix.settings.max-jobs' muss 0 sein.";
-      }
-    ];
+  config = {
+    nix.settings.max-jobs = lib.mkForce 0;
+    assertions = [ { assertion = config.nix.settings.max-jobs == 0; message = "🚫 [POLICY-VIOLATION] Lokales Kompilieren ist verboten!"; } ];
   };
 }
-/**
- * technical_integrity:
- *   eof_marker: NIXHOME_VALID_EOF
- */

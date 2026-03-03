@@ -1,19 +1,17 @@
-/**
- * ---
- * nms_version: 2.3
- * identity:
- *   id: NIXH-00-CORE-005
- *   title: "Config Merger"
- *   layer: 00
- * architecture:
- *   req_refs: [REQ-CORE]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
- * ---
- */
 { config, lib, pkgs, ... }:
 let
+  # 🚀 NMS v4.0 Metadaten
+  nms = {
+    id = "NIXH-00-CORE-005";
+    title = "Config Merger";
+    description = "Dynamic bridge between NixOS declarations and user-managed JSON overrides.";
+    layer = 00;
+    nixpkgs.category = "tools/admin";
+    capabilities = [ "config/merger" "system/runtime-config" ];
+    audit.last_reviewed = "2026-03-02";
+    audit.complexity = 2;
+  };
+
   runDir = "/run/nixhome";
   userConfig = "/var/lib/nixhome/user-config.json";
   finalConfig = "${runDir}/config.json";
@@ -29,14 +27,7 @@ let
   mergerScript = pkgs.writeShellScript "nixhome-config-merger" ''
     set -euo pipefail
     mkdir -p ${runDir}
-    
-    if [ ! -f "${userConfig}" ]; then
-      echo "{}" > "${userConfig}"
-      chown root:root "${userConfig}"
-      chmod 644 "${userConfig}"
-    fi
-
-    # Merge Nix-Defaults mit User-JSON (User überschreibt Nix)
+    if [ ! -f "${userConfig}" ]; then echo "{}" > "${userConfig}"; chown root:root "${userConfig}"; chmod 644 "${userConfig}"; fi
     ${pkgs.jq}/bin/jq -s '.[0] * .[1]' "${nixDefaults}" "${userConfig}" > "${finalConfig}.tmp"
     mv "${finalConfig}.tmp" "${finalConfig}"
     chmod 644 "${finalConfig}"
@@ -46,52 +37,29 @@ let
     set -euo pipefail
     echo "🔄 Merging configuration..."
     systemctl start nixhome-config-merger.service
-    
     echo "🚀 Reloading services..."
-    if systemctl is-active caddy >/dev/null 2>&1; then
-      systemctl reload caddy
-    fi
-    if systemctl is-active pocket-id >/dev/null 2>&1; then
-      systemctl restart pocket-id
-    fi
+    if systemctl is-active caddy >/dev/null 2>&1; then systemctl reload caddy; fi
+    if systemctl is-active pocket-id >/dev/null 2>&1; then systemctl restart pocket-id; fi
     echo "✨ Fertig!"
   '';
-
 in
 {
-  systemd.services.nixhome-config-merger = {
-    description = "Merge Nix Defaults with User JSON Config";
-    before = [ "caddy.service" "pocket-id.service" "landing-zone-ui.service" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = mergerScript;
-    };
+  options.my.meta.config_merger = lib.mkOption {
+    type = lib.types.attrs;
+    default = nms;
+    readOnly = true;
+    description = "NMS metadata for config-merger module";
   };
 
-  environment.systemPackages = [ applyScript pkgs.jq ];
-  systemd.tmpfiles.rules = [ "d /var/lib/nixhome 0755 root root -" ];
+
+  config = lib.mkIf config.my.services.configMerger.enable {
+    systemd.services.nixhome-config-merger = {
+      description = "Merge Nix Defaults with User JSON Config";
+      before = [ "caddy.service" "pocket-id.service" "landing-zone-ui.service" ];
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = { Type = "oneshot"; RemainAfterExit = true; ExecStart = mergerScript; };
+    };
+    environment.systemPackages = [ applyScript pkgs.jq ];
+    systemd.tmpfiles.rules = [ "d /var/lib/nixhome 0755 root root -" ];
+  };
 }
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * ---
- * technical_integrity:
- *   checksum: sha256:e4a6541a83722a75280cfb09216051d54aa1740b6ce394b6a63408e5e7c56d02
- *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
- */

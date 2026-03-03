@@ -1,98 +1,74 @@
-/**
- * ---
- * nms_version: 2.3
- * identity:
- *   id: NIXH-00-SYS-LIB-001
- *   title: "Global Service Helpers"
- *   layer: 00
- * architecture:
- *   req_refs: [REQ-LIB-01]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
- * ---
- */
 { lib, ... }:
 let
-  dnsMap = import ../10-infrastructure/dns-map.nix;
+  # 🚀 NMS v4.0 Metadaten
+  nms = {
+    id = "NIXH-00-SYS-LIB-001";
+    title = "Global Service Helpers";
+    description = "Central library providing the mkService abstraction for consistent configuration.";
+    layer = 00;
+    nixpkgs.category = "tools/admin";
+    capabilities = [ "architecture/abstraction" "system/hardening" ];
+    audit.last_reviewed = "2026-03-02";
+    audit.complexity = 3;
+  };
+
+  dnsMap = import ../10-gateway/dns-map.nix;
 in
 {
-  # mkService: v3.1 (Caddy Migration + Metadata)
-  mkService = { 
-    config,
-    name, 
-    port ? null,
-    useSSO ? true, 
-    description ? "Managed Service",
-    readWritePaths ? [],
-    allowNetwork ? true,
-    netns ? null 
-  }: let
-    finalPort = if port != null then port 
-                else if config.my.ports ? ${name} then config.my.ports.${name}
-                else throw "mkService: No port defined for ${name}";
-    
-    host = if dnsMap.dnsMapping ? ${name} 
-           then dnsMap.dnsMapping.${name} 
-           else "${name}.nix.${dnsMap.baseDomain}";
-    
-    target = "http://${if netns != null then "10.200.1.2" else "127.0.0.1"}:${toString finalPort}";
+  options.my.meta.lib_helpers = lib.mkOption {
+    type = lib.types.attrs;
+    default = nms;
+    readOnly = true;
+    description = "NMS metadata for lib-helpers module";
+  };
 
-  in {
-    # ── SYSTEMD ─────────────────────────────────────────────────────────────
-    systemd.services."${name}" = {
-      serviceConfig = {
-        Description = lib.mkDefault description;
-        ProtectSystem = lib.mkDefault "strict";
-        ProtectHome = lib.mkDefault true;
-        PrivateTmp = lib.mkDefault true;
-        PrivateDevices = lib.mkDefault true;
-        NoNewPrivileges = lib.mkDefault true;
-        Restart = lib.mkDefault "always";
-        ReadWritePaths = lib.mkDefault readWritePaths;
-        NetworkNamespacePath = lib.mkIf (netns != null) "/run/netns/${netns}";
+  options.my.lib.mkService = lib.mkOption {
+    type = lib.types.unspecified;
+    default = { 
+      config,
+      name, 
+      port ? null,
+      useSSO ? true, 
+      description ? "Managed Service",
+      readWritePaths ? [],
+      allowNetwork ? true,
+      netns ? null 
+    }: let
+      finalPort = if port != null then port 
+                  else if config.my.ports ? ${name} then config.my.ports.${name}
+                  else throw "mkService: No port defined for ${name}";
+      
+      host = if dnsMap.dnsMapping ? ${name} 
+             then dnsMap.dnsMapping.${name} 
+             else "${name}.nix.${dnsMap.baseDomain}";
+      
+      target = "http://${if netns != null then "10.200.1.2" else "127.0.0.1"}:${toString finalPort}";
+
+    in {
+      systemd.services."${name}" = {
+        serviceConfig = {
+          Description = lib.mkDefault description;
+          ProtectSystem = lib.mkDefault "strict";
+          ProtectHome = lib.mkDefault true;
+          PrivateTmp = lib.mkDefault true;
+          PrivateDevices = lib.mkDefault true;
+          NoNewPrivileges = lib.mkDefault true;
+          Restart = lib.mkDefault "always";
+          ReadWritePaths = lib.mkDefault readWritePaths;
+          NetworkNamespacePath = lib.mkIf (netns != null) "/run/netns/${netns}";
+        };
       };
-    };
 
-    # ── CADDY REVERSE PROXY ─────────────────────────────────────────────────
-    services.caddy.virtualHosts."${host}" = {
-      extraConfig = ''
-        # PRIORITÄT 1: LAN/Tailscale immer durchlassen (auth-unabhängig)
-        @trusted_network remote_ip 127.0.0.1 100.64.0.0/10 ${lib.concatStringsSep " " config.my.configs.network.lanCidrs}
-        handle @trusted_network {
+      services.caddy.virtualHosts."${host}" = {
+        extraConfig = ''
+          @trusted_network remote_ip 127.0.0.1 100.64.0.0/10 ${lib.concatStringsSep " " config.my.configs.network.lanCidrs}
+          handle @trusted_network {
+            reverse_proxy ${target}
+          }
+          ${lib.optionalString useSSO "import sso_auth"}
           reverse_proxy ${target}
-        }
-
-        # PRIORITÄT 2: SSO für alle anderen (nur wenn useSSO)
-        ${lib.optionalString useSSO ''
-          import sso_auth
-        ''}
-        
-        # FALLBACK
-        reverse_proxy ${target}
-      '';
+        '';
+      };
     };
   };
 }
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * ---
- * technical_integrity:
- *   checksum: sha256:e517bcdd446948326ed9b6f4fa542961b1043810bd2004ff8d8c4a67335c8839
- *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
- */

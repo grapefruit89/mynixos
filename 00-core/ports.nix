@@ -1,15 +1,24 @@
-/**
- * ---
- * nms_version: 2.3
- * identity:
- *   id: NIXH-00-CORE-018
- *   title: "Ports (SRE Master Source)"
- *   layer: 00
- * summary: Central port registry for consistent 10k/20k schema mapping.
- * ---
- */
 { lib, ... }:
+let
+  nms = {
+    id = "NIXH-00-CORE-018";
+    title = "Ports (SRE Master Source)";
+    description = "Central port registry for consistent 10k/20k schema mapping.";
+    layer = 00;
+    nixpkgs.category = "system/settings";
+    capabilities = [ "ssot/ports" "networking/registry" ];
+    audit.last_reviewed = "2026-03-02";
+    audit.complexity = 1;
+  };
+in
 {
+  options.my.meta.ports = lib.mkOption {
+    type = lib.types.attrs;
+    default = nms;
+    readOnly = true;
+    description = "NMS metadata for ports module";
+  };
+
   options.my.ports = lib.mkOption {
     type = lib.types.attrsOf lib.types.port;
     default = { };
@@ -48,7 +57,7 @@
     jellyfin       = 20096;
     # source-id: PORT.vaultwarden
     vaultwarden    = 20002;
-    # source-id: PORT.n8n
+    # source-id: PORT.n8n            
     n8n            = 20017;
     # source-id: PORT.paperless
     paperless      = 20981;
@@ -89,7 +98,3 @@
     mqtt           = 1883;
   };
 }
-/**
- * technical_integrity:
- *   eof_marker: NIXHOME_VALID_EOF
- */

@@ -1,21 +1,18 @@
-/**
- * ---
- * nms_version: 2.3
- * identity:
- *   id: NIXH-00-CORE-035
- *   title: "Auto Locale"
- *   layer: 00
- * architecture:
- *   req_refs: [REQ-CORE]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
- * summary: Intelligent country detection via IP geolocation for zero-touch locale setup.
- * ---
- */
 { config, lib, pkgs, ... }:
 
 let
+  # 🚀 NMS v4.0 Metadaten
+  nms = {
+    id = "NIXH-00-CORE-035";
+    title = "Auto Locale";
+    description = "Intelligent country detection via IP geolocation for zero-touch locale setup.";
+    layer = 00;
+    nixpkgs.category = "system/localization";
+    capabilities = [ "automation/geolocate" "system/boot-optimization" ];
+    audit.last_reviewed = "2026-03-02";
+    audit.complexity = 2;
+  };
+
   cfg = config.my.autoLocale;
   
   # Locale-Profile (erweitert aus locale.nix)
@@ -88,7 +85,7 @@ let
       name = "Nederland";
       timeZone = "Europe/Amsterdam";
       locale = "nl_NL.UTF-8";
-      keyMap = "us-intl";  # NL nutzt oft US-International
+      keyMap = "us-intl";
       xkbLayout = "us";
       ntp = [ "0.nl.pool.ntp.org" "1.nl.pool.ntp.org" ];
     };
@@ -102,327 +99,95 @@ let
     };
   };
   
-  # Geolocation via IP-API (fallback: ipapi.co)
   geolocateScript = pkgs.writeShellScript "geolocate" ''
     set -euo pipefail
-    
-    # Versuch 1: ip-api.com (kein API-Key nötig)
-    COUNTRY=$(${pkgs.curl}/bin/curl -sf --max-time 5 \
-      "http://ip-api.com/json/?fields=countryCode" \
-      | ${pkgs.jq}/bin/jq -r '.countryCode' 2>/dev/null || echo "")
-    
-    if [ -n "$COUNTRY" ]; then
-      echo "$COUNTRY"
-      exit 0
-    fi
-    
-    # Versuch 2: ipapi.co (Fallback)
-    COUNTRY=$(${pkgs.curl}/bin/curl -sf --max-time 5 \
-      "https://ipapi.co/country/" 2>/dev/null || echo "")
-    
-    if [ -n "$COUNTRY" ]; then
-      echo "$COUNTRY"
-      exit 0
-    fi
-    
-    # Fallback: Default zu DE
+    COUNTRY=$(${pkgs.curl}/bin/curl -sf --max-time 5 "http://ip-api.com/json/?fields=countryCode" | ${pkgs.jq}/bin/jq -r '.countryCode' 2>/dev/null || echo "")
+    if [ -n "$COUNTRY" ]; then echo "$COUNTRY"; exit 0; fi
+    COUNTRY=$(${pkgs.curl}/bin/curl -sf --max-time 5 "https://ipapi.co/country/" 2>/dev/null || echo "")
+    if [ -n "$COUNTRY" ]; then echo "$COUNTRY"; exit 0; fi
     echo "DE"
   '';
   
-  # Interaktive Auswahl (für manuelle Override)
   selectCountryScript = pkgs.writeShellScriptBin "select-country" ''
     #!/usr/bin/env bash
     set -euo pipefail
-    
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "🌍 Auto-Locale: Land auswählen"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
     echo "Verfügbare Länder:"
-    echo ""
-    ${lib.concatMapStringsSep "\n" (code: 
-      let profile = profiles.${code}; in
-      ''  echo "  [${code}] ${profile.name}"''
-    ) (lib.attrNames profiles)}
-    echo ""
-    
-    # Automatische Erkennung
+    ${lib.concatMapStringsSep "\n" (code: let profile = profiles.${code}; in ''  echo "  [${code}] ${profile.name}"'') (lib.attrNames profiles)}
     AUTO=$(${geolocateScript})
-    echo "🔍 Automatisch erkannt: $AUTO (${profiles.${cfg.country}.name or "Unbekannt"})"
-    echo ""
-    
+    echo "🔍 Automatisch erkannt: $AUTO"
     read -p "Land auswählen [Enter für $AUTO]: " CHOICE
     CHOICE=''${CHOICE:-$AUTO}
     CHOICE=$(echo "$CHOICE" | tr '[:lower:]' '[:upper:]')
-    
-    # Validierung
     case "$CHOICE" in
       ${lib.concatMapStringsSep "|" (code: code) (lib.attrNames profiles)})
-        echo ""
-        echo "✅ Ausgewählt: $CHOICE (${profiles.''${CHOICE}.name})"
-        echo ""
-        echo "Trage in /etc/nixos/00-core/configs.nix ein:"
-        echo ""
-        echo "  my.autoLocale.country = \"$CHOICE\";"
-        echo ""
+        echo "✅ Ausgewählt: $CHOICE"
+        echo "Trage in /etc/nixos/00-core/configs.nix ein: my.autoLocale.country = \"$CHOICE\";"
         ;;
       *)
-        echo "❌ Ungültige Auswahl: $CHOICE"
-        echo "Verwende Default: $AUTO"
-        CHOICE=$AUTO
+        echo "❌ Ungültige Auswahl: $CHOICE. Verwende Default: $AUTO"
         ;;
     esac
   '';
   
-  # Cache-Datei für erkanntes Land
   cacheFile = "/var/lib/auto-locale/country";
-  
-  # Land ermitteln (Priorität: Config > Cache > Geolocation)
-  selectedCountry =
-    if cfg.country != ""
-    then cfg.country
-    else if builtins.pathExists cacheFile
-    then lib.removeSuffix "\n" (builtins.readFile cacheFile)
-    else "DE";  # Fallback
-  
-  # Ausgewähltes Profil
+  selectedCountry = if cfg.country != "" then cfg.country else if builtins.pathExists cacheFile then lib.removeSuffix "\n" (builtins.readFile cacheFile) else "DE";
   profile = profiles.${selectedCountry} or profiles.DE;
 in
 {
-  # ══════════════════════════════════════════════════════════════════════════
-  # OPTIONEN
-  # ══════════════════════════════════════════════════════════════════════════
-  
+  options.my.meta.auto_locale = lib.mkOption {
+    type = lib.types.attrs;
+    default = nms;
+    readOnly = true;
+    description = "NMS metadata for auto-locale module";
+  };
+
   options.my.autoLocale = {
     enable = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = ''
-        Aktiviert automatische Locale-Erkennung via Geolocation.
-        
-        WICHTIG: Nur beim ersten Boot sinnvoll!
-        Danach besser manuell in configs.nix setzen:
-          my.locale.profile = "DE";
-      '';
+      description = "Aktiviert automatische Locale-Erkennung via Geolocation.";
     };
-    
     country = lib.mkOption {
       type = lib.types.str;
       default = "";
-      example = "DE";
-      description = ''
-        Länder-Code (ISO 3166-1 alpha-2).
-        Leer = Automatische Erkennung via IP.
-        
-        Verfügbare Codes: ${lib.concatStringsSep ", " (lib.attrNames profiles)}
-      '';
+      description = "Länder-Code (ISO 3166-1 alpha-2). Leer = Automatisch.";
     };
-    
     forceGeolocation = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = ''
-        Erzwingt Geolocation bei jedem Boot (nicht empfohlen).
-        Standard: Nur einmalig, dann gecacht.
-      '';
+      description = "Erzwingt Geolocation bei jedem Boot.";
     };
   };
   
-  # ══════════════════════════════════════════════════════════════════════════
-  # KONFIGURATION
-  # ══════════════════════════════════════════════════════════════════════════
-  
   config = lib.mkIf cfg.enable {
-    
-    # System-Locale (überschreibbar via my.locale.profile)
     time.timeZone = lib.mkDefault profile.timeZone;
     i18n.defaultLocale = lib.mkDefault profile.locale;
-    i18n.supportedLocales = lib.mkForce [
-      "de_DE.UTF-8/UTF-8"
-      "en_US.UTF-8/UTF-8"
-      "en_GB.UTF-8/UTF-8"
-      "fr_FR.UTF-8/UTF-8"
-    ];
-    
+    i18n.supportedLocales = lib.mkForce [ "de_DE.UTF-8/UTF-8" "en_US.UTF-8/UTF-8" "en_GB.UTF-8/UTF-8" "fr_FR.UTF-8/UTF-8" ];
     console.keyMap = lib.mkDefault profile.keyMap;
-    
-    services.xserver.xkb = {
-      layout = lib.mkDefault profile.xkbLayout;
-      variant = "";
-    };
-    
+    services.xserver.xkb = { layout = lib.mkDefault profile.xkbLayout; variant = ""; };
     networking.timeServers = lib.mkDefault profile.ntp;
-    
-    # ══════════════════════════════════════════════════════════════════════════
-    # GEOLOCATION SERVICE (einmalig beim ersten Boot)
-    # ══════════════════════════════════════════════════════════════════════════
     
     systemd.services.auto-locale-detect = {
       description = "Auto-Locale: Detect Country via Geolocation";
       wantedBy = [ "multi-user.target" ];
       after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
-      
-      # Nur ausführen wenn:
-      # 1. Cache-Datei fehlt ODER
-      # 2. forceGeolocation = true
-      unitConfig = lib.mkIf (!cfg.forceGeolocation) {
-        ConditionPathExists = "!${cacheFile}";
-      };
-      
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-      };
-      
+      unitConfig = lib.mkIf (!cfg.forceGeolocation) { ConditionPathExists = "!${cacheFile}"; };
+      serviceConfig = { Type = "oneshot"; RemainAfterExit = true; };
       script = ''
-        set -euo pipefail
-        
-        echo "🌍 Auto-Locale: Starte Geolocation..."
-        
-        # Erstelle Cache-Verzeichnis
-        ${pkgs.coreutils}/bin/mkdir -p "$(dirname ${cacheFile})"
-        
-        # Geolocation durchführen
+        mkdir -p "$(dirname ${cacheFile})"
         COUNTRY=$(${geolocateScript} || echo "DE")
-        
-        # In Cache schreiben
         echo "$COUNTRY" > ${cacheFile}
-        
-        echo "✅ Land erkannt: $COUNTRY (${profiles.''${COUNTRY}.name or "Unbekannt"})"
-        
-        # Log-Meldung
-        ${pkgs.util-linux}/bin/logger -t auto-locale "Detected country: $COUNTRY"
-        
-        # Info-Banner
-        cat <<EOF
-        
-        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        🌍 AUTO-LOCALE AKTIVIERT
-        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        
-        Erkanntes Land: $COUNTRY (${profiles.''${COUNTRY}.name or "Unbekannt"})
-        Zeitzone:       ${profile.timeZone}
-        Sprache:        ${profile.locale}
-        Tastatur:       ${profile.keyMap}
-        
-        WICHTIG: Wenn falsch erkannt, ändere in configs.nix:
-          my.autoLocale.country = "XX";
-        
-        Oder interaktiv auswählen:
-          sudo select-country
-        
-        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        EOF
+        logger -t auto-locale "Detected country: $COUNTRY"
       '';
     };
     
-    # ══════════════════════════════════════════════════════════════════════════
-    # HELPER-TOOLS
-    # ══════════════════════════════════════════════════════════════════════════
-    
-    environment.systemPackages = [
-      selectCountryScript
-      
-      # Info-Tool
-      (pkgs.writeShellScriptBin "show-locale" ''
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo "🌍 Aktuelle Locale-Einstellungen"
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        echo ""
-        echo "Land:       ${selectedCountry} (${profile.name})"
-        echo "Zeitzone:   ${profile.timeZone}"
-        echo "Sprache:    ${profile.locale}"
-        echo "Tastatur:   ${profile.keyMap}"
-        echo "NTP-Server: ${lib.concatStringsSep ", " profile.ntp}"
-        echo ""
-        echo "Cache:      ${cacheFile}"
-        if [ -f ${cacheFile} ]; then
-          echo "Inhalt:     $(cat ${cacheFile})"
-        else
-          echo "Inhalt:     (nicht vorhanden)"
-        fi
-        echo ""
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-      '')
-    ];
-    
-    # Aliase
-    programs.bash.shellAliases = {
-      "locale-info" = "show-locale";
-      "locale-select" = "sudo select-country";
-    };
-    
-    # ══════════════════════════════════════════════════════════════════════════
-    # ASSERTIONS
-    # ══════════════════════════════════════════════════════════════════════════
-    
-    assertions = [
-      {
-        assertion = cfg.country == "" || (profiles ? ${cfg.country});
-        message = ''
-          auto-locale: Ungültiger Länder-Code: ${cfg.country}
-          Verfügbar: ${lib.concatStringsSep ", " (lib.attrNames profiles)}
-        '';
-      }
-    ];
+    environment.systemPackages = [ selectCountryScript (pkgs.writeShellScriptBin "show-locale" "echo Land: ${selectedCountry}") ];
+    programs.bash.shellAliases = { "locale-info" = "show-locale"; "locale-select" = "sudo select-country"; };
+    assertions = [ { assertion = cfg.country == "" || (profiles ? ${cfg.country}); message = "auto-locale: Ungültiger Länder-Code: ${cfg.country}"; } ];
   };
 }
-
-# ══════════════════════════════════════════════════════════════════════════
-# USAGE GUIDE
-# ══════════════════════════════════════════════════════════════════════════
-#
-# OPTION 1: Automatische Erkennung (empfohlen für Erstinstallation)
-#
-#   # In configuration.nix:
-#   my.autoLocale.enable = true;
-#   
-#   # Nach nixos-rebuild:
-#   $ show-locale
-#   Land: DE (Deutschland)
-#
-# OPTION 2: Manuell auswählen
-#
-#   my.autoLocale = {
-#     enable = true;
-#     country = "CH";  # Schweiz
-#   };
-#
-# OPTION 3: Interaktive Auswahl (während Installation)
-#
-#   $ sudo select-country
-#   🌍 Auto-Locale: Land auswählen
-#   [DE] Deutschland
-#   [AT] Österreich
-#   ...
-#   Land auswählen [Enter für DE]: CH
-#   ✅ Ausgewählt: CH (Schweiz)
-#
-# MIGRATION VON LOCALE.NIX:
-#
-#   Ersetze:
-#     my.locale.profile = "DE";
-#   
-#   Durch:
-#     my.autoLocale = {
-#       enable = true;
-#       country = "DE";
-#     };
-#
-# DEAKTIVIEREN (nach Installation):
-#
-#   # auto-locale.nix komplett entfernen
-#   # Zurück zu locale.nix:
-#   my.locale.profile = "DE";
-#
-# ══════════════════════════════════════════════════════════════════════════
-/**
- * ---
- * technical_integrity:
- *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-03-02
- *   complexity_score: 2
- * ---
- */

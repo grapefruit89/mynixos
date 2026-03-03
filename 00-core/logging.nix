@@ -1,43 +1,38 @@
-/**
- * ---
- * nms_version: 2.3
- * identity:
- *   id: NIXH-00-CORE-014
- *   title: "Logging (SRE Monitor Mode)"
- *   layer: 00
- * summary: Volatile logging with specific size and time limits to monitor log volume.
- * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/logging/journald.nix
- * ---
- */
 { lib, ... }:
+let
+  # 🚀 NMS v4.0 Metadaten
+  nms = {
+    id = "NIXH-00-CORE-014";
+    title = "Logging (SRE Monitor Mode)";
+    description = "Volatile high-performance logging with strict retention policies.";
+    layer = 00;
+    nixpkgs.category = "system/logging";
+    capabilities = [ "system/logging" "performance/volatile-storage" ];
+    audit.last_reviewed = "2026-03-02";
+    audit.complexity = 2;
+  };
+in
 {
-  # 🚀 JOURNALD SRE TUNING
-  services.journald.extraConfig = ''
-    # ── SPEICHER-STRATEGIE (Monitor Mode) ──────────────────────────────────
-    # 'volatile' hält Logs im RAM.
-    Storage=volatile
-    
-    # ── LIMITS (User Wunsch: 100MB Pakete, 5 Tage) ──────────────────────────
-    # Wir setzen RuntimeMaxUse auf 500MB insgesamt, aber Files auf 100MB.
-    RuntimeMaxUse=500M
-    RuntimeMaxFileSize=100M
-    
-    # Lösche Logs, die älter als 5 Tage sind (im RAM)
-    MaxRetentionSec=5day
-    
-    # ── PERFORMANCE ─────────────────────────────────────────────────────────
-    Compress=yes
-    RateLimitIntervalSec=30s
-    RateLimitBurst=10000
-    
-    ForwardToSyslog=no
-    ForwardToConsole=no
-    
-    MaxLevelStore=debug
-    MaxLevelConsole=info
-  '';
+  options.my.meta.logging = lib.mkOption {
+    type = lib.types.attrs;
+    default = nms;
+    readOnly = true;
+    description = "NMS metadata for logging module";
+  };
+
+  config = {
+    services.journald.extraConfig = ''
+      Storage=volatile
+      RuntimeMaxUse=500M
+      RuntimeMaxFileSize=100M
+      MaxRetentionSec=5day
+      Compress=yes
+      RateLimitIntervalSec=30s
+      RateLimitBurst=10000
+      ForwardToSyslog=no
+      ForwardToConsole=no
+      MaxLevelStore=debug
+      MaxLevelConsole=info
+    '';
+  };
 }
-/**
- * technical_integrity:
- *   eof_marker: NIXHOME_VALID_EOF
- */

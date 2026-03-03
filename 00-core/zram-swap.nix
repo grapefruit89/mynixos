@@ -1,37 +1,33 @@
-/**
- * ---
- * nms_version: 2.3
- * identity:
- *   id: NIXH-00-CORE-034
- *   title: "Zram Swap (RAM-Efficiency)"
- *   layer: 00
- * summary: Compressed RAM swap tuning for high performance without SSD wear.
- * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/services/misc/zram-swap.nix
- * ---
- */
 { config, lib, ... }:
 let
+  # 🚀 NMS v4.0 Metadaten
+  nms = {
+    id = "NIXH-00-CORE-034";
+    title = "Zram Swap (RAM-Efficiency)";
+    description = "Compressed RAM swap tuning for high performance without SSD wear.";
+    layer = 00;
+    nixpkgs.category = "system/settings";
+    capabilities = [ "system/performance" "hardware/ram-optimization" ];
+    audit.last_reviewed = "2026-03-02";
+    audit.complexity = 2;
+  };
+
   ramGB = config.my.configs.hardware.ramGB;
 in
 {
-  # ── ZRAM TUNING ──────────────────────────────────────────────────────────
-  zramSwap = {
-    enable = true;
-    algorithm = "zstd"; # Beste Ratio/Speed-Balance für 2026
-    memoryPercent = if ramGB <= 4 then 75
-                     else if ramGB <= 8 then 50
-                     else 25;
+  options.my.meta.zram_swap = lib.mkOption {
+    type = lib.types.attrs;
+    default = nms;
+    readOnly = true;
+    description = "NMS metadata for zram-swap module";
   };
 
-  # ── KERNEL OPTIMIERUNG (SRE Standard) ───────────────────────────────────
-  boot.kernel.sysctl = {
-    # Aggressiv in zram swappen (verhindert OOM bei hoher Last)
-    "vm.swappiness" = lib.mkForce 180;
-    # Kein Read-Ahead nötig bei ZRAM
-    "vm.page-cluster" = lib.mkDefault 0;
+  config = {
+    zramSwap = {
+      enable = true;
+      algorithm = "zstd";
+      memoryPercent = if ramGB <= 4 then 75 else if ramGB <= 8 then 50 else 25;
+    };
+    boot.kernel.sysctl = { "vm.swappiness" = lib.mkForce 180; "vm.page-cluster" = lib.mkDefault 0; };
   };
 }
-/**
- * technical_integrity:
- *   eof_marker: NIXHOME_VALID_EOF
- */

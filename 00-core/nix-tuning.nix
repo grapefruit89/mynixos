@@ -1,75 +1,45 @@
-/**
- * ---
- * nms_version: 2.3
- * identity:
- *   id: NIXH-00-CORE-017
- *   title: "Nix Tuning (Binary-Only Policy)"
- *   layer: 00
- * summary: Strict binary cache enforcement to prevent local compilation and SSD wear.
- * source_nixpkgs: https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/config/nix-remote-build.nix
- * ---
- */
 { config, lib, pkgs, ... }:
 let
-  ramGB = config.my.configs.hardware.ramGB;
-  isLowRam = ramGB <= 4;
-  isMidRam = ramGB > 4 && ramGB <= 8;
+  # 🚀 NMS v4.0 Metadaten
+  nms = {
+    id = "NIXH-00-CORE-017";
+    title = "Nix Tuning (Binary-Only Policy)";
+    description = "Strict binary cache enforcement to prevent local compilation and SSD wear.";
+    layer = 00;
+    nixpkgs.category = "system/settings";
+    capabilities = [ "nix/tuning" "policy/binary-only" "maintenance/auto-gc" ];
+    audit.last_reviewed = "2026-03-02";
+    audit.complexity = 2;
+  };
 in
 {
-  # ── BINARY CACHES (SSoT) ──────────────────────────────────────────────────
-  nix.settings.substituters = [
-    "https://cache.nixos.org"
-    "https://nix-community.cachix.org"
-  ];
-  nix.settings.trusted-public-keys = [
-    "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-    "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-  ];
-
-  # ── ⛔ NO-LOCAL-BUILD ENFORCEMENT (Aviation Grade) ──────────────────────
-  nix.settings = {
-    # Absolutes Verbot für lokale Builds (0 Slots)
-    max-jobs = lib.mkForce 0;
-    
-    # Schnelle Erkennung von Netzwerkproblemen
-    connect-timeout = 5;
-    
-    # Erlaubt dem Builder, Substitutes zu nutzen (Standard in NixOS)
-    builders-use-substitutes = true;
-    
-    # Optimierungen
-    auto-optimise-store = true;
-    narinfo-cache-negative-ttl = 0; # Sofortige Cache-Revalidierung
+  options.my.meta.nix_tuning = lib.mkOption {
+    type = lib.types.attrs;
+    default = nms;
+    readOnly = true;
+    description = "NMS metadata for nix-tuning module";
   };
 
-  # ── RESSOURCEN-SCHUTZ ────────────────────────────────────────────────────
+  config = {
+    nix.settings = {
+      substituters = [ "https://cache.nixos.org" "https://nix-community.cachix.org" ];
+      trusted-public-keys = [ "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=" "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs=" ];
+      max-jobs = lib.mkForce 0;
+      connect-timeout = 5;
+      builders-use-substitutes = true;
+      auto-optimise-store = true;
+      narinfo-cache-negative-ttl = 0;
+      timeout = 1800;
+      experimental-features = [ "nix-command" "flakes" "auto-allocate-uids" "cgroups" ];
+      sandbox = true;
+      trusted-users = [ "root" config.my.configs.identity.user ];
+    };
 
+    nix.daemonCPUSchedPolicy = "idle";
+    nix.daemonIOSchedClass = "idle";
 
-  # Build-Timeout als letzte Rettung
-  nix.settings.timeout = 1800;  # 30min Max (SRE: Alles über 30m ist vermutlich ein massiver Build -> Abbrechen)
+    nix.gc = { automatic = true; dates = "weekly"; options = "--delete-older-than 14d"; persistent = true; };
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" "auto-allocate-uids" "cgroups" ];
-  nix.settings.sandbox = true;
-  nix.settings.trusted-users = [ "root" config.my.configs.identity.user ];
-
-  # CPU & IO Priorität (Nix soll das System nicht blockieren)
-  nix.daemonCPUSchedPolicy = "idle";
-  nix.daemonIOSchedClass = "idle";
-
-  # ── AUTOMATISCHE PFLEGE (GC) ─────────────────────────────────────────────
-  nix.gc = {
-    automatic = true;
-    dates = "weekly";
-    options = "--delete-older-than 14d";
-    persistent = true;
+    environment.systemPackages = with pkgs; [ cachix nix-tree nix-diff nix-output-monitor ];
   };
-
-  # ── TOOLING ──────────────────────────────────────────────────────────────
-  environment.systemPackages = with pkgs; [
-    cachix nix-tree nix-diff nix-output-monitor
-  ];
 }
-/**
- * technical_integrity:
- *   eof_marker: NIXHOME_VALID_EOF
- */

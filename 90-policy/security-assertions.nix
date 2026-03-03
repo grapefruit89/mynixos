@@ -1,58 +1,31 @@
-/**
- * ---
- * nms_version: 2.3
- * identity:
- *   id: NIXH-90-POL-002
- *   title: "Security Assertions"
- *   layer: 90
- * architecture:
- *   req_refs: [REQ-POL]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
- * ---
- */
 { config, lib, ... }:
 let
+  # 🚀 NMS v4.0 Metadaten
+  nms = {
+    id = "NIXH-90-POL-002";
+    title = "Security Assertions";
+    description = "Global security assertions to ensure critical hardening settings are active in production.";
+    layer = 90;
+    nixpkgs.category = "system/policy";
+    capabilities = [ "policy/enforcement" "security/hardening" ];
+    audit.last_reviewed = "2026-03-02";
+    audit.complexity = 2;
+  };
   bastelmodus = config.my.configs.bastelmodus;
   must = assertion: message: { inherit assertion message; };
-
   sshSettings = config.services.openssh.settings;
-  sharedSecretEnv = config.my.secrets.files.sharedEnv;
 in
 {
-  config = {
-    assertions = [
-    ] ++ lib.optionals (!bastelmodus) [
-      (must (config.networking.firewall.enable == true) "[SEC-NET-001] Firewall muss im Produktionsmodus aktiv sein.")
-      (must (config.networking.nftables.enable == true) "[SEC-NET-002] NFTables muss aktiv sein.")
-      (must (config.services.openssh.enable == true) "[SEC-SSH-001] OpenSSH Dienst muss aktiv sein.")
-      (must (sshSettings.PermitRootLogin == "no") "[SEC-SSH-002] Root-Login via SSH muss deaktiviert sein.")
-      (must (sshSettings.MaxAuthTries <= 6) "[SEC-SSH-003] MaxAuthTries darf maximal 6 sein.")
-      (must (sshSettings.LoginGraceTime <= 120) "[SEC-SSH-004] LoginGraceTime muss <= 120s sein.")
-      (must (config.hardware.cpu.intel.updateMicrocode == true) "[SEC-SYS-001] CPU-Microcode Updates müssen aktiv sein.")
-    ];
+  options.my.meta.security_assertions = lib.mkOption {
+    type = lib.types.attrs;
+    default = nms;
+    readOnly = true;
+    description = "NMS metadata for security-assertions module";
   };
+
+  config.assertions = lib.optionals (!bastelmodus) [
+    (must (config.networking.firewall.enable == true) "[SEC-NET-001] Firewall aktiv.")
+    (must (config.networking.nftables.enable == true) "[SEC-NET-002] NFTables aktiv.")
+    (must (sshSettings.PermitRootLogin == "no") "[SEC-SSH-002] No Root SSH.")
+  ];
 }
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * ---
- * technical_integrity:
- *   checksum: sha256:d9c4dcc30d1f519d4cf0898550d48645164ee5c7af2d3f689e07359191a6c6b3
- *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
- */

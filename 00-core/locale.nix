@@ -1,30 +1,33 @@
-/**
- * ---
- * nms_version: 2.3
- * identity:
- *   id: NIXH-00-CORE-013
- *   title: "Locale (SRE Refactored)"
- *   layer: 00
- * architecture:
- *   req_refs: [REQ-CORE]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
- * ---
- */
 { lib, config, ... }:
 let
-  # SSoT: Pulling from Master Source (configs.nix)
+  # 🚀 NMS v4.0 Metadaten
+  nms = {
+    id = "NIXH-00-CORE-013";
+    title = "Locale (SRE Refactored)";
+    description = "Centralized localization settings using the Master Source of Truth.";
+    layer = 00;
+    nixpkgs.category = "system/localization";
+    capabilities = [ "system/localization" "ssot/locale" ];
+    audit.last_reviewed = "2026-03-02";
+    audit.complexity = 1;
+  };
+
   tz = config.my.configs.locale.timezone;
   loc = config.my.configs.locale.default;
 in
 {
+  options.my.meta.locale = lib.mkOption {
+    type = lib.types.attrs;
+    default = nms;
+    readOnly = true;
+    description = "NMS metadata for locale module";
+  };
+
   config = {
     time.timeZone = tz;
     i18n.defaultLocale = loc;
     i18n.supportedLocales = lib.mkForce [ "de_DE.UTF-8/UTF-8" "en_US.UTF-8/UTF-8" ];
     
-    # Standard settings for Germany/EU
     console.keyMap = lib.mkForce "de-latin1";
     services.xserver.xkb = {
       layout = "de";
@@ -38,7 +41,6 @@ in
       "3.de.pool.ntp.org" 
     ];
 
-    # DNS configuration (integrated with systemwide SRE standards)
     services.resolved = {
       enable = true;
       dnssec = "true";
@@ -47,11 +49,3 @@ in
     };
   };
 }
-/**
- * ---
- * technical_integrity:
- *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-03-02
- * ---
- */

@@ -1,40 +1,26 @@
-/**
- * ---
- * nms_version: 2.3
- * identity:
- *   id: NIXH-00-CORE-019
- *   title: "Principles"
- *   layer: 00
- * architecture:
- *   req_refs: [REQ-CORE]
- *   upstream: [NIXH-00-SYS-ROOT-001]
- *   downstream: []
- *   status: audited
- * ---
- */
-{ ... }:
+{ lib, ... }:
+let
+  # 🚀 NMS v4.0 Metadaten
+  nms = {
+    id = "NIXH-00-CORE-019";
+    title = "Principles";
+    description = "Core architectural principles and the manifesto of the NixHome project.";
+    layer = 00;
+    nixpkgs.category = "documentation/architecture";
+    capabilities = [ "architecture/manifesto" "system/standards" ];
+    audit.last_reviewed = "2026-03-02";
+    audit.complexity = 1;
+  };
+in
 {
-  # Rein dokumentatives Modul.
+  options.my.meta.principles = lib.mkOption {
+    type = lib.types.attrs;
+    default = nms;
+    readOnly = true;
+    description = "NMS metadata for principles module";
+  };
+
+  config = {
+    # Rein dokumentatives Modul.
+  };
 }
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * ---
- * technical_integrity:
- *   checksum: sha256:d6f135b2979842b70f87781b8d710bb0cefb0603e85b0ce42c59969ed464b3a1
- *   eof_marker: NIXHOME_VALID_EOF
- * audit_trail:
- *   last_reviewed: 2026-02-28
- *   complexity_score: 2
- * ---
- */
