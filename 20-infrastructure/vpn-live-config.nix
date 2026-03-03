@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-10-INF-019";
+    id = "NIXH-20-INF-008";
     title = "Vpn Live Config";
     description = "Dynamic runtime configuration for VPN credentials and endpoints.";
     layer = 10;

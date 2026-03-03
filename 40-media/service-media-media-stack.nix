@@ -2,10 +2,10 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-20-SRV-025";
+    id = "NIXH-40-MED-010";
     title = "Media Stack Activation";
     description = "Central toggle for activating the entire media stack and its default profiles.";
-    layer = 30;
+    layer = 40;
     nixpkgs.category = "system/settings";
     capabilities = [ "system/media-activation" ];
     audit.last_reviewed = "2026-03-02";

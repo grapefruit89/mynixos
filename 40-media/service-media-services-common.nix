@@ -2,10 +2,10 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-20-SRV-031";
+    id = "NIXH-40-MED-016";
     title = "Services Common";
     description = "Common media service defaults and global configuration attributes.";
-    layer = 30;
+    layer = 40;
     nixpkgs.category = "system/settings";
     capabilities = [ "media/defaults" "architecture/common" ];
     audit.last_reviewed = "2026-03-02";

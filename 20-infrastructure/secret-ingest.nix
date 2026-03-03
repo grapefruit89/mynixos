@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 let
   nms = {
-    id = "NIXH-10-INF-013";
+    id = "NIXH-20-INF-003";
     title = "Secret Ingest";
     description = "Watcher for secret landing zone.";
     layer = 10;

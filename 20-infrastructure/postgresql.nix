@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-10-INF-018";
+    id = "NIXH-20-INF-002";
     title = "PostgreSQL (SRE Optimized)";
     description = "Optimized database cluster with automated backups and strict sandboxing.";
     layer = 10;

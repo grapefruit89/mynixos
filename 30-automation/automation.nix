@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-20-SRV-018";
+    id = "NIXH-30-AUT-001";
     title = "Automation";
     description = "Core automation settings, including sudo rules for rebuilds and maintenance.";
     layer = 20;

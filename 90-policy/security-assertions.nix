@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-90-POL-002";
+    id = "NIXH-90-POL-004";
     title = "Security Assertions";
     description = "Global security assertions to ensure critical hardening settings are active in production.";
     layer = 90;

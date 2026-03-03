@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-00-CORE-023";
+    id = "NIXH-00-COR-030";
     title = "Shell";
     description = "Standardized Bash environment with productivity tools and basic maintenance aliases.";
     layer = 00;

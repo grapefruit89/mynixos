@@ -2,10 +2,10 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-20-SRV-029";
+    id = "NIXH-40-MED-014";
     title = "Recyclarr (SRE Declarative)";
     description = "Declarative management of Radarr/Sonarr quality profiles and custom formats.";
-    layer = 30;
+    layer = 40;
     nixpkgs.category = "services/misc";
     capabilities = [ "media/quality-profiles" "automation/declarative-config" ];
     audit.last_reviewed = "2026-03-02";

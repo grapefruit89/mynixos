@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }:
 let
-  nms = { id = "NIXH-10-INF-010"; title = "Landing Zone Ui"; description = "Static landing page."; layer = 10; nixpkgs.category = "web/apps"; capabilities = [ "web/landing-page" ]; audit.last_reviewed = "2026-03-02"; audit.complexity = 1; };
+  nms = { id = "NIXH-10-GTW-008"; title = "Landing Zone Ui"; description = "Static landing page."; layer = 10; nixpkgs.category = "web/apps"; capabilities = [ "web/landing-page" ]; audit.last_reviewed = "2026-03-02"; audit.complexity = 1; };
   domain = config.my.configs.identity.domain;
   lanIP = config.my.configs.server.lanIP;
   rescueHtml = pkgs.writeTextDir "index.html" "<html><body>Rettungsweg</body></html>";

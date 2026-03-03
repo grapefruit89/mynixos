@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-10-INF-015";
+    id = "NIXH-10-GTW-011";
     title = "Tailscale (Zero-Touch)";
     description = "Declarative VPN with autoconnect pattern and SOPS-nix secret integration.";
     layer = 10;

@@ -1,10 +1,10 @@
 { lib, ... }:
 let
   nms = {
-    id = "NIXH-20-SRV-020";
+    id = "NIXH-40-MED-006";
     title = "Default Media Services";
     description = "Master import module for the entire media stack.";
-    layer = 30;
+    layer = 40;
     nixpkgs.category = "system/settings";
     capabilities = [ "media/stack" "architecture/imports" ];
     audit.last_reviewed = "2026-03-02";

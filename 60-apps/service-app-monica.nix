@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 let
-  nms = { id = "NIXH-20-SRV-008"; title = "Monica"; description = "Personal CRM."; layer = 50; nixpkgs.category = "services/web-apps"; capabilities = [ "web/crm" ]; audit.last_reviewed = "2026-03-02"; audit.complexity = 3; };
+  nms = { id = "NIXH-60-APP-006"; title = "Monica"; description = "Personal CRM."; layer = 60; nixpkgs.category = "services/web-apps"; capabilities = [ "web/crm" ]; audit.last_reviewed = "2026-03-02"; audit.complexity = 3; };
   port = config.my.ports.monica;
   domain = config.my.configs.identity.domain;
   appKeyFile = "/var/lib/monica/app-key";

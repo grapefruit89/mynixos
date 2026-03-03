@@ -1,21 +1,24 @@
-{ config, lib, pkgs, ... }:
-
-let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-00-CORE-026";
+    id = "NIXH-00-COR-031";
     title = "SSH Rescue";
     description = "Temporary 5-minute SSH window with password auth for emergency recovery.";
     layer = 00;
     nixpkgs.category = "system/networking";
-    capabilities = [ "security/recovery" "ssh/password-fallback" ];
+    capabilities = ["security/recovery" "ssh/password-fallback"];
     audit.last_reviewed = "2026-03-02";
     audit.complexity = 2;
   };
 
   user = config.my.configs.identity.user;
   recoveryWindowSeconds = 300;
-  
+
   recoveryStatus = pkgs.writeShellScriptBin "ssh-recovery-status" ''
     #!/usr/bin/env bash
     if systemctl is-active --quiet ssh-recovery-window; then
@@ -25,8 +28,7 @@ let
     echo -e "\033[0;32m🔒 SSH Recovery Window: INAKTIV\033[0m"
     exit 1
   '';
-in
-{
+in {
   options.my.meta.ssh_rescue = lib.mkOption {
     type = lib.types.attrs;
     default = nms;
@@ -34,13 +36,16 @@ in
     description = "NMS metadata for ssh-rescue module";
   };
 
-
   config = lib.mkIf config.my.services.sshRescue.enable {
     systemd.services.ssh-recovery-window = {
       description = "SSH Password Recovery Window (5min after boot)";
-      wantedBy = [ "multi-user.target" ];
-      after = [ "sshd.service" "network-online.target" ];
-      serviceConfig = { Type = "oneshot"; RemainAfterExit = true; User = "root"; };
+      wantedBy = ["multi-user.target"];
+      after = ["sshd.service" "network-online.target"];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        User = "root";
+      };
       script = ''
         cp /etc/ssh/sshd_config /tmp/sshd_config.backup
         sed -i 's/^PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
@@ -50,8 +55,8 @@ in
         systemctl reload sshd
       '';
     };
-    
-    environment.systemPackages = [ recoveryStatus ];
+
+    environment.systemPackages = [recoveryStatus];
     programs.bash.shellAliases = {
       ssh-recovery-status = "${recoveryStatus}/bin/ssh-recovery-status";
       ssh-recovery-enable = "sudo systemctl start ssh-recovery-manual";

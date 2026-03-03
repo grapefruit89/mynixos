@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-10-INF-007";
+    id = "NIXH-10-GTW-005";
     title = "Dns Automation";
     description = "Check Cloudflare for DNS conflicts and update runtime map for dynamic routing.";
     layer = 10;

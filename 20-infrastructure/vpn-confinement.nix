@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-10-INF-018";
+    id = "NIXH-20-INF-007";
     title = "Vpn Confinement";
     description = "Network namespace based VPN isolation for secure service routing.";
     layer = 10;

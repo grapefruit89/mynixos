@@ -2,10 +2,10 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-20-SRV-013";
+    id = "NIXH-50-KNW-004";
     title = "Readeck (SRE Hardened)";
     description = "Self-hosted 'read-it-later' service, tightly sandboxed with DynamicUser.";
-    layer = 40;
+    layer = 50;
     nixpkgs.category = "services/web-apps";
     capabilities = [ "web/read-it-later" "security/sandboxing" ];
     audit.last_reviewed = "2026-03-02";

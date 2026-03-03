@@ -2,10 +2,10 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-10-INF-016";
+    id = "NIXH-80-MON-004";
     title = "Uptime Kuma (SRE Exhausted)";
     description = "Self-hosted monitoring tool, tightly sandboxed with resource limits.";
-    layer = 10;
+    layer = 80;
     nixpkgs.category = "services/monitoring";
     capabilities = [ "monitoring/uptime" "web/dashboard" ];
     audit.last_reviewed = "2026-03-02";

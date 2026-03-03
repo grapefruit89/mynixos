@@ -2,10 +2,10 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-20-SRV-002";
+    id = "NIXH-40-MED-002";
     title = "Audiobookshelf (SRE Hardened)";
     description = "Purposed-built audiobook and podcast server with standardized storage paths.";
-    layer = 30;
+    layer = 40;
     nixpkgs.category = "services/web-apps";
     capabilities = [ "media/audiobooks" "media/podcasts" ];
     audit.last_reviewed = "2026-03-02";

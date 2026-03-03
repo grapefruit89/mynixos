@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-00-CORE-019";
+    id = "NIXH-00-COR-026";
     title = "Principles";
     description = "Core architectural principles and the manifesto of the NixHome project.";
     layer = 00;

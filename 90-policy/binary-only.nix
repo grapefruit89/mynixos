@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-90-POL-003";
+    id = "NIXH-90-POL-001";
     title = "Binary-Only Policy";
     description = "Enforces a strict download-only workflow by forbidding local compilation to protect system resources.";
     layer = 90;

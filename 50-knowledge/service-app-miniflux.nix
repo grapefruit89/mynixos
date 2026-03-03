@@ -2,10 +2,10 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-20-SRV-007";
+    id = "NIXH-50-KNW-002";
     title = "Miniflux (SRE Exhausted)";
     description = "Minimalist RSS reader with Wake-on-Access (Socket Activation).";
-    layer = 40;
+    layer = 50;
     nixpkgs.category = "services/web-apps";
     capabilities = [ "web/rss" "security/socket-activation" ];
     audit.last_reviewed = "2026-03-02";

@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-00-CORE-001";
+    id = "NIXH-00-COR-002";
     title = "AI Tools (SRE Assisted)";
     description = "Optimized terminal environment for AI-assisted development and SRE tasks.";
     layer = 00;

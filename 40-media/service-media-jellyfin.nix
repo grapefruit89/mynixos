@@ -1,10 +1,10 @@
 { lib, pkgs, config, ... }:
 let
   nms = {
-    id = "NIXH-20-SRV-021";
+    id = "NIXH-40-MED-007";
     title = "Jellyfin (Expert Exhaustion)";
     description = "Hardware-accelerated media server.";
-    layer = 30;
+    layer = 40;
     nixpkgs.category = "services/media";
     capabilities = [ "media/jellyfin" "gpu/qsv" "security/sandboxing" ];
     audit.last_reviewed = "2026-03-02";

@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-10-INF-006";
+    id = "NIXH-10-GTW-004";
     title = "Ddns Updater";
     description = "Automated Dynamic DNS updates for Cloudflare and other providers.";
     layer = 10;

@@ -2,10 +2,10 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-20-APP-015";
+    id = "NIXH-60-APP-004";
     title = "Karakeep (SRE Hardened)";
     description = "Bookmark management tool with SRE sandboxing.";
-    layer = 20;
+    layer = 60;
     nixpkgs.category = "web/apps";
     capabilities = [ "web/bookmarks" "security/sandboxing" ];
     audit.last_reviewed = "2026-03-02";

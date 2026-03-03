@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-20-SRV-009";
+    id = "NIXH-30-AUT-004";
     title = "N8n (SRE Hardened)";
     description = "Workflow automation with DynamicUser isolation and secure secret handling.";
     layer = 20;

@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 let
-  nms = { id = "NIXH-20-SRV-034"; title = "Lidarr"; description = "Music downloader."; layer = 30; nixpkgs.category = "services/media"; capabilities = [ "media/music" ]; audit.last_reviewed = "2026-03-02"; audit.complexity = 3; };
+  nms = { id = "NIXH-40-MED-009"; title = "Lidarr"; description = "Music downloader."; layer = 40; nixpkgs.category = "services/media"; capabilities = [ "media/music" ]; audit.last_reviewed = "2026-03-02"; audit.complexity = 3; };
   factory = import ./service-media-_servarr-factory.nix { inherit lib pkgs; };
   myLib = import ../00-core/lib-helpers.nix { inherit lib; };
   cfg = config.my.media.lidarr;

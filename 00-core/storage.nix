@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 let
-  nms = { id = "NIXH-00-CORE-027"; title = "Storage"; description = "mergerfs pool."; layer = 00; nixpkgs.category = "system/storage"; capabilities = [ "storage/mergerfs" ]; audit.last_reviewed = "2026-03-02"; audit.complexity = 3; };
+  nms = { id = "NIXH-20-INF-005"; title = "Storage"; description = "mergerfs pool."; layer = 20; nixpkgs.category = "system/storage"; capabilities = [ "storage/mergerfs" ]; audit.last_reviewed = "2026-03-02"; audit.complexity = 3; };
   cfg = config.my.services.storagePool;
   srePaths = config.my.configs.paths;
 in

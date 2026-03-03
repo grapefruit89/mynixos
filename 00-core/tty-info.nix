@@ -1,18 +1,21 @@
-{ config, pkgs, lib, ... }:
-let
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}: let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-00-CORE-031";
+    id = "NIXH-00-COR-036";
     title = "Tty Info";
     description = "Service to display critical system information like IP addresses on the physical console (TTY1).";
     layer = 00;
     nixpkgs.category = "system/settings";
-    capabilities = [ "system/observability" "hardware/console-info" ];
+    capabilities = ["system/observability" "hardware/console-info"];
     audit.last_reviewed = "2026-03-02";
     audit.complexity = 1;
   };
-in
-{
+in {
   options.my.meta.tty_info = lib.mkOption {
     type = lib.types.attrs;
     default = nms;
@@ -23,10 +26,15 @@ in
   config = {
     systemd.services.tty-ip-info = {
       description = "Display IP Address on TTY1";
-      after = [ "network-online.target" ];
-      wants = [ "network-online.target" ];
-      wantedBy = [ "multi-user.target" ];
-      serviceConfig = { Type = "oneshot"; RemainAfterExit = true; StandardOutput = "tty"; TTYPath = "/dev/tty1"; };
+      after = ["network-online.target"];
+      wants = ["network-online.target"];
+      wantedBy = ["multi-user.target"];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        StandardOutput = "tty";
+        TTYPath = "/dev/tty1";
+      };
       script = ''
         sleep 2
         echo -e "\n\033[1;32m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"

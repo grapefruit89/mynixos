@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-20-SRV-035";
+    id = "NIXH-20-INF-004";
     title = "Zigbee Stack (MQTT & Z2M)";
     description = "Decoupled Zigbee infrastructure with Mosquitto and Zigbee2MQTT for SLZB-06.";
     layer = 20;

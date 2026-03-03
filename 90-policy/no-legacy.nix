@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 let
   nms = {
-    id = "NIXH-90-POL-001";
+    id = "NIXH-90-POL-003";
     title = "No Legacy";
     description = "Blocks legacy services and insecure protocols.";
     layer = 90;

@@ -1,18 +1,20 @@
-{ config, lib, ... }:
-let
+{
+  config,
+  lib,
+  ...
+}: let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-00-CORE-011";
+    id = "NIXH-00-COR-016";
     title = "Host";
     description = "Basic hostname and identity configuration for the server.";
     layer = 00;
     nixpkgs.category = "system/settings";
-    capabilities = [ "system/identity" ];
+    capabilities = ["system/identity"];
     audit.last_reviewed = "2026-03-02";
     audit.complexity = 1;
   };
-in
-{
+in {
   options.my.meta.host = lib.mkOption {
     type = lib.types.attrs;
     default = nms;

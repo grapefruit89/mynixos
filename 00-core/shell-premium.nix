@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-00-CORE-024";
+    id = "NIXH-00-COR-029";
     title = "Shell Premium";
     description = "Advanced shell workflow with fastfetch MOTD, service status health-checks, and power-user aliases.";
     layer = 00;

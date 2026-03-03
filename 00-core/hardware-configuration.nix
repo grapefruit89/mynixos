@@ -1,7 +1,7 @@
 { config, lib, pkgs, modulesPath, ... }:
 let
   nms = {
-    id = "NIXH-00-CORE-009";
+    id = "NIXH-00-COR-012";
     title = "Hardware Configuration";
     description = "Auto-generated hardware abstraction layer.";
     layer = 00;

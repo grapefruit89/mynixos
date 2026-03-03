@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 let
-  nms = { id = "NIXH-20-SRV-036"; title = "Jellyseerr"; description = "Media requests."; layer = 30; nixpkgs.category = "services/media"; capabilities = [ "media/requests" ]; audit.last_reviewed = "2026-03-02"; audit.complexity = 2; };
+  nms = { id = "NIXH-40-MED-008"; title = "Jellyseerr"; description = "Media requests."; layer = 40; nixpkgs.category = "services/media"; capabilities = [ "media/requests" ]; audit.last_reviewed = "2026-03-02"; audit.complexity = 2; };
   myLib = import ../00-core/lib-helpers.nix { inherit lib; };
   cfg = config.my.media.jellyseerr;
   defs = config.my.defaults;

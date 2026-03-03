@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-00-CORE-013";
+    id = "NIXH-00-COR-020";
     title = "Locale (SRE Refactored)";
     description = "Centralized localization settings using the Master Source of Truth.";
     layer = 00;

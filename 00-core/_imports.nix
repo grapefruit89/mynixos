@@ -1,7 +1,6 @@
 { ... }:
 {
   imports = [
-    ./ai-tools.nix
     ./auto-locale.nix
     ./backup.nix
     ./boot-safeguard.nix
@@ -29,6 +28,7 @@
     ./shell-premium.nix
     ./ssh.nix
     ./ssh-rescue.nix
+    ./storage.nix
     ./symbiosis.nix
     ./system.nix
     ./system-stability.nix

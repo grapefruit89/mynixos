@@ -1,28 +1,33 @@
-{ lib, ... }:
-let
+{lib, ...}: let
   dnsMap = import ../10-gateway/dns-map.nix;
-in
-{
-  mkService = { 
+in {
+  mkService = {
     config,
-    name, 
+    name,
     port ? null,
-    useSSO ? true, 
+    useSSO ? true,
     description ? "Managed Service",
     readWritePaths ? [],
     allowNetwork ? true,
-    netns ? null 
+    netns ? null,
   }: let
-    finalPort = if port != null then port 
-                else if config.my.ports ? ${name} then config.my.ports.${name}
-                else throw "mkService: No port defined for ${name}";
-    
-    host = if dnsMap.dnsMapping ? ${name} 
-           then dnsMap.dnsMapping.${name} 
-           else "${name}.nix.${dnsMap.baseDomain}";
-    
-    target = "http://${if netns != null then "10.200.1.2" else "127.0.0.1"}:${toString finalPort}";
+    finalPort =
+      if port != null
+      then port
+      else if config.my.ports ? ${name}
+      then config.my.ports.${name}
+      else throw "mkService: No port defined for ${name}";
 
+    host =
+      if dnsMap.dnsMapping ? ${name}
+      then dnsMap.dnsMapping.${name}
+      else "${name}.nix.${dnsMap.baseDomain}";
+
+    target = "http://${
+      if netns != null
+      then "10.200.1.2"
+      else "127.0.0.1"
+    }:${toString finalPort}";
   in {
     systemd.services."${name}" = {
       serviceConfig = {

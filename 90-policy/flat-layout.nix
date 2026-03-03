@@ -1,7 +1,7 @@
 { lib, ... }:
 let
   nms = {
-    id = "NIXH-90-POL-FLAT";
+    id = "NIXH-90-POL-002";
     title = "Flat Layout Enforcement";
     description = "Strict enforcement of zero-depth directory structure.";
     layer = 90;

@@ -1,7 +1,7 @@
 { lib, pkgs, config, ... }:
 let
   nms = {
-    id = "NIXH-10-INF-003";
+    id = "NIXH-20-INF-001";
     title = "ClamAV (SRE Exhausted)";
     description = "Professional antivirus protection.";
     layer = 10;

@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-00-CORE-004";
+    id = "NIXH-00-COR-006";
     title = "Central Configs Plan";
     description = "Roadmap and architectural planning for centralized configuration management.";
     layer = 00;

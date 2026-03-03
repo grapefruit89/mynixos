@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 let
-  nms = { id = "NIXH-10-INF-005"; title = "Cockpit"; description = "Web admin."; layer = 10; nixpkgs.category = "tools/admin"; capabilities = [ "system/administration" ]; audit.last_reviewed = "2026-03-02"; audit.complexity = 1; };
+  nms = { id = "NIXH-80-MON-001"; title = "Cockpit"; description = "Web admin."; layer = 80; nixpkgs.category = "tools/admin"; capabilities = [ "system/administration" ]; audit.last_reviewed = "2026-03-02"; audit.complexity = 1; };
   cfg = config.my.services.cockpit;
   domain = config.my.configs.identity.domain;
   port = config.my.ports.cockpit;

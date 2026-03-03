@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-10-INF-011";
+    id = "NIXH-80-MON-002";
     title = "Netdata (SRE Exhausted)";
     description = "Real-time performance monitoring with high-retention dbengine and strict sandboxing.";
     layer = 80;

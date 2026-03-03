@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-10-INF-017";
+    id = "NIXH-20-INF-006";
     title = "Valkey (SRE Exhausted)";
     description = "High-performance Valkey (Redis fork) with memory caps and aviation-grade sandboxing.";
     layer = 10;

@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-20-SRV-001";
+    id = "NIXH-30-AUT-002";
     title = "Ai Agents (Ollama & Claude)";
     description = "Local AI orchestration with Ollama (GPU-accelerated) and Claude Code.";
     layer = 20;

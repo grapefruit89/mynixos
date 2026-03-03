@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-20-SRV-020";
+    id = "NIXH-80-MON-003";
     title = "Scrutiny (SRE Hardened)";
     description = "Hard drive S.M.A.R.T monitoring with automated collection and InfluxDB trends.";
     layer = 80;

@@ -1,10 +1,10 @@
 { lib, pkgs, config, ... }:
 let
   nms = {
-    id = "NIXH-30-DOC-001";
+    id = "NIXH-50-KNW-003";
     title = "Paperless-ngx";
     description = "Aviation-grade document management.";
-    layer = 40;
+    layer = 50;
     nixpkgs.category = "services/documents";
     capabilities = [ "document/management" "ocr/automated" "backup/exporter" ];
     audit.last_reviewed = "2026-03-02";

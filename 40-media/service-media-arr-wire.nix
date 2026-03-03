@@ -2,10 +2,10 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-20-SRV-019";
+    id = "NIXH-40-MED-005";
     title = "Arr Wire (Nixarr Style API Extraction)";
     description = "Fully automated API key extraction and wiring without manual secret management.";
-    layer = 30;
+    layer = 40;
     nixpkgs.category = "services/admin";
     capabilities = [ "automation/media" "api/wiring" ];
     audit.last_reviewed = "2026-03-02";

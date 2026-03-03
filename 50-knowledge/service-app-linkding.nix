@@ -2,10 +2,10 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-20-SRV-006";
+    id = "NIXH-50-KNW-001";
     title = "Linkding";
     description = "Bookmark manager (Placeholder - Not yet implemented).";
-    layer = 40;
+    layer = 50;
     nixpkgs.category = "web/apps";
     capabilities = [ "web/bookmarks" ];
     audit.last_reviewed = "2026-03-02";

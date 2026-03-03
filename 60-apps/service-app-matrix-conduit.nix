@@ -2,10 +2,10 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-20-SRV-036";
+    id = "NIXH-60-APP-005";
     title = "Matrix Conduit";
     description = "Lightweight Matrix homeserver (Conduit) written in Rust.";
-    layer = 50;
+    layer = 60;
     nixpkgs.category = "services/matrix";
     capabilities = [ "communication/matrix" "security/sandboxing" ];
     audit.last_reviewed = "2026-03-02";

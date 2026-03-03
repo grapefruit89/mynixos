@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 let
   nms = {
-    id = "NIXH-00-CORE-015";
+    id = "NIXH-00-COR-022";
     title = "MOTD & Shell UI";
     description = "Dynamic login dashboard and interactive shell initialization.";
     layer = 00;

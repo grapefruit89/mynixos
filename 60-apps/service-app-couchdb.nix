@@ -2,10 +2,10 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-20-SRV-003";
+    id = "NIXH-60-APP-002";
     title = "CouchDB";
     description = "NoSQL database (Placeholder - Not yet implemented).";
-    layer = 50;
+    layer = 60;
     nixpkgs.category = "services/databases";
     capabilities = [ "database/nosql" ];
     audit.last_reviewed = "2026-03-02";

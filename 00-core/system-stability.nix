@@ -1,18 +1,21 @@
-{ config, lib, pkgs, ... }:
-let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-00-CORE-030";
+    id = "NIXH-00-COR-034";
     title = "System Stability";
     description = "Proactive maintenance services to prevent NVRAM corruption and config drift.";
     layer = 00;
     nixpkgs.category = "system/settings";
-    capabilities = [ "system/maintenance" "safety/recovery" ];
+    capabilities = ["system/maintenance" "safety/recovery"];
     audit.last_reviewed = "2026-03-02";
     audit.complexity = 2;
   };
-in
-{
+in {
   options.my.meta.system_stability = lib.mkOption {
     type = lib.types.attrs;
     default = nms;
@@ -32,15 +35,19 @@ in
 
     systemd.services.config-drift-detector = {
       description = "Detect configuration drift";
-      after = [ "nixhome-config-merger.service" ];
-      wantedBy = [ "multi-user.target" ];
+      after = ["nixhome-config-merger.service"];
+      wantedBy = ["multi-user.target"];
       serviceConfig.Type = "oneshot";
       script = "USER_CONFIG='/var/lib/nixhome/user-config.json'; if [ -f '$USER_CONFIG' ] && [ '$(cat '$USER_CONFIG')' != '{}' ]; then echo '⚠️ HINWEIS: Das System nutzt imperative Einstellungen.'; fi";
     };
 
     systemd.services.nixhome-emergency = {
       description = "NixOS Home Emergency Recovery Info";
-      serviceConfig = { Type = "oneshot"; StandardOutput = "tty"; TTYPath = "/dev/tty1"; };
+      serviceConfig = {
+        Type = "oneshot";
+        StandardOutput = "tty";
+        TTYPath = "/dev/tty1";
+      };
       script = "echo '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🚨 NIXHOME SETUP FEHLGESCHLAGEN\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━' > /dev/tty1";
     };
   };

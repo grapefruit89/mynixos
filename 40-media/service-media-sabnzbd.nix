@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 let
-  nms = { id = "NIXH-20-SRV-035"; title = "Sabnzbd"; description = "Usenet download client."; layer = 30; nixpkgs.category = "services/media"; capabilities = [ "media/usenet" ]; audit.last_reviewed = "2026-03-02"; audit.complexity = 3; };
+  nms = { id = "NIXH-40-MED-015"; title = "Sabnzbd"; description = "Usenet download client."; layer = 40; nixpkgs.category = "services/media"; capabilities = [ "media/usenet" ]; audit.last_reviewed = "2026-03-02"; audit.complexity = 3; };
   myLib = import ../00-core/lib-helpers.nix { inherit lib; };
   cfg = config.my.media.sabnzbd;
   defs = config.my.defaults;

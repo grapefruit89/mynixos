@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-00-CORE-032";
+    id = "NIXH-00-COR-037";
     title = "User Moritz Home";
     description = "Personalized user environment configuration via Home-Manager for user 'moritz'.";
     layer = 00;

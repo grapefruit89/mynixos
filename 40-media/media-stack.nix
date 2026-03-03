@@ -2,10 +2,10 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-20-SRV-033";
+    id = "NIXH-40-MED-001";
     title = "Media Stack (Exhausted Layout)";
     description = "Canonical data/state layout with ABC-tiering enforcement and global media permissions.";
-    layer = 30;
+    layer = 40;
     nixpkgs.category = "system/storage";
     capabilities = [ "storage/layout" "security/permissions" ];
     audit.last_reviewed = "2026-03-02";

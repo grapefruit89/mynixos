@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-20-SRV-015";
+    id = "NIXH-30-AUT-006";
     title = "Semaphore";
     description = "Ansible Web UI (Placeholder - Not yet implemented).";
     layer = 20;

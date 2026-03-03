@@ -2,10 +2,10 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-20-SRV-004";
+    id = "NIXH-60-APP-003";
     title = "Filebrowser (SRE Hardened)";
     description = "Web-based file manager with strict path restrictions and sandboxing.";
-    layer = 50;
+    layer = 60;
     nixpkgs.category = "services/web-apps";
     capabilities = [ "web/file-management" "security/sandboxing" ];
     audit.last_reviewed = "2026-03-02";

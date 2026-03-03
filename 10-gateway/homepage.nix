@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-10-INF-009";
+    id = "NIXH-10-GTW-007";
     title = "Homepage Dashboard";
     description = "Highly customizable application dashboard, fully declarative.";
     layer = 10;

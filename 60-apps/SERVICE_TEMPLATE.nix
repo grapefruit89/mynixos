@@ -2,9 +2,9 @@
  * ---
  * nms_version: 2.3
  * identity:
- *   id: NIXH-20-SRV-034
+ *   id: NIXH-60-APP-001
  *   title: "SERVICE_TEMPLATE"
- *   layer: 20
+ *   layer: 60
  * architecture:
  *   req_refs: [REQ-SRV]
  *   upstream: [NIXH-00-SYS-ROOT-001]

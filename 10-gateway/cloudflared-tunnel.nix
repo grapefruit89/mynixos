@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-10-INF-004";
+    id = "NIXH-10-GTW-003";
     title = "Cloudflared Tunnel (SRE Exhausted)";
     description = "Secure Ingress bridge using Cloudflare Tunnels for zero-port-forwarding connectivity.";
     layer = 10;

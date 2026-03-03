@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 let
-  nms = { id = "NIXH-10-INF-014"; title = "SSO"; description = "SSO config."; layer = 10; nixpkgs.category = "services/security"; capabilities = [ "security/sso" ]; audit.last_reviewed = "2026-03-02"; audit.complexity = 2; };
+  nms = { id = "NIXH-10-GTW-010"; title = "SSO"; description = "SSO config."; layer = 10; nixpkgs.category = "services/security"; capabilities = [ "security/sso" ]; audit.last_reviewed = "2026-03-02"; audit.complexity = 2; };
   cfg = config.my.services.pocketId;
   domain = config.my.configs.identity.domain;
   pocketIdPort = config.my.ports.pocketId;

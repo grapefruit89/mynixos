@@ -1,18 +1,21 @@
-{ config, lib, pkgs, ... }:
-let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-00-CORE-032";
+    id = "NIXH-00-COR-038";
     title = "User Preferences";
     description = "Customized user preferences and personal system adjustments.";
     layer = 00;
     nixpkgs.category = "system/settings";
-    capabilities = [ "user/preferences" ];
+    capabilities = ["user/preferences"];
     audit.last_reviewed = "2026-03-02";
     audit.complexity = 1;
   };
-in
-{
+in {
   options.my.meta.user_preferences = lib.mkOption {
     type = lib.types.attrs;
     default = nms;

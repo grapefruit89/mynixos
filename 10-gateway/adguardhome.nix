@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-10-INF-001";
+    id = "NIXH-10-GTW-001";
     title = "AdGuard Home (SRE Optimized)";
     description = "Declarative DNS filter with optimized cache, strict sandboxing and expert blocklists.";
     layer = 10;

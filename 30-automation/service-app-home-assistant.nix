@@ -2,7 +2,7 @@
 let
   # 🚀 NMS v4.0 Metadaten
   nms = {
-    id = "NIXH-20-SRV-005";
+    id = "NIXH-30-AUT-003";
     title = "Home Assistant (Fully Declarative)";
     description = "Tightly integrated home automation with MQTT and declarative UI.";
     layer = 20;
